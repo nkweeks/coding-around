@@ -7,6 +7,13 @@ const projectTracks = [
     note: 'Core focus: product-grade web experiences with clear UX and strong polish.',
     projects: [
       {
+        name: 'Benstagram.net',
+        type: 'Photo-first community platform for people named Ben',
+        stack: 'React, Node.js, PostgreSQL, AWS S3',
+        status: 'Live now',
+        url: 'https://benstagram.net',
+      },
+      {
         name: 'Atlas Commerce',
         type: 'Headless marketplace',
         stack: 'React, Node, Stripe, Postgres',
@@ -123,6 +130,16 @@ const milestones = [
     detail: 'Launch experimental hardware and creative-tech section with video walkthroughs.',
   },
 ]
+
+const featuredProject = {
+  name: 'Benstagram.net',
+  label: 'Featured Project',
+  summary:
+    'A modern photo-first community platform made for people named Ben, with clean posting, profile, and discovery flows.',
+  stack: ['React', 'Node.js', 'PostgreSQL', 'AWS S3'],
+  status: 'Live now',
+  url: 'https://benstagram.net',
+}
 
 function CodingAroundMark() {
   return (
@@ -450,6 +467,43 @@ function App() {
             <h2>Multiple formats, one system</h2>
           </div>
 
+          <article className="featured-project-card">
+            <div className="featured-project-copy">
+              <p className="featured-project-kicker">{featuredProject.label}</p>
+              <h3>{featuredProject.name}</h3>
+              <p>{featuredProject.summary}</p>
+              <div className="featured-project-tags">
+                {featuredProject.stack.map((item) => (
+                  <span key={item}>{item}</span>
+                ))}
+              </div>
+              <div className="featured-project-actions">
+                <span>{featuredProject.status}</span>
+                <a href={featuredProject.url} target="_blank" rel="noreferrer">
+                  Visit benstagram.net
+                </a>
+              </div>
+            </div>
+
+            <div className="featured-project-visual" aria-hidden="true">
+              <div className="ben-logo-chip">
+                <span>b</span>
+              </div>
+              <div className="ben-post-card">
+                <header>
+                  <div className="ben-avatar" />
+                  <p>the_ben_official</p>
+                </header>
+                <div className="ben-post-image" />
+                <footer>
+                  <span />
+                  <span />
+                  <span />
+                </footer>
+              </div>
+            </div>
+          </article>
+
           <div className="track-grid">
             {projectTracks.map((track, index) => (
               <article
@@ -470,6 +524,11 @@ function App() {
                       </header>
                       <small>{project.type}</small>
                       <em>{project.stack}</em>
+                      {project.url && (
+                        <a href={project.url} target="_blank" rel="noreferrer" className="project-link">
+                          Visit live site
+                        </a>
+                      )}
                     </li>
                   ))}
                 </ul>

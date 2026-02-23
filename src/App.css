@@ -470,6 +470,172 @@ main {
   gap: 1rem;
 }
 
+.featured-project-card {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 1.25rem;
+  border: 1px solid rgba(234, 241, 255, 0.16);
+  background:
+    linear-gradient(160deg, rgba(14, 22, 58, 0.88), rgba(8, 13, 35, 0.92)),
+    radial-gradient(circle at 100% 0%, rgba(144, 168, 255, 0.24), transparent 44%);
+  box-shadow: 0 1.8rem 3.7rem rgba(3, 5, 12, 0.52);
+  overflow: hidden;
+}
+
+.featured-project-copy {
+  padding: 1.2rem;
+}
+
+.featured-project-kicker {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.11em;
+  color: #a7b9e6;
+  font-size: 0.7rem;
+}
+
+.featured-project-copy h3 {
+  margin: 0.45rem 0 0;
+  font-family: var(--body-font);
+  font-size: clamp(1.55rem, 3.6vw, 2.1rem);
+  letter-spacing: -0.01em;
+}
+
+.featured-project-copy p {
+  margin: 0.66rem 0 0;
+  color: #c4d1ef;
+  max-width: 58ch;
+}
+
+.featured-project-tags {
+  margin-top: 0.8rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.featured-project-tags span {
+  border-radius: 999px;
+  border: 1px solid rgba(234, 241, 255, 0.18);
+  padding: 0.25rem 0.55rem;
+  font-size: 0.73rem;
+  color: #eaf1ff;
+  background: rgba(10, 15, 39, 0.56);
+}
+
+.featured-project-actions {
+  margin-top: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.72rem;
+  flex-wrap: wrap;
+}
+
+.featured-project-actions span {
+  border-radius: 999px;
+  padding: 0.27rem 0.56rem;
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #0f1634;
+  background: linear-gradient(120deg, #a2b7ff, #90f3ff);
+}
+
+.featured-project-actions a {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  border: 1px solid rgba(234, 241, 255, 0.38);
+  padding: 0.42rem 0.78rem;
+  color: #f0f5ff;
+  font-size: 0.82rem;
+  background: rgba(9, 15, 38, 0.42);
+}
+
+.featured-project-visual {
+  position: relative;
+  min-height: 17rem;
+  padding: 1.2rem;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background:
+    radial-gradient(circle at 50% 14%, rgba(143, 163, 255, 0.42), transparent 60%),
+    linear-gradient(175deg, rgba(8, 13, 34, 0.52), rgba(6, 10, 28, 0.88));
+}
+
+.ben-logo-chip {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  width: 2.3rem;
+  height: 2.3rem;
+  border-radius: 0.65rem;
+  display: grid;
+  place-items: center;
+  color: #eef3ff;
+  font-weight: 700;
+  font-size: 1.2rem;
+  border: 1px solid rgba(234, 241, 255, 0.28);
+  background: linear-gradient(140deg, rgba(89, 241, 255, 0.2), rgba(114, 122, 255, 0.38));
+}
+
+.ben-post-card {
+  width: min(24rem, 100%);
+  border-radius: 1rem;
+  overflow: hidden;
+  border: 1px solid rgba(234, 241, 255, 0.22);
+  background: rgba(3, 6, 16, 0.9);
+  box-shadow: 0 1.5rem 2.8rem rgba(4, 8, 20, 0.58);
+}
+
+.ben-post-card header {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.65rem 0.75rem;
+}
+
+.ben-avatar {
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #a8b8ff, #90f3ff);
+}
+
+.ben-post-card header p {
+  margin: 0;
+  color: #e8efff;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.ben-post-image {
+  aspect-ratio: 16 / 10;
+  background:
+    linear-gradient(200deg, rgba(26, 36, 92, 0.22), rgba(17, 24, 58, 0.14)),
+    radial-gradient(circle at 26% 18%, rgba(156, 109, 255, 0.52), transparent 48%),
+    radial-gradient(circle at 72% 74%, rgba(255, 180, 90, 0.42), transparent 40%),
+    radial-gradient(circle at 72% 18%, rgba(95, 214, 255, 0.46), transparent 38%),
+    linear-gradient(180deg, #15245f, #0f1738);
+}
+
+.ben-post-card footer {
+  display: flex;
+  align-items: center;
+  gap: 0.42rem;
+  padding: 0.68rem 0.75rem 0.82rem;
+}
+
+.ben-post-card footer span {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 999px;
+  background: rgba(222, 231, 255, 0.62);
+}
+
 .track-card {
   transform: translate3d(0, var(--float-y), 0);
   border-radius: 1.15rem;
@@ -550,6 +716,23 @@ main {
 .track-card li em {
   color: var(--text-soft);
   font-size: 0.75rem;
+}
+
+.project-link {
+  display: inline-flex;
+  margin-top: 0.52rem;
+  padding: 0.28rem 0.62rem;
+  border-radius: 999px;
+  border: 1px solid rgba(234, 241, 255, 0.22);
+  font-size: 0.72rem;
+  color: #e8eeff;
+  background: rgba(12, 18, 42, 0.52);
+  transition: border-color 180ms ease, background-color 180ms ease;
+}
+
+.project-link:hover {
+  border-color: rgba(167, 184, 255, 0.92);
+  background: rgba(24, 34, 76, 0.66);
 }
 
 .spectrum-grid {
@@ -701,6 +884,7 @@ footer {
   }
 
   .focus-ribbon,
+  .featured-project-card,
   .track-grid,
   .spectrum-grid,
   .roadmap-grid {
