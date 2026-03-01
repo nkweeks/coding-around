@@ -62,6 +62,13 @@ const projectTracks = [
     note: 'Developer-first utilities and internal platforms for reliability and speed.',
     projects: [
       {
+        name: 'VIM Protocol (Hacking Game)',
+        type: 'Cyber training simulator with branching missions',
+        stack: 'Vanilla JS, HTML/CSS, custom Vim engine',
+        status: 'Local subproject',
+        source: 'Local source: hacking_game',
+      },
+      {
         name: 'Patchline CLI',
         type: 'Release automation tool',
         stack: 'Go, GitHub API, Docker',
@@ -486,20 +493,26 @@ function App() {
             </div>
 
             <div className="featured-project-visual" aria-hidden="true">
-              <div className="ben-logo-chip">
-                <span>b</span>
-              </div>
-              <div className="ben-post-card">
-                <header>
-                  <div className="ben-avatar" />
-                  <p>the_ben_official</p>
-                </header>
-                <div className="ben-post-image" />
-                <footer>
-                  <span />
-                  <span />
-                  <span />
-                </footer>
+              <div className="ben-preview-shell">
+                <div className="ben-preview-topbar">
+                  <div className="ben-logo-chip">
+                    <span>b</span>
+                  </div>
+                  <p>benstagram</p>
+                  <span className="ben-live-dot" />
+                </div>
+                <div className="ben-post-card">
+                  <header>
+                    <div className="ben-avatar" />
+                    <p>the_ben_official</p>
+                  </header>
+                  <div className="ben-post-image" />
+                  <footer>
+                    <span />
+                    <span />
+                    <span />
+                  </footer>
+                </div>
               </div>
             </div>
           </article>
@@ -524,6 +537,7 @@ function App() {
                       </header>
                       <small>{project.type}</small>
                       <em>{project.stack}</em>
+                      {project.source && <span className="project-source">{project.source}</span>}
                       {project.url && (
                         <a href={project.url} target="_blank" rel="noreferrer" className="project-link">
                           Visit live site

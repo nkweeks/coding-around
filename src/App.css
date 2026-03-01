@@ -557,33 +557,65 @@ main {
 .featured-project-visual {
   position: relative;
   min-height: 17rem;
-  padding: 1.2rem;
+  padding: 1.1rem;
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: center;
+  border-left: 1px solid rgba(234, 241, 255, 0.12);
   background:
-    radial-gradient(circle at 50% 14%, rgba(143, 163, 255, 0.42), transparent 60%),
+    radial-gradient(circle at 52% 12%, rgba(143, 163, 255, 0.38), transparent 58%),
     linear-gradient(175deg, rgba(8, 13, 34, 0.52), rgba(6, 10, 28, 0.88));
 }
 
+.ben-preview-shell {
+  width: min(26rem, 100%);
+  border-radius: 1rem;
+  border: 1px solid rgba(234, 241, 255, 0.2);
+  background:
+    linear-gradient(160deg, rgba(12, 18, 49, 0.76), rgba(6, 10, 28, 0.92)),
+    radial-gradient(circle at 18% 0%, rgba(161, 181, 255, 0.18), transparent 40%);
+  padding: 0.72rem;
+}
+
+.ben-preview-topbar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.62rem;
+  padding: 0.15rem 0.15rem 0 0.15rem;
+}
+
+.ben-preview-topbar p {
+  margin: 0;
+  font-size: 0.86rem;
+  color: #d8e3ff;
+  letter-spacing: 0.02em;
+}
+
+.ben-live-dot {
+  margin-left: auto;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 999px;
+  background: linear-gradient(120deg, #88f2ff, #95b1ff);
+  box-shadow: 0 0 0.6rem rgba(132, 169, 255, 0.72);
+}
+
 .ben-logo-chip {
-  position: absolute;
-  top: 1rem;
-  left: 1rem;
-  width: 2.3rem;
-  height: 2.3rem;
-  border-radius: 0.65rem;
+  width: 1.7rem;
+  height: 1.7rem;
+  border-radius: 0.46rem;
   display: grid;
   place-items: center;
   color: #eef3ff;
   font-weight: 700;
-  font-size: 1.2rem;
-  border: 1px solid rgba(234, 241, 255, 0.28);
+  font-size: 1.06rem;
+  border: 1px solid rgba(234, 241, 255, 0.32);
   background: linear-gradient(140deg, rgba(89, 241, 255, 0.2), rgba(114, 122, 255, 0.38));
 }
 
 .ben-post-card {
-  width: min(24rem, 100%);
+  width: 100%;
   border-radius: 1rem;
   overflow: hidden;
   border: 1px solid rgba(234, 241, 255, 0.22);
@@ -716,6 +748,15 @@ main {
 .track-card li em {
   color: var(--text-soft);
   font-size: 0.75rem;
+}
+
+.project-source {
+  display: inline-flex;
+  margin-top: 0.45rem;
+  font-size: 0.68rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #b5c4e6;
 }
 
 .project-link {

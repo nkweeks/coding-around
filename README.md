@@ -38,10 +38,11 @@ npm run preview
    - install: `npm ci`
    - build: `npm run check:deploy`
    - publish directory: `dist`
-3. For SPA routing, add a rewrite in Amplify (Hosting > Rewrites and redirects):
-   - source: `/<*>`
+3. For SPA routing, add this rewrite in Amplify (Hosting > Rewrites and redirects):
+   - source: `</^[^.]+$|\\.(?!(css|gif|ico|jpg|js|png|txt|svg|woff|woff2|ttf|map|json|webp)$)([^.]+$)/>`
    - target: `/index.html`
    - type: `200 (Rewrite)`
+   - This avoids rewriting static assets (`.js`, `.css`, images, fonts) to HTML.
 4. Trigger a build from Amplify and confirm:
    - build logs show Node 22
    - artifacts are uploaded from `dist`
