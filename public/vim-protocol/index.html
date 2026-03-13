@@ -1,22 +1,62 @@
-const vimProtocolFrameHtml = String.raw`<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>VIM PROTOCOL :: CYBER TRAINING SIMULATOR</title>
-  <base href="/games/vim-protocol/">
+  <title>VIM Protocol | Coding Around</title>
+  <meta name="theme-color" content="#02080d">
+  <base href="/vim-protocol/">
 
+  <!-- Stylesheets -->
   <link rel="stylesheet" href="css/main.css">
   <link rel="stylesheet" href="css/cyberpunk-theme.css">
   <link rel="stylesheet" href="css/vim-editor.css">
   <link rel="stylesheet" href="css/ui-components.css">
   <link rel="stylesheet" href="css/characters.css">
 
+  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+
+  <style>
+    .portfolio-link {
+      position: fixed;
+      top: 18px;
+      left: 18px;
+      z-index: 50;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      border: 1px solid rgba(114, 241, 214, 0.28);
+      border-radius: 999px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #d8fff8;
+      background: rgba(2, 11, 15, 0.82);
+      backdrop-filter: blur(12px);
+      text-decoration: none;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.28);
+    }
+
+    .portfolio-link:hover {
+      border-color: rgba(114, 241, 214, 0.52);
+      color: #ffffff;
+    }
+
+    .portfolio-link::before {
+      content: '←';
+      font-size: 13px;
+    }
+  </style>
 </head>
 <body>
+  <a class="portfolio-link" href="/">Back to portfolio</a>
+
+  <!-- Main Menu Screen -->
   <div id="main-menu" class="main-menu">
     <div class="menu-content">
       <div class="menu-logo">
@@ -59,19 +99,25 @@ const vimProtocolFrameHtml = String.raw`<!DOCTYPE html>
     </div>
   </div>
 
+  <!-- Modal for Mission Briefing -->
   <div id="modal-overlay" class="modal-overlay hidden">
     <div class="modal-content">
       <div class="modal-header">
         <h2 id="modal-title">MISSION BRIEFING</h2>
       </div>
-      <div class="modal-body" id="modal-body"></div>
+      <div class="modal-body" id="modal-body">
+        <!-- Dynamic content -->
+      </div>
       <div class="modal-footer">
         <button id="modal-btn" class="cyber-button">START MISSION</button>
       </div>
     </div>
   </div>
 
+  <!-- Main Game Container -->
   <div class="game-container">
+
+    <!-- Top Bar -->
     <div class="top-bar">
       <div class="mission-title">
         <span class="glitch" data-text="OPERATION: FIRST CONTACT">OPERATION: FIRST CONTACT</span>
@@ -86,26 +132,36 @@ const vimProtocolFrameHtml = String.raw`<!DOCTYPE html>
       </div>
     </div>
 
+    <!-- Main Content Area -->
     <div class="content-area">
+
+      <!-- Left Panel: Mission Briefing -->
       <div class="left-panel">
         <div class="panel-header">
           <span class="terminal-prompt">&gt;</span> MISSION BRIEFING
         </div>
         <div class="panel-content">
-          <div id="mission-story" class="mission-story"></div>
+          <div id="mission-story" class="mission-story">
+            <!-- Dynamic mission story -->
+          </div>
 
           <div class="objectives-section">
             <div class="section-title">OBJECTIVES:</div>
-            <div id="objectives-list" class="objectives-list"></div>
+            <div id="objectives-list" class="objectives-list">
+              <!-- Dynamic objectives -->
+            </div>
           </div>
 
           <div class="hints-section">
             <div class="section-title">HINTS:</div>
-            <div id="hints-list" class="hints-list"></div>
+            <div id="hints-list" class="hints-list">
+              <!-- Dynamic hints -->
+            </div>
           </div>
         </div>
       </div>
 
+      <!-- Center: Vim Editor -->
       <div class="center-panel">
         <div class="editor-header">
           <span class="terminal-prompt">&gt;</span> VIM TERMINAL
@@ -113,15 +169,20 @@ const vimProtocolFrameHtml = String.raw`<!DOCTYPE html>
             <span class="status-dot"></span> CONNECTED
           </span>
         </div>
-        <div id="vim-editor" class="vim-editor"></div>
+        <div id="vim-editor" class="vim-editor">
+          <!-- Vim simulator renders here -->
+        </div>
       </div>
 
+      <!-- Right Panel: Command History & Stats -->
       <div class="right-panel">
         <div class="panel-header">
           <span class="terminal-prompt">&gt;</span> COMMAND LOG
         </div>
         <div class="panel-content">
-          <div id="command-history" class="command-history"></div>
+          <div id="command-history" class="command-history">
+            <!-- Dynamic command history -->
+          </div>
 
           <div class="stats-section">
             <div class="section-title">STATS:</div>
@@ -138,8 +199,10 @@ const vimProtocolFrameHtml = String.raw`<!DOCTYPE html>
           </div>
         </div>
       </div>
+
     </div>
 
+    <!-- Bottom Status Bar -->
     <div class="status-bar">
       <div class="status-section">
         <span id="mode-indicator" class="mode-indicator">-- NORMAL --</span>
@@ -154,36 +217,49 @@ const vimProtocolFrameHtml = String.raw`<!DOCTYPE html>
         <span id="progress-indicator" class="progress-indicator">Objectives: 0/0</span>
       </div>
     </div>
+
   </div>
 
+  <!-- Background Effects -->
   <div class="bg-grid"></div>
   <div class="scanline"></div>
 
+  <!-- Core Vim Scripts -->
   <script src="js/vim/buffer.js"></script>
   <script src="js/vim/cursor.js"></script>
   <script src="js/vim/commands.js"></script>
   <script src="js/vim/vim-simulator.js"></script>
+
+  <!-- Core Game Scripts -->
   <script src="js/core/storage.js"></script>
   <script src="js/core/state-manager.js"></script>
   <script src="js/core/game.js"></script>
+
+  <!-- Narrative System Scripts -->
   <script src="js/narrative/characters.js"></script>
   <script src="js/narrative/story-manager.js"></script>
+
+  <!-- Level System Scripts -->
   <script src="js/levels/skill-catalog.js"></script>
   <script src="js/levels/level-data.js"></script>
   <script src="js/levels/mission-validator.js"></script>
   <script src="js/levels/level-manager.js"></script>
+
+  <!-- UI Scripts -->
   <script src="js/ui/modal.js"></script>
   <script src="js/ui/hud.js"></script>
   <script src="js/ui/skill-log.js"></script>
   <script src="js/ui/terminal.js"></script>
 
+  <!-- Initialize Game -->
   <script>
+    // Wait for DOM to be ready
     document.addEventListener('DOMContentLoaded', () => {
-      window.game = new Game()
-      window.game.init()
-    })
+      // Initialize the game
+      window.game = new Game();
+      window.game.init();
+    });
   </script>
-</body>
-</html>`
 
-export default vimProtocolFrameHtml
+</body>
+</html>

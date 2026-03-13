@@ -1,9 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import './App.css'
-import vimProtocolFrameHtml from './vimProtocolFrameHtml.js'
 
-const VIM_PROTOCOL_ROUTE = '/vim-protocol'
-const VIM_PROTOCOL_PLAY_ROUTE = '/vim-protocol/play'
+const VIM_PROTOCOL_URL = '/vim-protocol/index.html'
 
 const projectTracks = [
   {
@@ -71,8 +69,8 @@ const projectTracks = [
         stack: 'Vanilla JS, HTML/CSS, custom Vim engine',
         status: 'Local subproject',
         source: 'Local source: hacking_game',
-        url: VIM_PROTOCOL_ROUTE,
-        linkLabel: 'Play subpage',
+        url: VIM_PROTOCOL_URL,
+        linkLabel: 'Open standalone game',
       },
       {
         name: 'Patchline CLI',
@@ -160,17 +158,9 @@ const featuredSubproject = {
   summary:
     'A cyber training simulator built around a custom Vim engine, branching missions, and character-driven progression.',
   stack: ['Vanilla JS', 'Custom Vim engine', 'Branching story', 'Terminal UI'],
-  status: 'Local prototype',
+  status: 'Playable now',
   source: 'Source project: hacking_game',
-  url: VIM_PROTOCOL_ROUTE,
-}
-
-function normalizePath(pathname) {
-  if (!pathname || pathname === '/') {
-    return '/'
-  }
-
-  return pathname.replace(/\/+$/, '')
+  url: VIM_PROTOCOL_URL,
 }
 
 function CodingAroundMark() {
@@ -235,87 +225,6 @@ function CodingAroundMark() {
       <circle cx="161" cy="84" r="5" fill="#90f3ff" />
       <circle cx="64" cy="156" r="5.5" fill="#9da8ff" />
     </svg>
-  )
-}
-
-function VimProtocolFrame({ title, className }) {
-  return (
-    <iframe
-      className={className}
-      srcDoc={vimProtocolFrameHtml}
-      title={title}
-      loading="eager"
-    />
-  )
-}
-
-function VimProtocolPage({ fullMode = false }) {
-  const year = new Date().getFullYear()
-
-  useEffect(() => {
-    document.title = 'VIM Protocol | Coding Around'
-  }, [])
-
-  return (
-    <div className={`subpage-shell subpage-shell-vim ${fullMode ? 'subpage-shell-vim-full' : ''}`}>
-      <header className="subpage-header">
-        <a className="top-brand" href="/">
-          <span className="brand-dot" />
-          coding around
-        </a>
-        <nav>
-          <a href="/">Portfolio</a>
-          <a href={fullMode ? VIM_PROTOCOL_ROUTE : VIM_PROTOCOL_PLAY_ROUTE}>
-            {fullMode ? 'Embedded view' : 'Open full game'}
-          </a>
-        </nav>
-      </header>
-
-      <main className="subpage-main">
-        {!fullMode && (
-          <section className="subpage-hero subpage-hero-vim">
-            <div className="subpage-copy">
-              <p className="kicker">Playable Subpage</p>
-              <h1>VIM Protocol</h1>
-              <p>
-                A keyboard-first cyber training simulator with branching missions, a custom Vim
-                engine, and terminal-style progression. Click into the game frame to take control.
-              </p>
-              <div className="subpage-actions">
-                <a className="btn btn-primary" href={VIM_PROTOCOL_PLAY_ROUTE}>
-                  Open full game
-                </a>
-                <a className="btn btn-outline" href="/#projects">
-                  Back to portfolio
-                </a>
-              </div>
-            </div>
-          </section>
-        )}
-
-        <section className="game-frame-section">
-          <div className={`game-frame-shell ${fullMode ? 'game-frame-shell-full' : ''}`}>
-            <div className="game-frame-topbar">
-              <span className="vim-light vim-light-red" />
-              <span className="vim-light vim-light-yellow" />
-              <span className="vim-light vim-light-green" />
-              <p>{fullMode ? 'VIM PROTOCOL :: FULL PLAY MODE' : 'VIM PROTOCOL :: LIVE SUBPAGE'}</p>
-            </div>
-            <VimProtocolFrame
-              className={`game-frame ${fullMode ? 'game-frame-full' : ''}`}
-              title="VIM Protocol game"
-            />
-          </div>
-        </section>
-      </main>
-
-      {!fullMode && (
-        <footer className="subpage-footer">
-          <p>© {year} Coding Around</p>
-          <p>Hosted on the portfolio at `/vim-protocol`.</p>
-        </footer>
-      )}
-    </div>
   )
 }
 
@@ -643,7 +552,7 @@ function PortfolioHome() {
               <div className="featured-project-actions featured-project-actions-vim">
                 <span>{featuredSubproject.status}</span>
                 <strong>{featuredSubproject.source}</strong>
-                <a href={featuredSubproject.url}>Launch /vim-protocol</a>
+                <a href={featuredSubproject.url}>Open standalone game</a>
               </div>
             </div>
 
@@ -786,16 +695,6 @@ function PortfolioHome() {
 }
 
 function App() {
-  const pathname = typeof window === 'undefined' ? '/' : normalizePath(window.location.pathname)
-
-  if (pathname === VIM_PROTOCOL_PLAY_ROUTE) {
-    return <VimProtocolPage fullMode />
-  }
-
-  if (pathname === VIM_PROTOCOL_ROUTE) {
-    return <VimProtocolPage />
-  }
-
   return <PortfolioHome />
 }
 

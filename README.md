@@ -38,12 +38,16 @@ npm run preview
    - install: `npm ci`
    - build: `npm run check:deploy`
    - publish directory: `dist`
-3. For SPA routing, add this rewrite in Amplify (Hosting > Rewrites and redirects):
-   - source: `</^[^.]+$|\\.(?!(css|gif|ico|jpeg|jpg|js|png|txt|svg|woff|woff2|ttf|map|json|webp)$)([^.]+$)/>`
+3. Optional clean URL for the standalone VIM Protocol page. Add this rule above the SPA catch-all if you want `/vim-protocol` to work without `index.html`:
+   - source: `/vim-protocol`
+   - target: `/vim-protocol/index.html`
+   - type: `200 (Rewrite)`
+4. For SPA routing, add this rewrite in Amplify below the VIM Protocol rule:
+   - source: `</^[^.]+$|\\.(?!(css|gif|html|ico|jpeg|jpg|js|png|txt|svg|woff|woff2|ttf|map|json|webp)$)([^.]+$)/>`
    - target: `/index.html`
    - type: `200 (Rewrite)`
-   - This avoids rewriting static assets (`.js`, `.css`, images, fonts) to HTML.
-4. Trigger a build from Amplify and confirm:
+   - This avoids rewriting static assets (`.js`, `.css`, images, fonts, static HTML pages) to HTML.
+5. Trigger a build from Amplify and confirm:
    - build logs show Node 22
    - artifacts are uploaded from `dist`
    - deep-link URL loads without 404
