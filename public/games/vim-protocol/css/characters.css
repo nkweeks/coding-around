@@ -1,0 +1,333 @@
+/* Character Dialogue System Styles */
+
+/* Main dialogue overlay */
+.character-dialogue {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+.character-dialogue.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Dialogue box */
+.dialogue-box {
+  background: linear-gradient(180deg, rgba(26, 26, 46, 0.98) 0%, rgba(15, 15, 30, 0.98) 100%);
+  border: 2px solid;
+  border-radius: 8px;
+  padding: 30px;
+  max-width: 600px;
+  width: 90%;
+  box-shadow: 0 0 30px rgba(157, 78, 221, 0.3),
+              inset 0 0 20px rgba(0, 0, 0, 0.5);
+  animation: dialogueSlideIn 0.3s ease;
+}
+
+@keyframes dialogueSlideIn {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Character header */
+.dialogue-character {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.character-avatar {
+  font-family: 'Courier New', monospace;
+  font-size: 14px;
+  line-height: 1.2;
+  white-space: pre;
+  text-shadow: 0 0 10px currentColor;
+}
+
+.character-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.character-name {
+  font-family: 'Orbitron', 'Courier New', monospace;
+  font-size: 24px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  text-shadow: 0 0 10px currentColor;
+}
+
+.character-title {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Dialogue content */
+.dialogue-content {
+  margin-bottom: 25px;
+}
+
+.dialogue-content p {
+  color: #e0e0e0;
+  font-size: 16px;
+  line-height: 1.6;
+  margin-bottom: 12px;
+}
+
+.dialogue-content p:last-child {
+  margin-bottom: 0;
+}
+
+/* Continue button */
+.dialogue-continue {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.dialogue-btn {
+  background: transparent;
+  border: 2px solid;
+  padding: 10px 30px;
+  font-family: 'Orbitron', 'Courier New', monospace;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.dialogue-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 15px currentColor;
+  transform: translateY(-2px);
+}
+
+.dialogue-btn:focus {
+  outline: none;
+  box-shadow: 0 0 15px currentColor, 0 0 0 2px currentColor;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Quick reaction popup */
+.character-reaction {
+  position: fixed;
+  bottom: 120px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 500;
+  opacity: 0;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  pointer-events: none;
+}
+
+.character-reaction.hidden {
+  opacity: 0;
+  transform: translateX(-50%) translateY(20px);
+}
+
+.character-reaction.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.reaction-box {
+  background: rgba(15, 15, 30, 0.95);
+  border: 1px solid;
+  border-radius: 6px;
+  padding: 12px 20px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+  animation: reactionPop 0.3s ease;
+}
+
+@keyframes reactionPop {
+  0% {
+    transform: scale(0.8);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.reaction-name {
+  font-family: 'Orbitron', 'Courier New', monospace;
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.reaction-text {
+  color: #e0e0e0;
+  font-size: 14px;
+  font-style: italic;
+}
+
+/* Character-specific glow effects */
+.character-dialogue[data-character="zero"] .dialogue-box {
+  box-shadow: 0 0 30px rgba(157, 78, 221, 0.4);
+}
+
+.character-dialogue[data-character="byte"] .dialogue-box {
+  box-shadow: 0 0 30px rgba(0, 212, 255, 0.4);
+}
+
+.character-dialogue[data-character="shell"] .dialogue-box {
+  box-shadow: 0 0 30px rgba(57, 255, 20, 0.4);
+}
+
+.character-dialogue[data-character="blade"] .dialogue-box {
+  box-shadow: 0 0 30px rgba(255, 20, 147, 0.4);
+}
+
+/* Glow effect for BLADE character name */
+@keyframes bladeGlow {
+  0%, 100% {
+    text-shadow: 0 0 10px currentColor;
+  }
+  50% {
+    text-shadow: 0 0 20px currentColor, 0 0 40px currentColor;
+  }
+}
+
+.character-dialogue[data-character="blade"] .character-name {
+  animation: bladeGlow 2s infinite;
+}
+
+/* Scan effect for BYTE character name */
+@keyframes byteScan {
+  0%, 100% {
+    text-shadow: 0 0 10px currentColor;
+  }
+  25% {
+    text-shadow: 0 0 15px currentColor, 2px 0 5px rgba(0, 212, 255, 0.5);
+  }
+  75% {
+    text-shadow: 0 0 15px currentColor, -2px 0 5px rgba(0, 212, 255, 0.5);
+  }
+}
+
+.character-dialogue[data-character="byte"] .character-name {
+  animation: byteScan 1.5s infinite;
+}
+
+/* Typing effect for dialogue text */
+.dialogue-content.typing p {
+  overflow: hidden;
+  white-space: nowrap;
+  animation: typing 1s steps(40, end);
+}
+
+@keyframes typing {
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+/* Objective completion celebration */
+.objective-complete-flash {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle, rgba(157, 78, 221, 0.3) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 999;
+  animation: celebrationFlash 0.5s ease-out forwards;
+}
+
+@keyframes celebrationFlash {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* Active objective highlight in HUD */
+.objective-item.active {
+  background: rgba(157, 78, 221, 0.2);
+  border-left: 3px solid #9d4edd;
+  padding-left: 12px;
+  animation: activePulse 2s infinite;
+}
+
+@keyframes activePulse {
+  0%, 100% {
+    background: rgba(157, 78, 221, 0.2);
+  }
+  50% {
+    background: rgba(157, 78, 221, 0.35);
+  }
+}
+
+.objective-item.completed {
+  opacity: 0.6;
+}
+
+.objective-item.completed .objective-checkbox {
+  background: #39ff14;
+  border-color: #39ff14;
+}
+
+.objective-item.completed .objective-checkbox::after {
+  content: '✓';
+  color: #0f0f1e;
+  font-size: 10px;
+}
+
+.objective-item.pending {
+  opacity: 0.4;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+  .dialogue-box {
+    padding: 20px;
+    margin: 10px;
+  }
+
+  .character-name {
+    font-size: 18px;
+  }
+
+  .dialogue-content p {
+    font-size: 14px;
+  }
+
+  .character-avatar {
+    font-size: 12px;
+  }
+}

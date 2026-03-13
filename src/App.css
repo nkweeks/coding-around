@@ -5,6 +5,17 @@
   isolation: isolate;
 }
 
+.subpage-shell {
+  min-height: 100vh;
+  color: var(--text-main);
+}
+
+.subpage-shell-vim {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(74, 255, 210, 0.12), transparent 28%),
+    linear-gradient(180deg, #041118 0%, #02080d 100%);
+}
+
 .sr-only {
   position: absolute;
   width: 1px;
@@ -588,6 +599,17 @@ main {
   font-weight: 500;
 }
 
+.featured-project-actions-vim a {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  border: 1px solid rgba(122, 242, 214, 0.3);
+  padding: 0.42rem 0.78rem;
+  color: #dffff8;
+  font-size: 0.82rem;
+  background: rgba(2, 20, 22, 0.52);
+}
+
 .featured-project-visual {
   position: relative;
   min-height: 17rem;
@@ -837,6 +859,115 @@ main {
   font-size: 0.69rem;
   color: #081814;
   background: linear-gradient(90deg, #6af0cf, #8df7a2);
+}
+
+.subpage-header {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem var(--shell-padding);
+  border-bottom: 1px solid rgba(116, 244, 216, 0.1);
+  background: rgba(2, 11, 15, 0.74);
+  backdrop-filter: blur(12px);
+}
+
+.subpage-header nav {
+  display: flex;
+  align-items: center;
+  gap: 1.1rem;
+}
+
+.subpage-header nav a {
+  font-size: 0.86rem;
+  color: #cceae4;
+}
+
+.subpage-main {
+  padding: 0 var(--shell-padding) 4rem;
+}
+
+.subpage-hero {
+  padding: 3.2rem 0 1.5rem;
+}
+
+.subpage-copy {
+  max-width: 58rem;
+}
+
+.subpage-copy h1 {
+  margin: 0.6rem 0 0;
+  font-family: var(--cyber-font);
+  font-size: clamp(2.8rem, 7vw, 5rem);
+  letter-spacing: 0.04em;
+  line-height: 0.95;
+  color: #b6fff0;
+}
+
+.subpage-copy p:not(.kicker) {
+  max-width: 56rem;
+  color: #b4d7d0;
+  font-size: 1.05rem;
+}
+
+.subpage-actions {
+  margin-top: 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+}
+
+.game-frame-section {
+  padding-top: 0.4rem;
+}
+
+.game-frame-shell {
+  border-radius: 1.25rem;
+  overflow: hidden;
+  border: 1px solid rgba(116, 244, 216, 0.18);
+  box-shadow: 0 1.8rem 4rem rgba(0, 0, 0, 0.45);
+  background: rgba(1, 9, 12, 0.92);
+}
+
+.game-frame-topbar {
+  display: flex;
+  align-items: center;
+  gap: 0.42rem;
+  padding: 0.8rem 1rem;
+  border-bottom: 1px solid rgba(116, 244, 216, 0.1);
+  background: rgba(0, 8, 10, 0.94);
+}
+
+.game-frame-topbar p {
+  margin: 0 0 0 0.4rem;
+  font-family: var(--terminal-font);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  color: #a8e9db;
+}
+
+.game-frame {
+  display: block;
+  width: 100%;
+  min-height: calc(100vh - 15rem);
+  border: 0;
+  background: #02080d;
+}
+
+.subpage-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+  padding: 1.25rem var(--shell-padding) 2rem;
+  color: #90b8b0;
+  font-size: 0.76rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .track-card {
@@ -1190,6 +1321,16 @@ footer {
   .vim-preview-sidebar {
     border-right: 0;
     border-bottom: 1px solid rgba(111, 237, 211, 0.08);
+  }
+
+  .subpage-header,
+  .subpage-footer {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .game-frame {
+    min-height: 72vh;
   }
 }
 

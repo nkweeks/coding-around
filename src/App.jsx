@@ -1,6 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
 import './App.css'
 
+const VIM_PROTOCOL_ROUTE = '/vim-protocol'
+const VIM_PROTOCOL_IFRAME_SRC = '/games/vim-protocol/index.html'
+
 const projectTracks = [
   {
     title: 'Immersive Web Apps',
@@ -67,6 +70,8 @@ const projectTracks = [
         stack: 'Vanilla JS, HTML/CSS, custom Vim engine',
         status: 'Local subproject',
         source: 'Local source: hacking_game',
+        url: VIM_PROTOCOL_ROUTE,
+        linkLabel: 'Play subpage',
       },
       {
         name: 'Patchline CLI',
@@ -156,6 +161,15 @@ const featuredSubproject = {
   stack: ['Vanilla JS', 'Custom Vim engine', 'Branching story', 'Terminal UI'],
   status: 'Local prototype',
   source: 'Source project: hacking_game',
+  url: VIM_PROTOCOL_ROUTE,
+}
+
+function normalizePath(pathname) {
+  if (!pathname || pathname === '/') {
+    return '/'
+  }
+
+  return pathname.replace(/\/+$/, '')
 }
 
 function CodingAroundMark() {
@@ -223,7 +237,75 @@ function CodingAroundMark() {
   )
 }
 
-function App() {
+function VimProtocolPage() {
+  const year = new Date().getFullYear()
+
+  useEffect(() => {
+    document.title = 'VIM Protocol | Coding Around'
+  }, [])
+
+  return (
+    <div className="subpage-shell subpage-shell-vim">
+      <header className="subpage-header">
+        <a className="top-brand" href="/">
+          <span className="brand-dot" />
+          coding around
+        </a>
+        <nav>
+          <a href="/">Portfolio</a>
+          <a href={VIM_PROTOCOL_IFRAME_SRC} target="_blank" rel="noreferrer">
+            Open standalone
+          </a>
+        </nav>
+      </header>
+
+      <main className="subpage-main">
+        <section className="subpage-hero subpage-hero-vim">
+          <div className="subpage-copy">
+            <p className="kicker">Playable Subpage</p>
+            <h1>VIM Protocol</h1>
+            <p>
+              A keyboard-first cyber training simulator with branching missions, a custom Vim
+              engine, and terminal-style progression. Click into the game frame to take control.
+            </p>
+            <div className="subpage-actions">
+              <a className="btn btn-primary" href={VIM_PROTOCOL_IFRAME_SRC} target="_blank" rel="noreferrer">
+                Open full game
+              </a>
+              <a className="btn btn-outline" href="/#projects">
+                Back to portfolio
+              </a>
+            </div>
+          </div>
+        </section>
+
+        <section className="game-frame-section">
+          <div className="game-frame-shell">
+            <div className="game-frame-topbar">
+              <span className="vim-light vim-light-red" />
+              <span className="vim-light vim-light-yellow" />
+              <span className="vim-light vim-light-green" />
+              <p>VIM PROTOCOL :: LIVE SUBPAGE</p>
+            </div>
+            <iframe
+              className="game-frame"
+              src={VIM_PROTOCOL_IFRAME_SRC}
+              title="VIM Protocol game"
+              loading="eager"
+            />
+          </div>
+        </section>
+      </main>
+
+      <footer className="subpage-footer">
+        <p>© {year} Coding Around</p>
+        <p>Hosted on the portfolio at `/vim-protocol`.</p>
+      </footer>
+    </div>
+  )
+}
+
+function PortfolioHome() {
   const [motion, setMotion] = useState({
     scrollY: 0,
     progress: 0,
@@ -319,6 +401,10 @@ function App() {
   const contentDepth = depth * 0.24
   const year = new Date().getFullYear()
 
+  useEffect(() => {
+    document.title = 'Coding Around | Development Portfolio'
+  }, [])
+
   return (
     <div className="app-shell">
       <div className="parallax-scene" aria-hidden="true">
@@ -356,6 +442,7 @@ function App() {
         </a>
         <nav>
           <a href="#projects">Projects</a>
+          <a href={featuredSubproject.url}>VIM Protocol</a>
           <a href="#spectrum">Styles</a>
           <a href="#roadmap">Roadmap</a>
           <a href="#contact">Contact</a>
@@ -542,6 +629,7 @@ function App() {
               <div className="featured-project-actions featured-project-actions-vim">
                 <span>{featuredSubproject.status}</span>
                 <strong>{featuredSubproject.source}</strong>
+                <a href={featuredSubproject.url}>Launch /vim-protocol</a>
               </div>
             </div>
 
@@ -605,8 +693,13 @@ function App() {
                       <em>{project.stack}</em>
                       {project.source && <span className="project-source">{project.source}</span>}
                       {project.url && (
-                        <a href={project.url} target="_blank" rel="noreferrer" className="project-link">
-                          Visit live site
+                        <a
+                          href={project.url}
+                          target={project.url.startsWith('http') ? '_blank' : undefined}
+                          rel={project.url.startsWith('http') ? 'noreferrer' : undefined}
+                          className="project-link"
+                        >
+                          {project.linkLabel || 'Visit live site'}
                         </a>
                       )}
                     </li>
@@ -676,6 +769,16 @@ function App() {
       </footer>
     </div>
   )
+}
+
+function App() {
+  const pathname = typeof window === 'undefined' ? '/' : normalizePath(window.location.pathname)
+
+  if (pathname === VIM_PROTOCOL_ROUTE) {
+    return <VimProtocolPage />
+  }
+
+  return <PortfolioHome />
 }
 
 export default App

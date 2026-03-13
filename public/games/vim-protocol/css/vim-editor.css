@@ -1,0 +1,201 @@
+/* Vim Editor Styling */
+
+.vim-editor {
+  width: 100%;
+  height: calc(100% - 40px);
+  background: var(--bg-terminal);
+  border: 2px solid var(--deep-purple);
+  font-family: 'JetBrains Mono', 'Courier New', monospace;
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--text-primary);
+  padding: 15px;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
+}
+
+.vim-editor:focus {
+  outline: none;
+  border-color: var(--neon-purple);
+  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5), var(--glow-purple);
+}
+
+/* When vim is active and receiving keyboard input */
+.vim-editor.focused {
+  border-color: var(--neon-green);
+  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5), 0 0 15px var(--neon-green);
+}
+
+/* When vim is inactive - dim appearance */
+.vim-editor:not(.focused) {
+  opacity: 0.7;
+}
+
+.vim-editor:not(.focused)::after {
+  content: 'Click here to activate vim, or press Escape';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0, 0, 0, 0.9);
+  padding: 15px 25px;
+  border: 2px solid var(--neon-purple);
+  border-radius: 4px;
+  color: var(--text-primary);
+  font-size: 14px;
+  z-index: 10;
+  pointer-events: none;
+  text-align: center;
+  box-shadow: 0 0 20px var(--neon-purple);
+}
+
+.vim-editor-content {
+  position: relative;
+  min-height: 100%;
+}
+
+.vim-line {
+  display: flex;
+  align-items: center;
+  min-height: 25px;
+  position: relative;
+}
+
+.line-number {
+  display: inline-block;
+  width: 40px;
+  text-align: right;
+  color: var(--text-muted);
+  margin-right: 20px;
+  user-select: none;
+  font-size: 14px;
+}
+
+.vim-char {
+  display: inline-block;
+  width: 0.6em;
+  position: relative;
+}
+
+.vim-cursor {
+  background: var(--neon-purple);
+  color: var(--bg-primary);
+  animation: cursorBlink 1s infinite, cursorGlow 2s ease-in-out infinite;
+  position: relative;
+  z-index: 10;
+}
+
+@keyframes cursorBlink {
+  0%, 50% {
+    opacity: 1;
+  }
+  51%, 100% {
+    opacity: 0.6;
+  }
+}
+
+@keyframes cursorGlow {
+  0%, 100% {
+    box-shadow: var(--glow-purple);
+  }
+  50% {
+    box-shadow: 0 0 20px #9d4edd, 0 0 40px #9d4edd;
+  }
+}
+
+.vim-visual-selection {
+  background: rgba(157, 78, 221, 0.3);
+  border: 1px solid var(--neon-purple);
+}
+
+/* Insert Mode Cursor */
+.vim-editor.insert-mode .vim-cursor {
+  border-left: 2px solid var(--neon-cyan);
+  background: transparent;
+  animation: insertCursorBlink 1s infinite;
+}
+
+@keyframes insertCursorBlink {
+  0%, 50% {
+    opacity: 1;
+    box-shadow: var(--glow-cyan);
+  }
+  51%, 100% {
+    opacity: 0.3;
+  }
+}
+
+/* Replace Mode Cursor */
+.vim-editor.replace-mode .vim-cursor {
+  background: var(--neon-pink);
+  animation: replaceCursorBlink 1s infinite;
+}
+
+@keyframes replaceCursorBlink {
+  0%, 50% {
+    opacity: 1;
+    box-shadow: var(--glow-pink);
+  }
+  51%, 100% {
+    opacity: 0.6;
+  }
+}
+
+/* Visual Mode Styling */
+.vim-editor.visual-mode .vim-visual-selection {
+  background: rgba(157, 78, 221, 0.4);
+  animation: visualPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes visualPulse {
+  0%, 100% {
+    background: rgba(157, 78, 221, 0.3);
+  }
+  50% {
+    background: rgba(157, 78, 221, 0.5);
+  }
+}
+
+/* Scrollbar Styling */
+.vim-editor::-webkit-scrollbar {
+  width: 10px;
+}
+
+.vim-editor::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+  border-left: 1px solid var(--dark-purple);
+}
+
+.vim-editor::-webkit-scrollbar-thumb {
+  background: var(--deep-purple);
+  border: 1px solid var(--neon-purple);
+}
+
+.vim-editor::-webkit-scrollbar-thumb:hover {
+  background: var(--neon-purple);
+  box-shadow: var(--glow-purple);
+}
+
+/* Editor Header */
+.editor-header {
+  height: 40px;
+  background: var(--bg-secondary);
+  border: 2px solid var(--deep-purple);
+  border-bottom: none;
+  padding: 0 15px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: 'Orbitron', monospace;
+  font-size: 12px;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+}
+
+.connection-status {
+  display: flex;
+  align-items: center;
+  color: var(--neon-green);
+  font-size: 11px;
+}
