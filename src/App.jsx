@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
 import './App.css'
+import vimProtocolFrameHtml from './vimProtocolFrameHtml.js'
 
 const VIM_PROTOCOL_ROUTE = '/vim-protocol'
-const VIM_PROTOCOL_IFRAME_SRC = '/games/vim-protocol/index.html'
+const VIM_PROTOCOL_PLAY_ROUTE = '/vim-protocol/play'
 
 const projectTracks = [
   {
@@ -237,7 +238,18 @@ function CodingAroundMark() {
   )
 }
 
-function VimProtocolPage() {
+function VimProtocolFrame({ title, className }) {
+  return (
+    <iframe
+      className={className}
+      srcDoc={vimProtocolFrameHtml}
+      title={title}
+      loading="eager"
+    />
+  )
+}
+
+function VimProtocolPage({ fullMode = false }) {
   const year = new Date().getFullYear()
 
   useEffect(() => {
@@ -245,7 +257,7 @@ function VimProtocolPage() {
   }, [])
 
   return (
-    <div className="subpage-shell subpage-shell-vim">
+    <div className={`subpage-shell subpage-shell-vim ${fullMode ? 'subpage-shell-vim-full' : ''}`}>
       <header className="subpage-header">
         <a className="top-brand" href="/">
           <span className="brand-dot" />
@@ -253,54 +265,56 @@ function VimProtocolPage() {
         </a>
         <nav>
           <a href="/">Portfolio</a>
-          <a href={VIM_PROTOCOL_IFRAME_SRC} target="_blank" rel="noreferrer">
-            Open standalone
+          <a href={fullMode ? VIM_PROTOCOL_ROUTE : VIM_PROTOCOL_PLAY_ROUTE}>
+            {fullMode ? 'Embedded view' : 'Open full game'}
           </a>
         </nav>
       </header>
 
       <main className="subpage-main">
-        <section className="subpage-hero subpage-hero-vim">
-          <div className="subpage-copy">
-            <p className="kicker">Playable Subpage</p>
-            <h1>VIM Protocol</h1>
-            <p>
-              A keyboard-first cyber training simulator with branching missions, a custom Vim
-              engine, and terminal-style progression. Click into the game frame to take control.
-            </p>
-            <div className="subpage-actions">
-              <a className="btn btn-primary" href={VIM_PROTOCOL_IFRAME_SRC} target="_blank" rel="noreferrer">
-                Open full game
-              </a>
-              <a className="btn btn-outline" href="/#projects">
-                Back to portfolio
-              </a>
+        {!fullMode && (
+          <section className="subpage-hero subpage-hero-vim">
+            <div className="subpage-copy">
+              <p className="kicker">Playable Subpage</p>
+              <h1>VIM Protocol</h1>
+              <p>
+                A keyboard-first cyber training simulator with branching missions, a custom Vim
+                engine, and terminal-style progression. Click into the game frame to take control.
+              </p>
+              <div className="subpage-actions">
+                <a className="btn btn-primary" href={VIM_PROTOCOL_PLAY_ROUTE}>
+                  Open full game
+                </a>
+                <a className="btn btn-outline" href="/#projects">
+                  Back to portfolio
+                </a>
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
+        )}
 
         <section className="game-frame-section">
-          <div className="game-frame-shell">
+          <div className={`game-frame-shell ${fullMode ? 'game-frame-shell-full' : ''}`}>
             <div className="game-frame-topbar">
               <span className="vim-light vim-light-red" />
               <span className="vim-light vim-light-yellow" />
               <span className="vim-light vim-light-green" />
-              <p>VIM PROTOCOL :: LIVE SUBPAGE</p>
+              <p>{fullMode ? 'VIM PROTOCOL :: FULL PLAY MODE' : 'VIM PROTOCOL :: LIVE SUBPAGE'}</p>
             </div>
-            <iframe
-              className="game-frame"
-              src={VIM_PROTOCOL_IFRAME_SRC}
+            <VimProtocolFrame
+              className={`game-frame ${fullMode ? 'game-frame-full' : ''}`}
               title="VIM Protocol game"
-              loading="eager"
             />
           </div>
         </section>
       </main>
 
-      <footer className="subpage-footer">
-        <p>© {year} Coding Around</p>
-        <p>Hosted on the portfolio at `/vim-protocol`.</p>
-      </footer>
+      {!fullMode && (
+        <footer className="subpage-footer">
+          <p>© {year} Coding Around</p>
+          <p>Hosted on the portfolio at `/vim-protocol`.</p>
+        </footer>
+      )}
     </div>
   )
 }
@@ -773,6 +787,10 @@ function PortfolioHome() {
 
 function App() {
   const pathname = typeof window === 'undefined' ? '/' : normalizePath(window.location.pathname)
+
+  if (pathname === VIM_PROTOCOL_PLAY_ROUTE) {
+    return <VimProtocolPage fullMode />
+  }
 
   if (pathname === VIM_PROTOCOL_ROUTE) {
     return <VimProtocolPage />
