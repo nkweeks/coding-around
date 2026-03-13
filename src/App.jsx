@@ -148,6 +148,16 @@ const featuredProject = {
   url: 'https://benstagram.net',
 }
 
+const featuredSubproject = {
+  name: 'VIM Protocol',
+  label: 'Featured Subproject',
+  summary:
+    'A cyber training simulator built around a custom Vim engine, branching missions, and character-driven progression.',
+  stack: ['Vanilla JS', 'Custom Vim engine', 'Branching story', 'Terminal UI'],
+  status: 'Local prototype',
+  source: 'Source project: hacking_game',
+}
+
 function CodingAroundMark() {
   return (
     <svg
@@ -512,6 +522,62 @@ function App() {
                     <span />
                     <span />
                   </footer>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <article className="featured-project-card featured-project-card-vim">
+            <div className="featured-project-copy featured-project-copy-vim">
+              <p className="featured-project-kicker featured-project-kicker-vim">
+                {featuredSubproject.label}
+              </p>
+              <h3>{featuredSubproject.name}</h3>
+              <p>{featuredSubproject.summary}</p>
+              <div className="featured-project-tags featured-project-tags-vim">
+                {featuredSubproject.stack.map((item) => (
+                  <span key={item}>{item}</span>
+                ))}
+              </div>
+              <div className="featured-project-actions featured-project-actions-vim">
+                <span>{featuredSubproject.status}</span>
+                <strong>{featuredSubproject.source}</strong>
+              </div>
+            </div>
+
+            <div className="featured-project-visual featured-project-visual-vim" aria-hidden="true">
+              <div className="vim-preview-shell">
+                <div className="vim-preview-topbar">
+                  <span className="vim-light vim-light-red" />
+                  <span className="vim-light vim-light-yellow" />
+                  <span className="vim-light vim-light-green" />
+                  <p>VIM PROTOCOL :: CYBER TRAINING SIMULATOR</p>
+                </div>
+
+                <div className="vim-preview-body">
+                  <div className="vim-preview-sidebar">
+                    <span>&gt; mission briefing</span>
+                    <span>&gt; objectives</span>
+                    <span>&gt; hints</span>
+                  </div>
+
+                  <div className="vim-preview-editor">
+                    <div className="vim-preview-header">
+                      <span className="vim-status-dot" />
+                      <p>OPERATION: FIRST CONTACT</p>
+                    </div>
+                    <div className="vim-preview-code">
+                      <p><span>1</span> // nexus intercept log</p>
+                      <p><span>2</span> &gt;&gt; navigate to target marker</p>
+                      <p><span>3</span> [TARGET] access point alpha</p>
+                      <p><span>4</span> press <strong>j</strong> to descend</p>
+                      <p><span>5</span> press <strong>k</strong> to return</p>
+                    </div>
+                    <div className="vim-preview-statusbar">
+                      <span>-- NORMAL --</span>
+                      <span>line 3, col 1</span>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
