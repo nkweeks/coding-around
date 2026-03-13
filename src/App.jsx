@@ -1,7 +1,36 @@
 import { useEffect, useRef, useState } from 'react'
 import './App.css'
+import vimProtocolShell from './vimProtocolShell.js'
 
-const VIM_PROTOCOL_URL = '/vim-protocol/index.html'
+const VIM_PROTOCOL_ROUTE = '/vim-protocol'
+const VIM_PROTOCOL_LEGACY_ROUTE = '/vim-protocol/index.html'
+const VIM_PROTOCOL_ASSET_BASE = '/vim-protocol'
+const VIM_PROTOCOL_STYLE_PATHS = [
+  `${VIM_PROTOCOL_ASSET_BASE}/css/main.css`,
+  `${VIM_PROTOCOL_ASSET_BASE}/css/cyberpunk-theme.css`,
+  `${VIM_PROTOCOL_ASSET_BASE}/css/vim-editor.css`,
+  `${VIM_PROTOCOL_ASSET_BASE}/css/ui-components.css`,
+  `${VIM_PROTOCOL_ASSET_BASE}/css/characters.css`,
+]
+const VIM_PROTOCOL_SCRIPT_PATHS = [
+  `${VIM_PROTOCOL_ASSET_BASE}/js/vim/buffer.js`,
+  `${VIM_PROTOCOL_ASSET_BASE}/js/vim/cursor.js`,
+  `${VIM_PROTOCOL_ASSET_BASE}/js/vim/commands.js`,
+  `${VIM_PROTOCOL_ASSET_BASE}/js/vim/vim-simulator.js`,
+  `${VIM_PROTOCOL_ASSET_BASE}/js/core/storage.js`,
+  `${VIM_PROTOCOL_ASSET_BASE}/js/core/state-manager.js`,
+  `${VIM_PROTOCOL_ASSET_BASE}/js/core/game.js`,
+  `${VIM_PROTOCOL_ASSET_BASE}/js/narrative/characters.js`,
+  `${VIM_PROTOCOL_ASSET_BASE}/js/narrative/story-manager.js`,
+  `${VIM_PROTOCOL_ASSET_BASE}/js/levels/skill-catalog.js`,
+  `${VIM_PROTOCOL_ASSET_BASE}/js/levels/level-data.js`,
+  `${VIM_PROTOCOL_ASSET_BASE}/js/levels/mission-validator.js`,
+  `${VIM_PROTOCOL_ASSET_BASE}/js/levels/level-manager.js`,
+  `${VIM_PROTOCOL_ASSET_BASE}/js/ui/modal.js`,
+  `${VIM_PROTOCOL_ASSET_BASE}/js/ui/hud.js`,
+  `${VIM_PROTOCOL_ASSET_BASE}/js/ui/skill-log.js`,
+  `${VIM_PROTOCOL_ASSET_BASE}/js/ui/terminal.js`,
+]
 
 const projectTracks = [
   {
@@ -69,8 +98,8 @@ const projectTracks = [
         stack: 'Vanilla JS, HTML/CSS, custom Vim engine',
         status: 'Local subproject',
         source: 'Local source: hacking_game',
-        url: VIM_PROTOCOL_URL,
-        linkLabel: 'Open standalone game',
+        url: VIM_PROTOCOL_ROUTE,
+        linkLabel: 'Open full game',
       },
       {
         name: 'Patchline CLI',
@@ -160,7 +189,15 @@ const featuredSubproject = {
   stack: ['Vanilla JS', 'Custom Vim engine', 'Branching story', 'Terminal UI'],
   status: 'Playable now',
   source: 'Source project: hacking_game',
-  url: VIM_PROTOCOL_URL,
+  url: VIM_PROTOCOL_ROUTE,
+}
+
+function normalizePath(pathname) {
+  if (!pathname || pathname === '/') {
+    return '/'
+  }
+
+  return pathname.replace(/\/+$/, '')
 }
 
 function CodingAroundMark() {
@@ -225,6 +262,124 @@ function CodingAroundMark() {
       <circle cx="161" cy="84" r="5" fill="#90f3ff" />
       <circle cx="64" cy="156" r="5.5" fill="#9da8ff" />
     </svg>
+  )
+}
+
+function VimProtocolPage() {
+  useEffect(() => {
+    document.title = 'VIM Protocol | Coding Around'
+
+    const previousTheme = document
+      .querySelector('meta[name="theme-color"]')
+      ?.getAttribute('content')
+
+    let themeMeta = document.querySelector('meta[name="theme-color"]')
+    let createdThemeMeta = false
+    if (!themeMeta) {
+      themeMeta = document.createElement('meta')
+      themeMeta.setAttribute('name', 'theme-color')
+      document.head.appendChild(themeMeta)
+      createdThemeMeta = true
+    }
+    themeMeta.setAttribute('content', '#02080d')
+
+    let baseTag = document.querySelector('base[data-vim-protocol-base]')
+    let createdBaseTag = false
+    if (!baseTag) {
+      baseTag = document.createElement('base')
+      baseTag.href = `${VIM_PROTOCOL_ASSET_BASE}/`
+      baseTag.dataset.vimProtocolBase = 'true'
+      document.head.prepend(baseTag)
+      createdBaseTag = true
+    }
+
+    const createdLinks = []
+    const createdScripts = []
+
+    for (const href of VIM_PROTOCOL_STYLE_PATHS) {
+      if (document.querySelector(`link[data-vim-protocol-style="${href}"]`)) {
+        continue
+      }
+
+      const link = document.createElement('link')
+      link.rel = 'stylesheet'
+      link.href = href
+      link.dataset.vimProtocolStyle = href
+      document.head.appendChild(link)
+      createdLinks.push(link)
+    }
+
+    let cancelled = false
+
+    const loadScript = (src) =>
+      new Promise((resolve, reject) => {
+        if (document.querySelector(`script[data-vim-protocol-src="${src}"]`)) {
+          resolve()
+          return
+        }
+
+        const script = document.createElement('script')
+        script.src = src
+        script.async = false
+        script.dataset.vimProtocolSrc = src
+        script.onload = () => resolve()
+        script.onerror = () => reject(new Error(`Failed to load ${src}`))
+        document.body.appendChild(script)
+        createdScripts.push(script)
+      })
+
+    const bootstrap = async () => {
+      for (const src of VIM_PROTOCOL_SCRIPT_PATHS) {
+        if (cancelled) {
+          return
+        }
+        await loadScript(src)
+      }
+
+      if (cancelled) {
+        return
+      }
+
+      const initScript = document.createElement('script')
+      initScript.dataset.vimProtocolInit = 'true'
+      initScript.text = `
+        if (window.game && window.game.hud && typeof window.game.hud.stopTimer === 'function') {
+          window.game.hud.stopTimer();
+        }
+        window.game = new Game();
+        window.game.init();
+      `
+      document.body.appendChild(initScript)
+      createdScripts.push(initScript)
+    }
+
+    bootstrap().catch((error) => {
+      console.error('VIM Protocol bootstrap failed', error)
+    })
+
+    return () => {
+      cancelled = true
+      if (window.game?.hud && typeof window.game.hud.stopTimer === 'function') {
+        window.game.hud.stopTimer()
+      }
+      createdScripts.reverse().forEach((node) => node.remove())
+      createdLinks.reverse().forEach((node) => node.remove())
+      if (createdBaseTag) {
+        baseTag?.remove()
+      }
+      if (themeMeta && previousTheme) {
+        themeMeta.setAttribute('content', previousTheme)
+      } else if (createdThemeMeta) {
+        themeMeta?.remove()
+      }
+    }
+  }, [])
+
+  return (
+    <div
+      className="vim-protocol-page"
+      dangerouslySetInnerHTML={{ __html: vimProtocolShell }}
+    />
   )
 }
 
@@ -552,7 +707,7 @@ function PortfolioHome() {
               <div className="featured-project-actions featured-project-actions-vim">
                 <span>{featuredSubproject.status}</span>
                 <strong>{featuredSubproject.source}</strong>
-                <a href={featuredSubproject.url}>Open standalone game</a>
+                <a href={featuredSubproject.url}>Open full game</a>
               </div>
             </div>
 
@@ -695,6 +850,12 @@ function PortfolioHome() {
 }
 
 function App() {
+  const pathname = typeof window === 'undefined' ? '/' : normalizePath(window.location.pathname)
+
+  if (pathname === VIM_PROTOCOL_ROUTE || pathname === VIM_PROTOCOL_LEGACY_ROUTE) {
+    return <VimProtocolPage />
+  }
+
   return <PortfolioHome />
 }
 
