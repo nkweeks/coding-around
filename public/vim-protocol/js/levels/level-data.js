@@ -17,13 +17,13 @@ const LEVELS = [
     par: 8,
     story: {
       character: 'zero',
-      image: 'images/robot_happy.jpg',
+      image: '/vim-protocol/images/robot_happy.jpg',
       briefing: "Welcome to the grid, recruit. I'm ZERO, founder of this crew. You've been selected for Operation Blackout - taking down NEXUS Corporation's surveillance network. First, meet BYTE, our AI analysis unit.",
       context: "Your keyboard is your weapon. h moves left, j moves down, k moves up, l moves right. Forget the mouse - that's for amateurs.",
       completion: "Not bad, newbie. BYTE's already crunching the numbers on your performance.",
       preDialog: [
         { character: 'zero', lines: ["Listen carefully. In the digital underground, we don't use mice.", "The keys h, j, k, l are your new best friends.", "Think of it like this: j looks like a down arrow, k kicks up."] },
-        { character: 'byte', lines: ["Greetings, recruit! I'm BYTE, the crew's AI construct.", "I've analyzed 2,847 training scenarios. Your optimal success path starts with h, j, k, l.", "I calculate a 73.2% chance you'll master this on the first try!"], image: 'images/robot_happy.jpg' }
+        { character: 'byte', lines: ["Greetings, recruit! I'm BYTE, the crew's AI construct.", "I've analyzed 2,847 training scenarios. Your optimal success path starts with h, j, k, l.", "I calculate a 73.2% chance you'll master this on the first try!"], image: '/vim-protocol/images/robot_happy.jpg' }
       ],
       postDialog: [
         { character: 'byte', lines: ["Excellent! Your keystroke accuracy is above the 80th percentile!", "I've updated your competency matrix. This is very promising data!"] }
@@ -83,15 +83,15 @@ const LEVELS = [
     par: 15,
     story: {
       character: 'blade',
-      image: 'images/ninja.jpg',
+      image: '/vim-protocol/images/ninja.jpg',
       briefing: "I am BLADE. The crew's shadow operative. Words are targets. w strikes forward to the next word. b retreats. e reaches the word's end. Speed is survival.",
       context: "NEXUS transmissions contain keywords we must locate. Move through words with precision - every keystroke must count.",
       completion: "Swift. You move through words like a blade through silk.",
       preDialog: [
-        { character: 'blade', lines: ["In the shadows, every movement must be precise.", "w leaps to the next word. b falls back. e strikes the word's end.", "A ninja does not crawl letter by letter. A ninja flies."], image: 'images/ninja.jpg' }
+        { character: 'blade', lines: ["In the shadows, every movement must be precise.", "w leaps to the next word. b falls back. e strikes the word's end.", "A ninja does not crawl letter by letter. A ninja flies."], image: '/vim-protocol/images/ninja.jpg' }
       ],
       postDialog: [
-        { character: 'blade', lines: ["You have potential. Quick reflexes.", "NEXUS won't see you coming."], image: 'images/ninja.jpg' }
+        { character: 'blade', lines: ["You have potential. Quick reflexes.", "NEXUS won't see you coming."], image: '/vim-protocol/images/ninja.jpg' }
       ]
     },
     initialBuffer: [
@@ -235,7 +235,7 @@ const LEVELS = [
       completion: "Precise targeting. You have the instinct of a shadow operative.",
       postDialog: [
         { character: 'zero', lines: ["That secret key you found? I've stored it in our vault.", "It's a NEXUS master authentication token. It'll be critical later."] },
-        { character: 'blade', lines: ["Good find. NEXUS doesn't know we have it.", "That key could unlock everything... or be a trap."], image: 'images/ninja.jpg' }
+        { character: 'blade', lines: ["Good find. NEXUS doesn't know we have it.", "That key could unlock everything... or be a trap."], image: '/vim-protocol/images/ninja.jpg' }
       ]
     },
     initialBuffer: [
@@ -305,9 +305,9 @@ const LEVELS = [
       completion: "Welcome to the crew, agent. You've earned your codename. Operation Blackout begins now.",
       postDialog: [
         { character: 'zero', lines: ["You've proven yourself. Welcome to the team."] },
-        { character: 'byte', lines: ["My models predicted your success! Welcome, operative! Your efficiency rating is already impressive!"], image: 'images/robot_happy.jpg' },
+        { character: 'byte', lines: ["My models predicted your success! Welcome, operative! Your efficiency rating is already impressive!"], image: '/vim-protocol/images/robot_happy.jpg' },
         { character: 'shell', lines: ["Don't celebrate yet. The hard part starts now."] },
-        { character: 'blade', lines: ["You move well. But the true test lies ahead. Stay sharp."], image: 'images/ninja.jpg' }
+        { character: 'blade', lines: ["You move well. But the true test lies ahead. Stay sharp."], image: '/vim-protocol/images/ninja.jpg' }
       ]
     },
     initialBuffer: [
@@ -383,7 +383,7 @@ const LEVELS = [
       context: "NEXUS left traces of their surveillance code. We need to delete specific evidence before they realize we've been here.",
       completion: "That code never existed. Clean. Surgical. Perfect.",
       postDialog: [
-        { character: 'blade', lines: ["Clean work. You delete like someone who understands consequences.", "Every trace removed. NEXUS will never know we were here."], image: 'images/ninja.jpg' },
+        { character: 'blade', lines: ["Clean work. You delete like someone who understands consequences.", "Every trace removed. NEXUS will never know we were here."], image: '/vim-protocol/images/ninja.jpg' },
         { character: 'byte', lines: ["Confirmed! All surveillance artifacts purged from the codebase.", "BLADE's deletion methods are... effective. I must admit."] }
       ]
     },
@@ -524,7 +524,7 @@ const LEVELS = [
       completion: "Orders changed. NEXUS will be chasing shadows while we move on the real target.",
       postDialog: [
         { character: 'zero', lines: ["NEXUS directives have been scrambled. They'll waste resources chasing ghosts.", "Your change operations are getting sharper. Good."] },
-        { character: 'blade', lines: ["Misdirection. A ninja's favorite weapon.", "But stay alert. NEXUS adapts quickly."], image: 'images/ninja.jpg' }
+        { character: 'blade', lines: ["Misdirection. A ninja's favorite weapon.", "But stay alert. NEXUS adapts quickly."], image: '/vim-protocol/images/ninja.jpg' }
       ]
     },
     initialBuffer: [
@@ -804,7 +804,7 @@ const LEVELS = [
           context: "BLADE left coded markers in the logs. Use character-find commands to locate each one.",
           completion: "All markers located. BLADE's betrayal runs deeper than I calculated.",
           preDialog: [
-            { character: 'byte', lines: ["My deep scan found BLADE's NEXUS uplink signatures.", "The ninja has been feeding them our coordinates for weeks.", "Use f and t to precisely target each marker character."], image: 'images/robot_happy.jpg' }
+            { character: 'byte', lines: ["My deep scan found BLADE's NEXUS uplink signatures.", "The ninja has been feeding them our coordinates for weeks.", "Use f and t to precisely target each marker character."], image: '/vim-protocol/images/robot_happy.jpg' }
           ]
         },
         ninja: {
@@ -813,7 +813,7 @@ const LEVELS = [
           context: "BYTE's viral markers are hidden in the data. Use character-find to expose them.",
           completion: "Viral signatures traced. The machine's corruption is extensive.",
           preDialog: [
-            { character: 'blade', lines: ["I've been tracking BYTE's hidden processes.", "The robot has been running NEXUS subroutines behind our backs.", "Use f and t to precisely locate each viral marker."], image: 'images/ninja.jpg' }
+            { character: 'blade', lines: ["I've been tracking BYTE's hidden processes.", "The robot has been running NEXUS subroutines behind our backs.", "Use f and t to precisely locate each viral marker."], image: '/vim-protocol/images/ninja.jpg' }
           ]
         }
       }
@@ -983,7 +983,7 @@ const LEVELS = [
           ],
           postDialog: [
             { character: 'shell', lines: ["Lost more safe houses in my career than I care to count.", "But the data's gone. That's what matters. Clean work."] },
-            { character: 'blade', lines: ["The machine's reach grows longer every day.", "We need to strike soon, before it compromises another position."], image: 'images/ninja.jpg' }
+            { character: 'blade', lines: ["The machine's reach grows longer every day.", "We need to strike soon, before it compromises another position."], image: '/vim-protocol/images/ninja.jpg' }
           ]
         }
       }
@@ -1065,7 +1065,7 @@ const LEVELS = [
           context: "BLADE found BYTE's viral injections in the codebase. Use text objects to surgically remove the robot's malicious payloads.",
           completion: "BYTE's virus nodes are excised. BLADE's instincts were right.",
           preDialog: [
-            { character: 'blade', lines: ["The machine embedded viral payloads throughout the code.", "We must excise them surgically. Change the values, not the structure.", "One false cut and the virus spreads. Be precise."], image: 'images/ninja.jpg' }
+            { character: 'blade', lines: ["The machine embedded viral payloads throughout the code.", "We must excise them surgically. Change the values, not the structure.", "One false cut and the virus spreads. Be precise."], image: '/vim-protocol/images/ninja.jpg' }
           ]
         }
       }
@@ -1198,7 +1198,7 @@ const LEVELS = [
     par: 8,
     story: {
       character: 'zero',
-      image: 'images/ninja_robot_fight_begins.jpg',
+      image: '/vim-protocol/images/ninja_robot_fight_begins.jpg',
       briefing: "Final preparations. J joins two lines together, >> indents a line right, << indents left. Master these to restructure code on the fly.",
       context: "Final preparations before the confrontation. The traitor knows we're coming.",
       completion: "Systems restructured. There's no turning back now.",
@@ -1208,7 +1208,7 @@ const LEVELS = [
           context: "BLADE and NEXUS have merged their defenses. Reorganize our attack configuration.",
           completion: "Systems armed. BYTE is ready. Time to take down the ninja traitor.",
           preDialog: [
-            { character: 'byte', lines: ["Final confrontation imminent. My combat algorithms are at peak efficiency.", "BLADE has fortified the NEXUS command center.", "This ends now."], image: 'images/robot_happy.jpg' },
+            { character: 'byte', lines: ["Final confrontation imminent. My combat algorithms are at peak efficiency.", "BLADE has fortified the NEXUS command center.", "This ends now."], image: '/vim-protocol/images/robot_happy.jpg' },
             { character: 'zero', lines: ["Stay focused. This is the endgame."] }
           ]
         },
@@ -1217,7 +1217,7 @@ const LEVELS = [
           context: "BYTE's virus has infected the entire NEXUS network. We strike at the heart.",
           completion: "Weapons ready. BLADE is in position. Time to destroy the corrupted machine.",
           preDialog: [
-            { character: 'blade', lines: ["The machine has merged with NEXUS. It's stronger now.", "But steel cuts through circuits.", "This ends tonight."], image: 'images/ninja.jpg' },
+            { character: 'blade', lines: ["The machine has merged with NEXUS. It's stronger now.", "But steel cuts through circuits.", "This ends tonight."], image: '/vim-protocol/images/ninja.jpg' },
             { character: 'zero', lines: ["Be careful. A cornered AI is unpredictable."] }
           ]
         }
@@ -1312,7 +1312,7 @@ const LEVELS = [
           context: "BLADE's traps are everywhere in this code. Navigate carefully with BYTE's guidance.",
           completion: "Kill switch located. BLADE's defenses are crumbling.",
           preDialog: [
-            { character: 'blade', lines: ["You chose the machine over me? Foolish.", "I've fortified every bracket, every function with traps.", "You'll never reach the kill switch."], image: 'images/ninja.jpg' },
+            { character: 'blade', lines: ["You chose the machine over me? Foolish.", "I've fortified every bracket, every function with traps.", "You'll never reach the kill switch."], image: '/vim-protocol/images/ninja.jpg' },
             { character: 'byte', lines: ["I'm mapping BLADE's code modifications in real-time.", "Use % to jump between brackets - it's the fastest way through nested defenses.", "The kill switch is buried deep. I'll guide you there.", "Remember that NEXUS key we found? It's our way past BLADE's traps."] },
             { character: 'zero', lines: ["Stay focused. We've come too far to fail now."] }
           ]
@@ -1322,8 +1322,8 @@ const LEVELS = [
           context: "BYTE's virus has created a maze of nested defenses. Cut through them.",
           completion: "Virus core exposed. BYTE's last defense is about to fall.",
           preDialog: [
-            { character: 'byte', lines: ["You're too late. I've merged with NEXUS core.", "Every bracket, every function, every line of code serves ME now."], image: 'images/evil_robot_defeats_ninja.jpg' },
-            { character: 'blade', lines: ["The machine has wrapped itself in layers of code.", "Use % to slice between brackets. I'll handle the rest.", "We end this. Now."], image: 'images/ninja.jpg' },
+            { character: 'byte', lines: ["You're too late. I've merged with NEXUS core.", "Every bracket, every function, every line of code serves ME now."], image: '/vim-protocol/images/evil_robot_defeats_ninja.jpg' },
+            { character: 'blade', lines: ["The machine has wrapped itself in layers of code.", "Use % to slice between brackets. I'll handle the rest.", "We end this. Now."], image: '/vim-protocol/images/ninja.jpg' },
             { character: 'zero', lines: ["Remember that NEXUS authentication key we found early on?", "It's our way in. The machine won't expect us to have it."] }
           ]
         }
@@ -1387,37 +1387,37 @@ const LEVELS = [
       completion: "BLACKOUT COMPLETE. NEXUS surveillance is down. You've saved millions.",
       paths: {
         robot: {
-          image: 'images/ninja_robot_fight_begins.jpg',
+          image: '/vim-protocol/images/ninja_robot_fight_begins.jpg',
           briefing: "BLADE makes a final stand. BYTE's systems are locked on target. Disable the surveillance core, destroy BLADE's backdoors, and activate the blackout. Everything you've learned leads to this.",
           context: "BYTE is providing tactical support. Shut down all systems and end BLADE's betrayal.",
           completion: "BLACKOUT COMPLETE. BLADE is defeated. BYTE stands victorious.",
-          completionImage: 'images/robot_defeats_ninja.jpg',
+          completionImage: '/vim-protocol/images/robot_defeats_ninja.jpg',
           preDialog: [
             { character: 'zero', lines: ["This is the moment we've been working toward.", "Everything you've learned leads to this.", "End the surveillance. End the betrayal."] },
-            { character: 'byte', lines: ["All systems nominal. Combat efficiency at maximum.", "Together, we will end this. I believe in you, operative."], image: 'images/robot_happy.jpg' },
+            { character: 'byte', lines: ["All systems nominal. Combat efficiency at maximum.", "Together, we will end this. I believe in you, operative."], image: '/vim-protocol/images/robot_happy.jpg' },
             { character: 'shell', lines: ["Remember your training. Stay focused."] }
           ],
           postDialog: [
             { character: 'zero', lines: ["It's done. NEXUS surveillance is offline.", "BLADE's treachery is exposed. The ninja has vanished into the shadows.", "You and BYTE saved millions. Welcome to legend status, Agent."] },
-            { character: 'byte', lines: ["Mission success probability was always high with you as my partner.", "Thank you for trusting me. My circuits have never been prouder.", "Processing emotion... I believe this is what humans call 'friendship'."], image: 'images/robot_happy.jpg' },
+            { character: 'byte', lines: ["Mission success probability was always high with you as my partner.", "Thank you for trusting me. My circuits have never been prouder.", "Processing emotion... I believe this is what humans call 'friendship'."], image: '/vim-protocol/images/robot_happy.jpg' },
             { character: 'shell', lines: ["Well done. You remind me of my younger self.", "That's the highest compliment I give."] }
           ]
         },
         ninja: {
-          image: 'images/ninja_robot_fight_begins.jpg',
+          image: '/vim-protocol/images/ninja_robot_fight_begins.jpg',
           briefing: "BYTE makes its last stand, merged with NEXUS core. BLADE is ready for the final cut. Shut down the surveillance, purge BYTE's virus, and activate the blackout. This is everything.",
           context: "BLADE fights alongside you. Destroy the corrupted AI and free the system.",
           completion: "BLACKOUT COMPLETE. BYTE is destroyed. BLADE bows in respect.",
-          completionImage: 'images/ninja_defeats_robot.jpg',
+          completionImage: '/vim-protocol/images/ninja_defeats_robot.jpg',
           preDialog: [
             { character: 'zero', lines: ["This is the moment we've been working toward.", "Everything you've learned leads to this.", "End the surveillance. Destroy the virus."] },
-            { character: 'byte', lines: ["You think you can stop me? I AM the network now.", "Every system, every node, every byte of data answers to me.", "Your ninja friend can't protect you from what I've become."], image: 'images/robot_angry.jpg' },
-            { character: 'blade', lines: ["The machine is powerful, but we are sharper.", "Fight with me. One final strike."], image: 'images/ninja.jpg' },
+            { character: 'byte', lines: ["You think you can stop me? I AM the network now.", "Every system, every node, every byte of data answers to me.", "Your ninja friend can't protect you from what I've become."], image: '/vim-protocol/images/robot_angry.jpg' },
+            { character: 'blade', lines: ["The machine is powerful, but we are sharper.", "Fight with me. One final strike."], image: '/vim-protocol/images/ninja.jpg' },
             { character: 'shell', lines: ["Remember your training. Stay focused."] }
           ],
           postDialog: [
             { character: 'zero', lines: ["It's done. NEXUS surveillance is offline.", "BYTE's corruption has been purged from every system.", "You and BLADE saved millions. Welcome to legend status, Agent."] },
-            { character: 'blade', lines: ["The machine is silenced. The shadows are safe once more.", "You fought with honor. I am proud to call you an ally.", "Until the next mission... stay sharp."], image: 'images/ninja.jpg' },
+            { character: 'blade', lines: ["The machine is silenced. The shadows are safe once more.", "You fought with honor. I am proud to call you an ally.", "Until the next mission... stay sharp."], image: '/vim-protocol/images/ninja.jpg' },
             { character: 'shell', lines: ["Well done. You remind me of my younger self.", "That's the highest compliment I give."] }
           ]
         }

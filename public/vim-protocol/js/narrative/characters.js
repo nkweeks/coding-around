@@ -58,8 +58,8 @@ const CHARACTERS = {
     accentColor: '#7df9ff',
     role: 'Sentient AI robot, analytical mind of the crew',
     personality: 'Friendly, precise, speaks in computed probabilities, genuinely caring',
-    image: 'images/robot_happy.jpg',
-    angryImage: 'images/robot_angry.jpg',
+    image: '/vim-protocol/images/robot_happy.jpg',
+    angryImage: '/vim-protocol/images/robot_angry.jpg',
 
     avatar: [
       '┌─⚙─┐',
@@ -109,7 +109,7 @@ const CHARACTERS = {
     accentColor: '#ff69b4',
     role: 'Cyber-ninja, stealth and precision specialist',
     personality: 'Silent and deadly, speaks in short sharp sentences, respects skill',
-    image: 'images/ninja.jpg',
+    image: '/vim-protocol/images/ninja.jpg',
 
     avatar: [
       '╔═╦═╗',
