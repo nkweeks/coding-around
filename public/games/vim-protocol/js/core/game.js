@@ -441,7 +441,7 @@ class Game {
               "Thank you for trusting me. My analysis was correct.",
               "BLADE has been feeding NEXUS our coordinates. I have proof.",
               "Together, we will stop the traitor and complete the mission."
-            ], image: 'images/robot_happy.jpeg' },
+            ], image: 'images/robot_happy.jpg' },
             { character: 'zero', lines: [
               "The choice is made. BLADE is now our primary target.",
               "Stay alert. A cornered ninja is the most dangerous kind."
@@ -452,7 +452,7 @@ class Game {
               "You chose wisely. The machine cannot be trusted.",
               "I found NEXUS code woven into BYTE's core processes.",
               "We must shut it down before it compromises everything."
-            ], image: 'images/ninja.jpeg' },
+            ], image: 'images/ninja.jpg' },
             { character: 'zero', lines: [
               "So be it. BYTE is compromised. We treat it as hostile.",
               "Be careful. A corrupted AI has access to all our systems."
@@ -507,7 +507,7 @@ class Game {
     let endingQuote = '';
 
     if (path === 'robot') {
-      endingImage = '<div class="story-image ending-image"><img src="images/robot_defeats_ninja.jpeg" alt="BYTE triumphs"></div>';
+      endingImage = '<div class="story-image ending-image"><img src="images/robot_defeats_ninja.jpg" alt="BYTE triumphs"></div>';
       endingMessage = `
         <p>BYTE's loyalty proved true. With the ninja traitor defeated,
         NEXUS surveillance is permanently disabled.</p>
@@ -521,7 +521,7 @@ class Game {
         </div>
       `;
     } else if (path === 'ninja') {
-      endingImage = '<div class="story-image ending-image"><img src="images/ninja_defeats_robot.jpeg" alt="BLADE triumphs"></div>';
+      endingImage = '<div class="story-image ending-image"><img src="images/ninja_defeats_robot.jpg" alt="BLADE triumphs"></div>';
       endingMessage = `
         <p>BLADE's instincts were right. The corrupted AI is destroyed,
         and NEXUS loses its most dangerous weapon.</p>

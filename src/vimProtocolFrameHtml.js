@@ -26,11 +26,11 @@ const vimProtocolFrameHtml = String.raw`<!DOCTYPE html>
 
       <div class="menu-characters">
         <div class="menu-character robot">
-          <img src="images/robot_happy.jpeg" alt="BYTE the Robot">
+          <img src="images/robot_happy.jpg" alt="BYTE the Robot">
           <div class="char-name">BYTE</div>
         </div>
         <div class="menu-character ninja">
-          <img src="images/ninja.jpeg" alt="BLADE the Ninja">
+          <img src="images/ninja.jpg" alt="BLADE the Ninja">
           <div class="char-name">BLADE</div>
         </div>
       </div>

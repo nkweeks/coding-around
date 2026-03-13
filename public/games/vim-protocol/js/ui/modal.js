@@ -263,7 +263,7 @@ class Modal {
         <div class="choice-options">
           <div class="choice-card" data-choice="robot">
             <div class="choice-image">
-              <img src="images/robot_happy.jpeg" alt="BYTE the Robot">
+              <img src="images/robot_happy.jpg" alt="BYTE the Robot">
             </div>
             <div class="choice-info">
               <div class="choice-name" style="color: #00d4ff;">TRUST BYTE</div>
@@ -279,7 +279,7 @@ class Modal {
 
           <div class="choice-card" data-choice="ninja">
             <div class="choice-image">
-              <img src="images/ninja.jpeg" alt="BLADE the Ninja">
+              <img src="images/ninja.jpg" alt="BLADE the Ninja">
             </div>
             <div class="choice-info">
               <div class="choice-name" style="color: #ff1493;">TRUST BLADE</div>
