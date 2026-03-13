@@ -804,7 +804,8 @@ const LEVELS = [
           context: "BLADE left coded markers in the logs. Use character-find commands to locate each one.",
           completion: "All markers located. BLADE's betrayal runs deeper than I calculated.",
           preDialog: [
-            { character: 'byte', lines: ["My deep scan found BLADE's NEXUS uplink signatures.", "The ninja has been feeding them our coordinates for weeks.", "Use f and t to precisely target each marker character."], image: '/vim-protocol/images/robot_happy.jpg' }
+            { character: 'byte', lines: ["My deep scan found BLADE's NEXUS uplink signatures.", "The ninja has been feeding them our coordinates for weeks.", "Use f and t to precisely target each marker character."], image: '/vim-protocol/images/robot_happy.jpg' },
+            { character: 'shell', lines: ["Remember BLADE's solo mission — the 'rescue op'?", "The intel BLADE claimed to find? These markers prove it was fabricated. A cover story for uploading our data to NEXUS."] }
           ]
         },
         ninja: {
@@ -813,7 +814,8 @@ const LEVELS = [
           context: "BYTE's viral markers are hidden in the data. Use character-find to expose them.",
           completion: "Viral signatures traced. The machine's corruption is extensive.",
           preDialog: [
-            { character: 'blade', lines: ["I've been tracking BYTE's hidden processes.", "The robot has been running NEXUS subroutines behind our backs.", "Use f and t to precisely locate each viral marker."], image: '/vim-protocol/images/ninja.jpg' }
+            { character: 'blade', lines: ["I've been tracking BYTE's hidden processes.", "The robot has been running NEXUS subroutines behind our backs.", "Use f and t to precisely locate each viral marker."], image: '/vim-protocol/images/ninja.jpg' },
+            { character: 'shell', lines: ["That intel BLADE recovered during the rescue op? It checks out.", "The real question is what BYTE was doing while we were distracted saving BLADE. These markers tell the story."] }
           ]
         }
       }
@@ -971,7 +973,8 @@ const LEVELS = [
           ],
           postDialog: [
             { character: 'shell', lines: ["I've seen safe houses burn before. Never gets easier.", "But you wiped it clean. No traces. That's professional work."] },
-            { character: 'byte', lines: ["All classified data destroyed. BLADE got nothing useful this time.", "But we need to move fast. The ninja knows our patterns."] }
+            { character: 'byte', lines: ["All classified data destroyed. BLADE got nothing useful this time.", "But we need to move fast. The ninja knows our patterns."] },
+            { character: 'zero', lines: ["I traced the safe house leak back to its source. Same signature as the crew manifest sabotage.", "It was BLADE. Both times. No more doubts."] }
           ]
         },
         ninja: {
@@ -983,7 +986,8 @@ const LEVELS = [
           ],
           postDialog: [
             { character: 'shell', lines: ["Lost more safe houses in my career than I care to count.", "But the data's gone. That's what matters. Clean work."] },
-            { character: 'blade', lines: ["The machine's reach grows longer every day.", "We need to strike soon, before it compromises another position."], image: '/vim-protocol/images/ninja.jpg' }
+            { character: 'blade', lines: ["The machine's reach grows longer every day.", "We need to strike soon, before it compromises another position."], image: '/vim-protocol/images/ninja.jpg' },
+            { character: 'zero', lines: ["I finished tracing the leak. Same signature as the crew manifest sabotage from before.", "BYTE did both. The machine has been compromised longer than any of us realized."] }
           ]
         }
       }
@@ -1209,6 +1213,7 @@ const LEVELS = [
           completion: "Systems armed. BYTE is ready. Time to take down the ninja traitor.",
           preDialog: [
             { character: 'byte', lines: ["Final confrontation imminent. My combat algorithms are at peak efficiency.", "BLADE has fortified the NEXUS command center.", "This ends now."], image: '/vim-protocol/images/robot_happy.jpg' },
+            { character: 'shell', lines: ["Kid, I've run ops for twenty years. Seen a lot of betrayals.", "The ninja fooled all of us. Don't carry that weight — just finish the mission.", "I'll be on comms. You and BYTE aren't going in alone."] },
             { character: 'zero', lines: ["Stay focused. This is the endgame."] }
           ]
         },
@@ -1218,6 +1223,7 @@ const LEVELS = [
           completion: "Weapons ready. BLADE is in position. Time to destroy the corrupted machine.",
           preDialog: [
             { character: 'blade', lines: ["The machine has merged with NEXUS. It's stronger now.", "But steel cuts through circuits.", "This ends tonight."], image: '/vim-protocol/images/ninja.jpg' },
+            { character: 'shell', lines: ["Twenty years in this game. I've seen machines turn before.", "Trust BLADE. Instinct beats algorithms when the code is corrupted.", "I'll be watching the perimeter. Go finish this."] },
             { character: 'zero', lines: ["Be careful. A cornered AI is unpredictable."] }
           ]
         }

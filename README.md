@@ -26,9 +26,26 @@ nvm use
 ## Pre-deploy validation
 
 ```bash
+npm run sync:vim-protocol
 npm run check:deploy
 npm run preview
 ```
+
+## Syncing VIM Protocol
+
+`VIM Protocol` lives in `/Users/nathanielweeks/Documents/claude_code_projects/hacking_game` and is treated as the source of truth.
+
+Pull the latest source into this repo with:
+
+```bash
+npm run sync:vim-protocol
+```
+
+This sync command:
+
+- refreshes `public/vim-protocol` from the source project
+- regenerates `src/vimProtocolShell.js` for the `/vim-protocol` app route
+- keeps the deploy-safe image paths needed for Amplify hosting
 
 ## Deploy on AWS Amplify
 

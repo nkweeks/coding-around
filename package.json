@@ -8,7 +8,8 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "check:deploy": "npm run lint && npm run build"
+    "check:deploy": "npm run lint && npm run build",
+    "sync:vim-protocol": "node scripts/sync-vim-protocol.mjs"
   },
   "engines": {
     "node": "^20.19.0 || >=22.12.0",

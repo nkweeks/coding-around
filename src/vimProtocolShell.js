@@ -1,6 +1,7 @@
 const vimProtocolShell = String.raw`
-  <a class="vim-portfolio-link" href="/">Back to portfolio</a>
+<a class="vim-portfolio-link" href="/">Back to portfolio</a>
 
+  <!-- Main Menu Screen -->
   <div id="main-menu" class="main-menu">
     <div class="menu-content">
       <div class="menu-logo">
@@ -43,19 +44,25 @@ const vimProtocolShell = String.raw`
     </div>
   </div>
 
+  <!-- Modal for Mission Briefing -->
   <div id="modal-overlay" class="modal-overlay hidden">
     <div class="modal-content">
       <div class="modal-header">
         <h2 id="modal-title">MISSION BRIEFING</h2>
       </div>
-      <div class="modal-body" id="modal-body"></div>
+      <div class="modal-body" id="modal-body">
+        <!-- Dynamic content -->
+      </div>
       <div class="modal-footer">
         <button id="modal-btn" class="cyber-button">START MISSION</button>
       </div>
     </div>
   </div>
 
+  <!-- Main Game Container -->
   <div class="game-container">
+
+    <!-- Top Bar -->
     <div class="top-bar">
       <div class="mission-title">
         <span class="glitch" data-text="OPERATION: FIRST CONTACT">OPERATION: FIRST CONTACT</span>
@@ -70,26 +77,36 @@ const vimProtocolShell = String.raw`
       </div>
     </div>
 
+    <!-- Main Content Area -->
     <div class="content-area">
+
+      <!-- Left Panel: Mission Briefing -->
       <div class="left-panel">
         <div class="panel-header">
           <span class="terminal-prompt">&gt;</span> MISSION BRIEFING
         </div>
         <div class="panel-content">
-          <div id="mission-story" class="mission-story"></div>
+          <div id="mission-story" class="mission-story">
+            <!-- Dynamic mission story -->
+          </div>
 
           <div class="objectives-section">
             <div class="section-title">OBJECTIVES:</div>
-            <div id="objectives-list" class="objectives-list"></div>
+            <div id="objectives-list" class="objectives-list">
+              <!-- Dynamic objectives -->
+            </div>
           </div>
 
           <div class="hints-section">
             <div class="section-title">HINTS:</div>
-            <div id="hints-list" class="hints-list"></div>
+            <div id="hints-list" class="hints-list">
+              <!-- Dynamic hints -->
+            </div>
           </div>
         </div>
       </div>
 
+      <!-- Center: Vim Editor -->
       <div class="center-panel">
         <div class="editor-header">
           <span class="terminal-prompt">&gt;</span> VIM TERMINAL
@@ -97,15 +114,20 @@ const vimProtocolShell = String.raw`
             <span class="status-dot"></span> CONNECTED
           </span>
         </div>
-        <div id="vim-editor" class="vim-editor"></div>
+        <div id="vim-editor" class="vim-editor">
+          <!-- Vim simulator renders here -->
+        </div>
       </div>
 
+      <!-- Right Panel: Command History & Stats -->
       <div class="right-panel">
         <div class="panel-header">
           <span class="terminal-prompt">&gt;</span> COMMAND LOG
         </div>
         <div class="panel-content">
-          <div id="command-history" class="command-history"></div>
+          <div id="command-history" class="command-history">
+            <!-- Dynamic command history -->
+          </div>
 
           <div class="stats-section">
             <div class="section-title">STATS:</div>
@@ -122,8 +144,10 @@ const vimProtocolShell = String.raw`
           </div>
         </div>
       </div>
+
     </div>
 
+    <!-- Bottom Status Bar -->
     <div class="status-bar">
       <div class="status-section">
         <span id="mode-indicator" class="mode-indicator">-- NORMAL --</span>
@@ -138,10 +162,41 @@ const vimProtocolShell = String.raw`
         <span id="progress-indicator" class="progress-indicator">Objectives: 0/0</span>
       </div>
     </div>
+
   </div>
 
+  <!-- Background Effects -->
   <div class="bg-grid"></div>
   <div class="scanline"></div>
+
+  <!-- Core Vim Scripts -->
+  
+  
+  
+  
+
+  <!-- Core Game Scripts -->
+  
+  
+  
+
+  <!-- Narrative System Scripts -->
+  
+  
+
+  <!-- Level System Scripts -->
+  
+  
+  
+  
+
+  <!-- UI Scripts -->
+  
+  
+  
+  
+
+  <!-- Initialize Game -->
 `
 
 export default vimProtocolShell
