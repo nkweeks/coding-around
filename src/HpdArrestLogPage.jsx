@@ -1,14 +1,70 @@
 import { useEffect, useMemo, useState } from 'react'
 
 const SNAPSHOT_URL = '/hpd-arrest-log/snapshot.json'
+const WATCHLIST_STORAGE_KEY = 'coding-around:hpd-watchlist'
 const DAY_OPTIONS = [7, 14, 30, 60, 90]
-const ROW_OPTIONS = [100, 250, 500, 1000]
+const ROW_OPTIONS = [100, 250, 500, 1000, 2500]
+const DEFAULT_DAYS = 14
+const DEFAULT_ROWS = 250
 
 function normalizeTokens(value) {
   return (String(value || '').toLowerCase().match(/[a-z0-9]+/g) || []).filter(Boolean)
 }
 
-function matchesName(name, query) {
+function cleanLine(value) {
+  return String(value || '').trim().replace(/\s+/g, ' ')
+}
+
+function dedupeItems(values) {
+  return Array.from(new Set(values.map(cleanLine).filter(Boolean)))
+}
+
+function readStoredWatchlist() {
+  if (typeof window === 'undefined') {
+    return []
+  }
+
+  try {
+    const raw = window.localStorage.getItem(WATCHLIST_STORAGE_KEY)
+    if (!raw) {
+      return []
+    }
+    const parsed = JSON.parse(raw)
+    return Array.isArray(parsed) ? dedupeItems(parsed) : []
+  } catch {
+    return []
+  }
+}
+
+function persistWatchlist(values) {
+  if (typeof window === 'undefined') {
+    return
+  }
+
+  window.localStorage.setItem(WATCHLIST_STORAGE_KEY, JSON.stringify(dedupeItems(values)))
+}
+
+function readInitialFilters() {
+  if (typeof window === 'undefined') {
+    return {
+      nameQuery: '',
+      days: DEFAULT_DAYS,
+      rows: DEFAULT_ROWS,
+    }
+  }
+
+  const params = new URLSearchParams(window.location.search)
+  const daysValue = Number(params.get('days'))
+  const rowsValue = Number(params.get('rows'))
+
+  return {
+    nameQuery: cleanLine(params.get('name') || ''),
+    days: DAY_OPTIONS.includes(daysValue) ? daysValue : DEFAULT_DAYS,
+    rows: ROW_OPTIONS.includes(rowsValue) ? rowsValue : DEFAULT_ROWS,
+  }
+}
+
+function matchesQuery(name, query) {
   const terms = normalizeTokens(query)
   if (terms.length === 0) {
     return true
@@ -44,17 +100,67 @@ function formatShortDate(value) {
   return parsed.toLocaleDateString()
 }
 
+function formatCompactDateTime(value) {
+  if (!value) {
+    return 'Unknown'
+  }
+
+  const parsed = new Date(value)
+  if (Number.isNaN(parsed.getTime())) {
+    return String(value)
+  }
+
+  return parsed.toLocaleString([], {
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+  })
+}
+
+function getRecordTimestamp(record) {
+  return Date.parse(record.arrest_sort_utc || record.source_anchor_utc || '') || 0
+}
+
 export default function HpdArrestLogPage() {
+  const initialFilters = readInitialFilters()
   const [snapshot, setSnapshot] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-  const [nameQuery, setNameQuery] = useState('')
-  const [days, setDays] = useState(14)
-  const [rows, setRows] = useState(250)
+  const [reloadToken, setReloadToken] = useState(0)
+  const [nameQuery, setNameQuery] = useState(initialFilters.nameQuery)
+  const [days, setDays] = useState(initialFilters.days)
+  const [rows, setRows] = useState(initialFilters.rows)
+  const [watchInput, setWatchInput] = useState('')
+  const [watchNames, setWatchNames] = useState(() => readStoredWatchlist())
 
   useEffect(() => {
     document.title = 'HPD Arrest Log Viewer | Coding Around'
+  }, [])
 
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return
+    }
+
+    const params = new URLSearchParams(window.location.search)
+    if (nameQuery) {
+      params.set('name', nameQuery)
+    } else {
+      params.delete('name')
+    }
+    params.set('days', String(days))
+    params.set('rows', String(rows))
+
+    const nextQuery = params.toString()
+    const nextUrl = nextQuery
+      ? `${window.location.pathname}?${nextQuery}`
+      : window.location.pathname
+
+    window.history.replaceState({}, '', nextUrl)
+  }, [days, nameQuery, rows])
+
+  useEffect(() => {
     let cancelled = false
 
     async function loadSnapshot() {
@@ -66,8 +172,20 @@ export default function HpdArrestLogPage() {
           throw new Error(`Snapshot request failed with ${response.status}`)
         }
         const payload = await response.json()
-        if (!cancelled) {
-          setSnapshot(payload)
+        if (cancelled) {
+          return
+        }
+
+        setSnapshot(payload)
+
+        const storedExists = typeof window !== 'undefined'
+          ? window.localStorage.getItem(WATCHLIST_STORAGE_KEY) !== null
+          : false
+
+        if (!storedExists) {
+          const seededWatchlist = dedupeItems(payload.watch_names || [])
+          setWatchNames(seededWatchlist)
+          persistWatchlist(seededWatchlist)
         }
       } catch (loadError) {
         if (!cancelled) {
@@ -85,14 +203,17 @@ export default function HpdArrestLogPage() {
     return () => {
       cancelled = true
     }
-  }, [])
+  }, [reloadToken])
+
+  const syncedWatchNames = useMemo(() => dedupeItems(snapshot?.watch_names || []), [snapshot])
+  const activeWatchNames = useMemo(() => dedupeItems(watchNames), [watchNames])
 
   const filteredData = useMemo(() => {
     if (!snapshot) {
       return {
-        matchedCount: 0,
+        windowRecords: [],
+        visibleRecords: [],
         sourceCount: 0,
-        records: [],
       }
     }
 
@@ -102,27 +223,80 @@ export default function HpdArrestLogPage() {
     const cutoff = new Date(latestAnchor)
     cutoff.setUTCDate(cutoff.getUTCDate() - Math.max(0, days - 1))
 
-    const filtered = snapshot.records.filter((record) => {
+    const windowRecords = snapshot.records.filter((record) => {
       const sourceAnchor = record.source_anchor_utc ? new Date(record.source_anchor_utc) : null
-      if (sourceAnchor && sourceAnchor < cutoff) {
-        return false
-      }
-
-      return matchesName(record.name, nameQuery)
+      return !sourceAnchor || sourceAnchor >= cutoff
     })
 
-    filtered.sort((left, right) => {
-      const leftDate = Date.parse(left.arrest_sort_utc || left.source_anchor_utc || '')
-      const rightDate = Date.parse(right.arrest_sort_utc || right.source_anchor_utc || '')
-      return rightDate - leftDate
-    })
+    windowRecords.sort((left, right) => getRecordTimestamp(right) - getRecordTimestamp(left))
+
+    const visibleRecords = windowRecords.filter((record) => matchesQuery(record.name, nameQuery))
 
     return {
-      matchedCount: filtered.length,
-      sourceCount: new Set(filtered.map((record) => record.source_pdf)).size,
-      records: filtered.slice(0, rows),
+      windowRecords,
+      visibleRecords: visibleRecords.slice(0, rows),
+      sourceCount: new Set(visibleRecords.map((record) => record.source_pdf)).size,
     }
   }, [days, nameQuery, rows, snapshot])
+
+  const watchHits = useMemo(() => {
+    if (!snapshot || activeWatchNames.length === 0) {
+      return []
+    }
+
+    const hits = []
+    for (const record of filteredData.windowRecords) {
+      for (const watchName of activeWatchNames) {
+        if (!matchesQuery(record.name, watchName)) {
+          continue
+        }
+        hits.push({
+          key: `${watchName}:${record.report_number || record.source_pdf}:${record.page_number}`,
+          watchName,
+          record,
+        })
+      }
+    }
+
+    hits.sort((left, right) => getRecordTimestamp(right.record) - getRecordTimestamp(left.record))
+    return hits.slice(0, 12)
+  }, [activeWatchNames, filteredData.windowRecords, snapshot])
+
+  function handleRefresh() {
+    setReloadToken((value) => value + 1)
+  }
+
+  function handleAddWatch(event) {
+    event.preventDefault()
+    const nextWatch = cleanLine(watchInput)
+    if (!nextWatch) {
+      return
+    }
+
+    const updated = dedupeItems([...activeWatchNames, nextWatch])
+    setWatchNames(updated)
+    persistWatchlist(updated)
+    setWatchInput('')
+  }
+
+  function handleRemoveWatch(watchName) {
+    const updated = activeWatchNames.filter((item) => item !== watchName)
+    setWatchNames(updated)
+    persistWatchlist(updated)
+  }
+
+  function handleResetWatchlist() {
+    setWatchNames(syncedWatchNames)
+    persistWatchlist(syncedWatchNames)
+  }
+
+  function handleClearFilters() {
+    setNameQuery('')
+    setDays(DEFAULT_DAYS)
+    setRows(DEFAULT_ROWS)
+  }
+
+  const runStateOk = snapshot?.last_run?.ok === true
 
   return (
     <div className="hpd-page-shell">
@@ -143,12 +317,12 @@ export default function HpdArrestLogPage() {
             <p className="kicker">Operational Dashboard</p>
             <h1>HPD Arrest Log Viewer</h1>
             <p>
-              A Python and Flask pipeline that pulls Honolulu PD arrest log PDFs, parses them into
-              structured records, and exposes searchable review flows with watch alerts and ingest
-              telemetry. The portfolio version is a static snapshot of the latest synced data.
+              A public-facing port of the HPD arrest review tool. This route keeps the denser
+              operational feel of the source app, while running on the latest synced dataset so it
+              stays deployable on Amplify.
             </p>
             <div className="hpd-hero-actions">
-              <span className="hpd-status-pill">Snapshot live</span>
+              <span className="hpd-status-pill">Full public interface</span>
               <span className="hpd-source-pill">Source: hpd_arrest_log_viewer</span>
               <a className="hpd-back-link" href="/#projects">
                 Back to portfolio
@@ -161,7 +335,7 @@ export default function HpdArrestLogPage() {
               <span className="hpd-panel-dot hpd-panel-dot-blue" />
               <span className="hpd-panel-dot hpd-panel-dot-orange" />
               <span className="hpd-panel-dot hpd-panel-dot-green" />
-              <p>Snapshot metadata</p>
+              <p>Sync status</p>
             </div>
             <div className="hpd-meta-grid">
               <article>
@@ -179,8 +353,8 @@ export default function HpdArrestLogPage() {
                 <strong>{snapshot ? (snapshot.ocr?.ok ? 'Ready' : 'Unavailable') : 'Loading...'}</strong>
               </article>
               <article>
-                <span>Last parse</span>
-                <strong>{snapshot?.last_run?.parse_method || 'Unknown'}</strong>
+                <span>Public mode</span>
+                <strong>Read/search/watch on synced data</strong>
               </article>
             </div>
           </div>
@@ -188,7 +362,7 @@ export default function HpdArrestLogPage() {
 
         {loading && (
           <section className="hpd-message-panel">
-            <p>Loading snapshot...</p>
+            <p>Loading synced dataset...</p>
           </section>
         )}
 
@@ -200,6 +374,65 @@ export default function HpdArrestLogPage() {
 
         {snapshot && !loading && !error && (
           <>
+            <section className="hpd-utility-grid">
+              <div className="hpd-sidebar-card hpd-actions-card">
+                <h2>Actions</h2>
+                <p className="hpd-helper-copy">
+                  Hosted mode supports search, watchlist management, and deep record review against
+                  the latest synced dataset.
+                </p>
+                <div className="hpd-action-row">
+                  <button className="hpd-btn" type="button" onClick={handleRefresh}>
+                    Refresh synced data
+                  </button>
+                  <a className="hpd-btn hpd-btn-secondary" href={SNAPSHOT_URL}>
+                    Open JSON
+                  </a>
+                </div>
+                <div className="hpd-action-row">
+                  <button className="hpd-btn hpd-btn-secondary" type="button" onClick={handleClearFilters}>
+                    Reset filters
+                  </button>
+                  <button className="hpd-btn hpd-btn-secondary" type="button" onClick={handleResetWatchlist}>
+                    Reset watchlist
+                  </button>
+                </div>
+                <p className="hpd-inline-note">
+                  Pull, backfill, and source watchlist writes still run in the local Flask tool.
+                </p>
+              </div>
+
+              <div className="hpd-sidebar-card hpd-run-card">
+                <div className="hpd-run-head">
+                  <h2>Run state</h2>
+                  <span className={`hpd-health-pill ${runStateOk ? 'hpd-health-pill-ok' : 'hpd-health-pill-error'}`}>
+                    {runStateOk ? 'Healthy' : 'Needs attention'}
+                  </span>
+                </div>
+                <div className="hpd-run-grid">
+                  <article>
+                    <span>Latest sync</span>
+                    <strong>{formatDateTime(snapshot.last_run?.ran_at_utc)}</strong>
+                  </article>
+                  <article>
+                    <span>Parse method</span>
+                    <strong>{snapshot.last_run?.parse_method || 'Unknown'}</strong>
+                  </article>
+                  <article>
+                    <span>Last record count</span>
+                    <strong>{snapshot.last_run?.record_count || 0}</strong>
+                  </article>
+                  <article>
+                    <span>Recent source alerts</span>
+                    <strong>{snapshot.recent_alerts?.length || 0}</strong>
+                  </article>
+                </div>
+                {snapshot.last_run?.error ? (
+                  <p className="hpd-inline-note hpd-inline-note-error">{snapshot.last_run.error}</p>
+                ) : null}
+              </div>
+            </section>
+
             <section className="hpd-controls">
               <div className="hpd-control-card">
                 <label htmlFor="hpd-name-search">Search arrested name</label>
@@ -243,57 +476,87 @@ export default function HpdArrestLogPage() {
 
             <section className="hpd-stats-grid">
               <article>
-                <span>Matched records</span>
-                <strong>{filteredData.matchedCount}</strong>
+                <span>Records in window</span>
+                <strong>{filteredData.windowRecords.length}</strong>
               </article>
               <article>
-                <span>Rows shown</span>
-                <strong>{filteredData.records.length}</strong>
+                <span>Rows visible</span>
+                <strong>{filteredData.visibleRecords.length}</strong>
               </article>
               <article>
                 <span>Source PDFs in view</span>
                 <strong>{filteredData.sourceCount}</strong>
               </article>
               <article>
-                <span>Total source PDFs</span>
-                <strong>{snapshot.summary?.available_source_count || 0}</strong>
+                <span>Watch hits</span>
+                <strong>{watchHits.length}</strong>
               </article>
             </section>
 
             <section className="hpd-content-grid">
               <aside className="hpd-sidebar">
                 <div className="hpd-sidebar-card">
-                  <h2>Run state</h2>
-                  <p>
-                    Latest sync: <strong>{formatDateTime(snapshot.last_run?.ran_at_utc)}</strong>
+                  <h2>Watchlist</h2>
+                  <p className="hpd-helper-copy">
+                    Add names here to keep a working watchlist in this browser while reviewing the
+                    hosted page.
                   </p>
-                  <p>
-                    Last record count: <strong>{snapshot.last_run?.record_count || 0}</strong>
-                  </p>
-                  <p>
-                    Parse method: <strong>{snapshot.last_run?.parse_method || 'Unknown'}</strong>
-                  </p>
-                  <p className="hpd-sidebar-note">
-                    Portfolio mode is read-only. Manual pull, backfill, and watch updates remain in
-                    the local Flask app.
+                  <form className="hpd-watch-form" onSubmit={handleAddWatch}>
+                    <input
+                      type="text"
+                      value={watchInput}
+                      onChange={(event) => setWatchInput(event.target.value)}
+                      placeholder="Add alert name fragment"
+                    />
+                    <button className="hpd-btn" type="submit">
+                      Add watch
+                    </button>
+                  </form>
+                  {activeWatchNames.length ? (
+                    <div className="hpd-watch-list">
+                      {activeWatchNames.map((watchName) => (
+                        <div className="hpd-watch-item" key={watchName}>
+                          <span>{watchName}</span>
+                          <button
+                            type="button"
+                            className="hpd-watch-remove"
+                            onClick={() => handleRemoveWatch(watchName)}
+                          >
+                            Remove
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="hpd-empty-copy">No public watch names configured yet.</p>
+                  )}
+                  <p className="hpd-inline-note">
+                    Synced watchlist count: {syncedWatchNames.length}. Public edits here do not write
+                    back to the source tool.
                   </p>
                 </div>
 
                 <div className="hpd-sidebar-card">
-                  <h2>Watchlist</h2>
-                  {snapshot.watch_names?.length ? (
-                    <div className="hpd-chip-list">
-                      {snapshot.watch_names.map((watchName) => (
-                        <span key={watchName}>{watchName}</span>
+                  <h2>Watch hits</h2>
+                  {watchHits.length ? (
+                    <div className="hpd-watch-hit-list">
+                      {watchHits.map((hit) => (
+                        <article className="hpd-watch-hit" key={hit.key}>
+                          <strong>{hit.watchName} matched</strong>
+                          <p>{hit.record.name || 'Unknown'}</p>
+                          <span>
+                            {hit.record.offense || 'Unknown offense'} · {formatCompactDateTime(hit.record.arrest_sort_utc || hit.record.source_anchor_utc)}
+                          </span>
+                        </article>
                       ))}
                     </div>
                   ) : (
-                    <p className="hpd-empty-copy">No watch names configured in the current snapshot.</p>
+                    <p className="hpd-empty-copy">No watch hits in the current time window.</p>
                   )}
                 </div>
 
                 <div className="hpd-sidebar-card">
-                  <h2>Recent alerts</h2>
+                  <h2>Source alert history</h2>
                   {snapshot.recent_alerts?.length ? (
                     <div className="hpd-alert-list">
                       {snapshot.recent_alerts.map((alert) => (
@@ -305,7 +568,7 @@ export default function HpdArrestLogPage() {
                       ))}
                     </div>
                   ) : (
-                    <p className="hpd-empty-copy">No recent alert events in this snapshot.</p>
+                    <p className="hpd-empty-copy">No recent source alerts in this sync.</p>
                   )}
                 </div>
               </aside>
@@ -314,9 +577,9 @@ export default function HpdArrestLogPage() {
                 <div className="hpd-records-head">
                   <div>
                     <p className="kicker">Searchable records</p>
-                    <h2>Current synced snapshot</h2>
+                    <h2>Full public review interface</h2>
                   </div>
-                  <span>{filteredData.records.length} rows visible</span>
+                  <span>{filteredData.visibleRecords.length} rows visible</span>
                 </div>
 
                 <div className="hpd-records-table-wrap">
@@ -333,10 +596,8 @@ export default function HpdArrestLogPage() {
                       </tr>
                     </thead>
                     <tbody>
-                      {filteredData.records.map((record) => (
-                        <tr
-                          key={`${record.report_number}-${record.source_pdf}-${record.page_number}`}
-                        >
+                      {filteredData.visibleRecords.map((record) => (
+                        <tr key={`${record.report_number}-${record.source_pdf}-${record.page_number}`}>
                           <td>{record.arrest_datetime || 'Unknown'}</td>
                           <td>
                             <div className="hpd-name-main">{record.name || 'Unknown'}</div>
@@ -362,9 +623,7 @@ export default function HpdArrestLogPage() {
                           </td>
                           <td>
                             <div>{record.source_pdf || 'Unknown source'}</div>
-                            <div className="hpd-subline">
-                              {formatShortDate(record.source_anchor_utc)}
-                            </div>
+                            <div className="hpd-subline">{formatShortDate(record.source_anchor_utc)}</div>
                           </td>
                           <td>
                             <details className="hpd-details">
