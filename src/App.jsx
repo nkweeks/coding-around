@@ -288,6 +288,9 @@ function CodingAroundMark() {
 }
 
 function VimProtocolPage() {
+  const [stylesReady, setStylesReady] = useState(false)
+  const [gameReady, setGameReady] = useState(false)
+
   useEffect(() => {
     document.title = 'VIM Protocol | Coding Around'
 
@@ -305,6 +308,8 @@ function VimProtocolPage() {
     }
     themeMeta.setAttribute('content', '#02080d')
 
+    let cancelled = false
+
     let baseTag = document.querySelector('base[data-vim-protocol-base]')
     let createdBaseTag = false
     if (!baseTag) {
@@ -318,20 +323,35 @@ function VimProtocolPage() {
     const createdLinks = []
     const createdScripts = []
 
-    for (const href of VIM_PROTOCOL_STYLE_PATHS) {
-      if (document.querySelector(`link[data-vim-protocol-style="${href}"]`)) {
-        continue
-      }
+    const nextFrame = () =>
+      new Promise((resolve) => {
+        window.requestAnimationFrame(() => resolve())
+      })
 
-      const link = document.createElement('link')
-      link.rel = 'stylesheet'
-      link.href = href
-      link.dataset.vimProtocolStyle = href
-      document.head.appendChild(link)
-      createdLinks.push(link)
-    }
+    const loadStyle = (href) =>
+      new Promise((resolve, reject) => {
+        const existing = document.querySelector(`link[data-vim-protocol-style="${href}"]`)
+        if (existing) {
+          if (existing.sheet) {
+            resolve()
+            return
+          }
+          existing.addEventListener('load', () => resolve(), { once: true })
+          existing.addEventListener('error', () => reject(new Error(`Failed to load ${href}`)), {
+            once: true,
+          })
+          return
+        }
 
-    let cancelled = false
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = href
+        link.dataset.vimProtocolStyle = href
+        link.onload = () => resolve()
+        link.onerror = () => reject(new Error(`Failed to load ${href}`))
+        document.head.appendChild(link)
+        createdLinks.push(link)
+      })
 
     const loadScript = (src) =>
       new Promise((resolve, reject) => {
@@ -351,6 +371,16 @@ function VimProtocolPage() {
       })
 
     const bootstrap = async () => {
+      await Promise.all(VIM_PROTOCOL_STYLE_PATHS.map((href) => loadStyle(href)))
+
+      if (cancelled) {
+        return
+      }
+
+      setStylesReady(true)
+      await nextFrame()
+      await nextFrame()
+
       for (const src of VIM_PROTOCOL_SCRIPT_PATHS) {
         if (cancelled) {
           return
@@ -373,6 +403,12 @@ function VimProtocolPage() {
       `
       document.body.appendChild(initScript)
       createdScripts.push(initScript)
+
+      await nextFrame()
+
+      if (!cancelled) {
+        setGameReady(true)
+      }
     }
 
     bootstrap().catch((error) => {
@@ -398,10 +434,32 @@ function VimProtocolPage() {
   }, [])
 
   return (
-    <div
-      className="vim-protocol-page"
-      dangerouslySetInnerHTML={{ __html: vimProtocolShell }}
-    />
+    <div className="vim-protocol-page">
+      {stylesReady ? (
+        <div
+          className={`vim-protocol-shell ${gameReady ? 'is-live' : 'is-staged'}`}
+          dangerouslySetInnerHTML={{ __html: vimProtocolShell }}
+        />
+      ) : null}
+
+      <div className={`vim-boot-screen ${stylesReady ? 'is-styled' : ''} ${gameReady ? 'is-hidden' : ''}`}>
+        <div className="vim-boot-panel">
+          <p className="vim-boot-kicker">Coding Around // launch sequence</p>
+          <h1>VIM Protocol</h1>
+          <p className="vim-boot-copy">
+            Loading the mission shell, command systems, and story runtime before the interface goes
+            live.
+          </p>
+          <div className="vim-boot-progress" aria-hidden="true">
+            <span className={stylesReady ? 'is-advanced' : ''} />
+          </div>
+          <div className="vim-boot-meta">
+            <span>{stylesReady ? 'Styles armed' : 'Styling systems'}</span>
+            <span>{stylesReady && !gameReady ? 'Booting mission systems' : 'Preparing shell'}</span>
+          </div>
+        </div>
+      </div>
+    </div>
   )
 }
 

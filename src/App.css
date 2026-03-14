@@ -17,8 +17,126 @@
 }
 
 .vim-protocol-page {
+  position: relative;
   min-height: 100vh;
   background: #02080d;
+  overflow: hidden;
+}
+
+.vim-protocol-shell {
+  opacity: 0;
+  transform: scale(1.01);
+  transition: opacity 360ms ease, transform 520ms ease;
+}
+
+.vim-protocol-shell.is-live {
+  opacity: 1;
+  transform: none;
+}
+
+.vim-boot-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  display: grid;
+  place-items: center;
+  padding: 2rem;
+  background:
+    radial-gradient(circle at 50% 36%, rgba(153, 92, 255, 0.2), transparent 32%),
+    radial-gradient(circle at 52% 60%, rgba(57, 255, 20, 0.08), transparent 28%),
+    linear-gradient(180deg, #050713 0%, #11051f 46%, #060911 100%);
+  transition: opacity 280ms ease, visibility 280ms ease;
+}
+
+.vim-boot-screen.is-hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.vim-boot-panel {
+  width: min(32rem, 100%);
+  border-radius: 1.2rem;
+  border: 1px solid rgba(170, 102, 255, 0.28);
+  padding: 1.45rem;
+  background:
+    linear-gradient(160deg, rgba(16, 8, 30, 0.94), rgba(4, 8, 16, 0.96)),
+    radial-gradient(circle at 50% 0%, rgba(0, 245, 255, 0.08), transparent 46%);
+  box-shadow:
+    0 0 0 1px rgba(57, 255, 20, 0.06),
+    0 1.8rem 4rem rgba(0, 0, 0, 0.52),
+    0 0 3rem rgba(157, 78, 221, 0.14);
+}
+
+.vim-boot-kicker {
+  margin: 0;
+  font-family: var(--terminal-font);
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #97a7c8;
+}
+
+.vim-boot-panel h1 {
+  margin: 0.7rem 0 0;
+  font-family: var(--cyber-font);
+  font-size: clamp(2.4rem, 7vw, 4rem);
+  letter-spacing: 0.08em;
+  line-height: 0.9;
+  text-transform: uppercase;
+  color: #f0dcff;
+  text-shadow: 0 0 1.8rem rgba(172, 103, 255, 0.34);
+}
+
+.vim-boot-copy {
+  margin: 0.9rem 0 0;
+  color: #cdb8ef;
+  line-height: 1.55;
+}
+
+.vim-boot-progress {
+  margin-top: 1rem;
+  height: 0.28rem;
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.vim-boot-progress span {
+  display: block;
+  width: 38%;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #8f40ff, #00f5ff, #39ff14);
+  box-shadow: 0 0 1.2rem rgba(0, 245, 255, 0.46);
+  animation: vimBootPulse 1.05s ease-in-out infinite alternate;
+}
+
+.vim-boot-progress span.is-advanced {
+  width: 78%;
+}
+
+.vim-boot-meta {
+  margin-top: 0.72rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+  font-family: var(--terminal-font);
+  font-size: 0.74rem;
+  color: #8ef7d2;
+}
+
+@keyframes vimBootPulse {
+  from {
+    transform: translateX(0);
+    filter: brightness(0.96);
+  }
+
+  to {
+    transform: translateX(6%);
+    filter: brightness(1.14);
+  }
 }
 
 .parallax-scene {

@@ -106,11 +106,20 @@ indexHtml = indexHtml
 
 const portfolioNavLink =
   '<a href="/" class="menu-button" data-portfolio-link="true" style="text-decoration:none;display:inline-flex;align-items:center;">← PORTFOLIO</a>'
+const bugReportLink =
+  '<a href="mailto:hello@codingaround.dev?subject=VIM%20Protocol%20Bug%20Report&body=Describe%20the%20issue%3A%0A%0ASteps%20to%20reproduce%3A%0A1.%20%0A2.%20%0A%0AExpected%20result%3A%0A%0AActual%20result%3A%0A%0ADevice%20and%20browser%3A%0A" class="menu-button" data-bug-report-link="true" style="text-decoration:none;display:inline-flex;align-items:center;">REPORT BUG</a>'
 
 if (!indexHtml.includes('data-portfolio-link="true"')) {
   indexHtml = indexHtml.replace(
     /(<span id="timer">[\s\S]*?<\/span>)/i,
     `$1\n        ${portfolioNavLink}`,
+  )
+}
+
+if (!indexHtml.includes('data-bug-report-link="true"')) {
+  indexHtml = indexHtml.replace(
+    /(<button id="home-btn" class="menu-button">HOME<\/button>)/i,
+    `${bugReportLink}\n        $1`,
   )
 }
 
