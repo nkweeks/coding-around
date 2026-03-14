@@ -180,20 +180,16 @@ class Modal {
     `;
   }
 
-  // Show level complete with character celebration and optional image
+  // Show level complete with stats (character reactions come via postDialog typewriter)
   showLevelComplete(level, stats, story, onNext) {
     const resolvedStory = story || level.story;
-    const celebrators = ['zero', 'byte', 'blade'];
-    const celebratorId = celebrators[Math.floor(Math.random() * celebrators.length)];
-    const character = CHARACTERS[celebratorId];
-    const quote = getCharacterQuote(celebratorId, 'levelComplete');
 
     this.title.textContent = 'MISSION COMPLETE';
     this.title.style.color = '#39ff14';
 
     const completionMessage = resolvedStory?.completion || 'Excellent work, operative.';
 
-    // Build completion image if present
+    // Build completion image if present (final level endings)
     const completionImage = resolvedStory?.completionImage ? `
       <div class="story-image completion-image">
         <img src="${resolvedStory.completionImage}" alt="Mission complete">
@@ -207,12 +203,6 @@ class Modal {
           ${completionMessage}
         </div>
         ${completionImage}
-        ${character ? `
-          <div class="celebration-quote" style="border-color: ${character.color}">
-            <span class="quote-char" style="color: ${character.color}">${character.name}:</span>
-            <span class="quote-text">"${quote}"</span>
-          </div>
-        ` : ''}
         <div class="level-stats">
           <div class="level-stat">
             <div class="level-stat-label">Time</div>

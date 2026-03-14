@@ -50,11 +50,10 @@ class StoryManager {
     this.onDialogueComplete = onComplete;
 
     if (Array.isArray(dialogueData)) {
-      // Multiple dialogue entries (conversation)
       this.dialogueQueue = [...dialogueData];
       this.showNextDialogue();
     } else {
-      // Single dialogue entry
+      this.dialogueQueue = [];
       this.displayDialogue(dialogueData);
     }
   }
@@ -63,12 +62,9 @@ class StoryManager {
   showNextDialogue() {
     if (this.dialogueQueue.length === 0) {
       this.hideDialogue();
-      // Capture and clear callback to prevent double-execution
       const callback = this.onDialogueComplete;
       this.onDialogueComplete = null;
-      if (callback) {
-        callback();
-      }
+      if (callback) callback();
       return;
     }
 
@@ -76,7 +72,7 @@ class StoryManager {
     this.displayDialogue(next);
   }
 
-  // Display a single dialogue on screen
+  // Display a single dialogue entry with typewriter animation
   displayDialogue(dialogueData) {
     const character = CHARACTERS[dialogueData.character];
     if (!character) {
@@ -87,6 +83,13 @@ class StoryManager {
 
     this.currentDialogue = dialogueData;
 
+    // Cancel any running typewriter
+    if (this._typewriterTimer) {
+      clearInterval(this._typewriterTimer);
+      this._typewriterTimer = null;
+    }
+    this._isAnimating = false;
+
     // Get or create dialogue container
     let container = document.getElementById('character-dialogue');
     if (!container) {
@@ -96,73 +99,157 @@ class StoryManager {
       document.body.appendChild(container);
     }
 
-    // Build dialogue HTML
     const lines = Array.isArray(dialogueData.lines)
       ? dialogueData.lines
-      : [dialogueData.lines];
+      : (dialogueData.lines ? [dialogueData.lines] : [dialogueData.line || '']);
 
-    // Check if this dialogue has an image
-    const imageHtml = dialogueData.image
-      ? `<div class="dialogue-image"><img src="${dialogueData.image}" alt="${character.name}"></div>`
-      : '';
+    const isLast = this.dialogueQueue.length === 0;
+    const continueLabel = isLast ? 'OK [Enter]' : 'CONTINUE [Enter]';
+
+    // Portrait: use image if provided, otherwise ascii avatar
+    const portraitHtml = dialogueData.image
+      ? `<img class="dialogue-portrait-img" src="${dialogueData.image}" alt="${character.name}">`
+      : `<div class="dialogue-avatar" style="color: ${character.color}">${character.avatar.join('<br>')}</div>`;
 
     container.innerHTML = `
-      <div class="dialogue-box" style="border-color: ${character.color}">
-        ${imageHtml}
-        <div class="dialogue-character">
-          <div class="character-avatar" style="color: ${character.color}">
-            ${character.avatar.join('<br>')}
-          </div>
-          <div class="character-info">
-            <div class="character-name" style="color: ${character.color}">${character.name}</div>
-            <div class="character-title">${character.title}</div>
-          </div>
+      <div class="dialogue-bar" style="--char-color: ${character.color}; border-color: ${character.color}">
+        <div class="dialogue-portrait">
+          ${portraitHtml}
+          <div class="dialogue-name" style="color: ${character.color}">${character.name}</div>
+          <div class="dialogue-char-title">${character.title}</div>
         </div>
-        <div class="dialogue-content">
-          ${lines.map(line => `<p>${line}</p>`).join('')}
-        </div>
-        <div class="dialogue-continue">
-          <button class="dialogue-btn" style="border-color: ${character.color}; color: ${character.color}">
-            ${this.dialogueQueue.length > 0 ? 'CONTINUE [Enter]' : 'OK [Enter]'}
-          </button>
+        <div class="dialogue-body">
+          <div class="dialogue-text" id="dialogue-text-output"></div>
+          <div class="dialogue-continue hidden" id="dialogue-continue-hint">${continueLabel}</div>
         </div>
       </div>
     `;
 
-    // Show container
     container.classList.remove('hidden');
 
-    // Add click handler
-    const btn = container.querySelector('.dialogue-btn');
-    btn.onclick = () => this.showNextDialogue();
+    // Click anywhere on bar to skip/advance
+    container.querySelector('.dialogue-bar').addEventListener('click', () => {
+      this._handleDialogueAdvance();
+    });
 
-    // Clean up old keyboard handler before adding new one (prevents leaked handlers)
+    // Keyboard handler
     if (this.keyHandler) {
       document.removeEventListener('keydown', this.keyHandler);
     }
-
-    // Also allow keyboard continue (with re-entrance guard)
     this.keyHandler = (e) => {
       if (e.key === 'Enter' || e.key === ' ' || e.key === 'Escape') {
         e.preventDefault();
-        if (this._advancing) return;
-        this._advancing = true;
-        this.showNextDialogue();
-        setTimeout(() => { this._advancing = false; }, 0);
+        this._handleDialogueAdvance();
       }
     };
     document.addEventListener('keydown', this.keyHandler);
 
-    // Focus the button for accessibility
-    setTimeout(() => btn.focus(), 100);
+    // Start typewriter
+    this._startTypewriter(lines, () => {
+      const hint = document.getElementById('dialogue-continue-hint');
+      if (hint) hint.classList.remove('hidden');
+    });
+  }
+
+  // Handle Enter/click: skip animation if running, else advance
+  _handleDialogueAdvance() {
+    if (this._isAnimating) {
+      this._skipAnimation();
+    } else {
+      if (this._advancing) return;
+      this._advancing = true;
+      this.showNextDialogue();
+      setTimeout(() => { this._advancing = false; }, 0);
+    }
+  }
+
+  // Typewriter animation — types all lines sequentially
+  _startTypewriter(lines, onComplete) {
+    const output = document.getElementById('dialogue-text-output');
+    if (!output) return;
+
+    this._isAnimating = true;
+    this._typewriterLines = lines;
+    this._typewriterOnComplete = onComplete;
+
+    // Build flat character list with HTML markers for line breaks
+    this._typewriterChars = [];
+    lines.forEach((line, i) => {
+      // Each character in the line
+      for (const ch of line) {
+        this._typewriterChars.push({ type: 'char', value: ch });
+      }
+      // Paragraph break between lines (not after last)
+      if (i < lines.length - 1) {
+        this._typewriterChars.push({ type: 'break' });
+      }
+    });
+
+    this._typewriterIndex = 0;
+    this._typewriterBuilt = '';
+
+    this._typewriterTimer = setInterval(() => {
+      if (this._typewriterIndex >= this._typewriterChars.length) {
+        clearInterval(this._typewriterTimer);
+        this._typewriterTimer = null;
+        this._isAnimating = false;
+        output.innerHTML = this._typewriterBuilt;
+        if (onComplete) onComplete();
+        return;
+      }
+
+      const item = this._typewriterChars[this._typewriterIndex];
+      if (item.type === 'break') {
+        this._typewriterBuilt += '<br><br>';
+      } else {
+        // Escape HTML entities
+        const ch = item.value;
+        this._typewriterBuilt += ch === '&' ? '&amp;'
+          : ch === '<' ? '&lt;'
+          : ch === '>' ? '&gt;'
+          : ch;
+      }
+      this._typewriterIndex++;
+
+      output.innerHTML = this._typewriterBuilt + '<span class="dialogue-cursor">▋</span>';
+    }, 18);
+  }
+
+  // Skip animation: show full text immediately
+  _skipAnimation() {
+    if (this._typewriterTimer) {
+      clearInterval(this._typewriterTimer);
+      this._typewriterTimer = null;
+    }
+    this._isAnimating = false;
+
+    const output = document.getElementById('dialogue-text-output');
+    if (output && this._typewriterLines) {
+      output.innerHTML = this._typewriterLines.map(l =>
+        l.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      ).join('<br><br>');
+    }
+
+    const hint = document.getElementById('dialogue-continue-hint');
+    if (hint) hint.classList.remove('hidden');
+
+    if (this._typewriterOnComplete) {
+      this._typewriterOnComplete();
+      this._typewriterOnComplete = null;
+    }
   }
 
   // Hide dialogue
   hideDialogue() {
-    const container = document.getElementById('character-dialogue');
-    if (container) {
-      container.classList.add('hidden');
+    // Cancel any running animation
+    if (this._typewriterTimer) {
+      clearInterval(this._typewriterTimer);
+      this._typewriterTimer = null;
     }
+    this._isAnimating = false;
+
+    const container = document.getElementById('character-dialogue');
+    if (container) container.classList.add('hidden');
 
     if (this.keyHandler) {
       document.removeEventListener('keydown', this.keyHandler);

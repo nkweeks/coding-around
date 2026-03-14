@@ -1,7 +1,5 @@
 const vimProtocolShell = String.raw`
-<a class="vim-portfolio-link" href="/">Back to portfolio</a>
-
-  <!-- Main Menu Screen -->
+<!-- Main Menu Screen -->
   <div id="main-menu" class="main-menu">
     <div class="menu-content">
       <div class="menu-logo">
@@ -71,6 +69,7 @@ const vimProtocolShell = String.raw`
         <span id="level-number">LEVEL 01</span>
         <span class="separator">//</span>
         <span id="timer">00:00</span>
+        <a href="/" class="menu-button" data-portfolio-link="true" style="text-decoration:none;display:inline-flex;align-items:center;">← PORTFOLIO</a>
         <button id="skill-log-btn" class="menu-button">SKILL LOG</button>
         <button id="menu-btn" class="menu-button">MISSIONS</button>
         <button id="home-btn" class="menu-button">HOME</button>

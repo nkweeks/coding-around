@@ -18,42 +18,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
-  <style>
-    .portfolio-link {
-      position: fixed;
-      top: 18px;
-      left: 18px;
-      z-index: 50;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 10px 14px;
-      border: 1px solid rgba(114, 241, 214, 0.28);
-      border-radius: 999px;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 12px;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: #d8fff8;
-      background: rgba(2, 11, 15, 0.82);
-      backdrop-filter: blur(12px);
-      text-decoration: none;
-      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.28);
-    }
-
-    .portfolio-link:hover {
-      border-color: rgba(114, 241, 214, 0.52);
-      color: #ffffff;
-    }
-
-    .portfolio-link::before {
-      content: '←';
-      font-size: 13px;
-    }
-  </style>
 </head>
 <body>
-  <a class="portfolio-link" href="/">Back to portfolio</a>
 
   <!-- Main Menu Screen -->
   <div id="main-menu" class="main-menu">
@@ -125,6 +91,7 @@
         <span id="level-number">LEVEL 01</span>
         <span class="separator">//</span>
         <span id="timer">00:00</span>
+        <a href="/" class="menu-button" data-portfolio-link="true" style="text-decoration:none;display:inline-flex;align-items:center;">← PORTFOLIO</a>
         <button id="skill-log-btn" class="menu-button">SKILL LOG</button>
         <button id="menu-btn" class="menu-button">MISSIONS</button>
         <button id="home-btn" class="menu-button">HOME</button>

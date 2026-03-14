@@ -21,38 +21,6 @@
   background: #02080d;
 }
 
-.vim-portfolio-link {
-  position: fixed;
-  top: 18px;
-  left: 18px;
-  z-index: 60;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.68rem 0.95rem;
-  border: 1px solid rgba(114, 241, 214, 0.28);
-  border-radius: 999px;
-  font-family: var(--terminal-font);
-  font-size: 0.74rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: #d8fff8;
-  background: rgba(2, 11, 15, 0.82);
-  backdrop-filter: blur(12px);
-  box-shadow: 0 1rem 2.5rem rgba(0, 0, 0, 0.28);
-}
-
-.vim-portfolio-link:hover {
-  border-color: rgba(114, 241, 214, 0.52);
-  color: #fff;
-}
-
-.vim-portfolio-link::before {
-  content: '<';
-  font-size: 0.9rem;
-  line-height: 1;
-}
-
 .parallax-scene {
   position: fixed;
   inset: -16vh -16vw;

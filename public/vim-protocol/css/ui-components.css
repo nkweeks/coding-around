@@ -941,20 +941,135 @@
   max-height: 300px;
 }
 
-/* Dialogue images */
-.dialogue-image {
-  margin-bottom: 15px;
-  border-radius: 4px;
-  overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+/* ========================================
+   RPG DIALOGUE BAR (bottom of screen)
+   ======================================== */
+
+.character-dialogue {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1500;
+  padding: 0 0 0;
+  transform: translateY(0);
+  opacity: 1;
+  transition: transform 0.25s ease-out, opacity 0.25s ease-out;
 }
 
-.dialogue-image img {
-  width: 100%;
-  height: auto;
-  max-height: 200px;
+.character-dialogue.hidden {
+  transform: translateY(100%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.dialogue-bar {
+  background: rgba(5, 5, 15, 0.97);
+  border-top: 2px solid var(--char-color, #9d4edd);
+  border-left: none;
+  border-right: none;
+  border-bottom: none;
+  box-shadow: 0 -8px 40px rgba(0, 0, 0, 0.8), 0 -2px 0 var(--char-color, #9d4edd);
+  display: grid;
+  grid-template-columns: 130px 1fr;
+  min-height: 130px;
+  max-height: 180px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.dialogue-portrait {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 14px 16px;
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.dialogue-avatar {
+  font-size: 11px;
+  line-height: 1.15;
+  font-family: monospace;
+  text-align: center;
+  filter: drop-shadow(0 0 4px var(--char-color, #9d4edd));
+}
+
+.dialogue-portrait-img {
+  width: 72px;
+  height: 56px;
   object-fit: cover;
-  display: block;
+  border-radius: 3px;
+  border: 1px solid var(--char-color, #9d4edd);
+  box-shadow: 0 0 10px var(--char-color, #9d4edd);
+}
+
+.dialogue-name {
+  font-family: 'Orbitron', monospace;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  text-align: center;
+  margin-top: 4px;
+}
+
+.dialogue-char-title {
+  font-size: 9px;
+  color: #555;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.dialogue-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 18px 24px 14px;
+  overflow: hidden;
+}
+
+.dialogue-text {
+  font-size: 14px;
+  line-height: 1.65;
+  color: #d8d8d8;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.dialogue-cursor {
+  display: inline-block;
+  animation: cursorBlink 0.6s steps(1) infinite;
+  font-size: 13px;
+  opacity: 1;
+}
+
+@keyframes cursorBlink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+.dialogue-continue {
+  font-family: 'Orbitron', monospace;
+  font-size: 10px;
+  color: var(--char-color, #9d4edd);
+  text-align: right;
+  letter-spacing: 1.5px;
+  margin-top: 8px;
+  animation: continuePulse 1.8s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+.dialogue-continue.hidden {
+  display: none;
+}
+
+@keyframes continuePulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
 }
 
 /* ========================================

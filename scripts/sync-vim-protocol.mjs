@@ -33,6 +33,10 @@ execFileSync(
     '--exclude',
     '.claude',
     '--exclude',
+    'AGENTS.md',
+    '--exclude',
+    'CLAUDE.md',
+    '--exclude',
     'LEVEL_AUDIT.md',
     `${sourceRoot}/`,
     `${targetRoot}/`,
@@ -41,6 +45,13 @@ execFileSync(
 )
 
 const imageDir = path.join(targetRoot, 'images')
+for (const strayFile of ['AGENTS.md', 'CLAUDE.md']) {
+  const strayPath = path.join(targetRoot, strayFile)
+  if (fs.existsSync(strayPath)) {
+    fs.rmSync(strayPath, { force: true })
+  }
+}
+
 if (fs.existsSync(imageDir)) {
   for (const entry of fs.readdirSync(imageDir)) {
     if (!entry.endsWith('.jpeg')) {
@@ -89,48 +100,18 @@ indexHtml = indexHtml.replace(
   '<title>VIM Protocol | Coding Around</title>\n  <meta name="theme-color" content="#02080d">\n  <base href="/vim-protocol/">',
 )
 
-if (!indexHtml.includes('.portfolio-link {')) {
+indexHtml = indexHtml
+  .replace(/\s*<style>\s*\.portfolio-link[\s\S]*?<\/style>\s*/i, '\n')
+  .replace(/\s*<a class="portfolio-link" href="\/">Back to portfolio<\/a>\s*/i, '\n')
+
+const portfolioNavLink =
+  '<a href="/" class="menu-button" data-portfolio-link="true" style="text-decoration:none;display:inline-flex;align-items:center;">← PORTFOLIO</a>'
+
+if (!indexHtml.includes('data-portfolio-link="true"')) {
   indexHtml = indexHtml.replace(
-    '</head>',
-    `  <style>
-    .portfolio-link {
-      position: fixed;
-      top: 18px;
-      left: 18px;
-      z-index: 50;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 10px 14px;
-      border: 1px solid rgba(114, 241, 214, 0.28);
-      border-radius: 999px;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 12px;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: #d8fff8;
-      background: rgba(2, 11, 15, 0.82);
-      backdrop-filter: blur(12px);
-      text-decoration: none;
-      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.28);
-    }
-
-    .portfolio-link:hover {
-      border-color: rgba(114, 241, 214, 0.52);
-      color: #ffffff;
-    }
-
-    .portfolio-link::before {
-      content: '←';
-      font-size: 13px;
-    }
-  </style>
-</head>`,
+    /(<span id="timer">[\s\S]*?<\/span>)/i,
+    `$1\n        ${portfolioNavLink}`,
   )
-}
-
-if (!indexHtml.includes('class="portfolio-link"')) {
-  indexHtml = indexHtml.replace('<body>', '<body>\n  <a class="portfolio-link" href="/">Back to portfolio</a>')
 }
 
 fs.writeFileSync(targetIndex, indexHtml)
@@ -143,7 +124,6 @@ if (!bodyMatch) {
 
 const bodyMarkup = bodyMatch[1]
   .replace(/<script[\s\S]*?<\/script>/gi, '')
-  .replace(/class="portfolio-link"/g, 'class="vim-portfolio-link"')
   .trim()
   .replace(/`/g, '\\`')
   .replace(/\$\{/g, '\\${')
