@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
 import './App.css'
+import HpdArrestLogPage from './HpdArrestLogPage.jsx'
 import vimProtocolShell from './vimProtocolShell.js'
 
+const HPD_ARREST_LOG_ROUTE = '/hpd-arrest-log'
 const VIM_PROTOCOL_ROUTE = '/vim-protocol'
 const VIM_PROTOCOL_LEGACY_ROUTE = '/vim-protocol/index.html'
 const VIM_PROTOCOL_ASSET_BASE = '/vim-protocol'
@@ -68,6 +70,15 @@ const projectTracks = [
     title: 'Automation + AI Flows',
     note: 'Systems that reduce repetitive work and create momentum for teams.',
     projects: [
+      {
+        name: 'HPD Arrest Log Viewer',
+        type: 'PDF ingest, parsing, and searchable arrest-log review dashboard',
+        stack: 'Python, Flask, pdfplumber, APScheduler',
+        status: 'Synced snapshot',
+        source: 'Local source: hpd_arrest_log_viewer',
+        url: HPD_ARREST_LOG_ROUTE,
+        linkLabel: 'Open snapshot',
+      },
       {
         name: 'Signal Watcher',
         type: 'Automated incident digest',
@@ -190,6 +201,17 @@ const featuredSubproject = {
   status: 'Playable now',
   source: 'Source project: hacking_game',
   url: VIM_PROTOCOL_ROUTE,
+}
+
+const featuredOpsProject = {
+  name: 'HPD Arrest Log Viewer',
+  label: 'Featured Operational Tool',
+  summary:
+    'A local-first intake and review tool that downloads arrest-log PDFs, parses structured records, and surfaces watch alerts through a fast operational dashboard.',
+  stack: ['Python', 'Flask', 'PDF parsing', 'Watch alerts'],
+  status: 'Snapshot synced',
+  source: 'Source project: hpd_arrest_log_viewer',
+  url: HPD_ARREST_LOG_ROUTE,
 }
 
 function normalizePath(pathname) {
@@ -520,6 +542,7 @@ function PortfolioHome() {
         </a>
         <nav>
           <a href="#projects">Projects</a>
+          <a href={featuredOpsProject.url}>HPD Log</a>
           <a href={featuredSubproject.url}>VIM Protocol</a>
           <a href="#spectrum">Styles</a>
           <a href="#roadmap">Roadmap</a>
@@ -749,6 +772,86 @@ function PortfolioHome() {
             </div>
           </article>
 
+          <article className="featured-project-card featured-project-card-hpd">
+            <div className="featured-project-copy featured-project-copy-hpd">
+              <p className="featured-project-kicker featured-project-kicker-hpd">
+                {featuredOpsProject.label}
+              </p>
+              <h3>{featuredOpsProject.name}</h3>
+              <p>{featuredOpsProject.summary}</p>
+              <div className="featured-project-tags featured-project-tags-hpd">
+                {featuredOpsProject.stack.map((item) => (
+                  <span key={item}>{item}</span>
+                ))}
+              </div>
+              <div className="featured-project-actions featured-project-actions-hpd">
+                <span>{featuredOpsProject.status}</span>
+                <strong>{featuredOpsProject.source}</strong>
+                <a href={featuredOpsProject.url}>Open snapshot</a>
+              </div>
+            </div>
+
+            <div className="featured-project-visual featured-project-visual-hpd" aria-hidden="true">
+              <div className="hpd-preview-shell">
+                <div className="hpd-preview-topbar">
+                  <div className="hpd-preview-lights">
+                    <span className="hpd-preview-light hpd-preview-light-blue" />
+                    <span className="hpd-preview-light hpd-preview-light-orange" />
+                    <span className="hpd-preview-light hpd-preview-light-green" />
+                  </div>
+                  <p>HPD ARREST LOG VIEWER :: LOCAL SNAPSHOT</p>
+                  <span className="hpd-preview-chip">SYNCED</span>
+                </div>
+
+                <div className="hpd-preview-body">
+                  <div className="hpd-preview-toolbar">
+                    <span>name query: doe</span>
+                    <span>window: 14d</span>
+                    <span>rows: 250</span>
+                  </div>
+
+                  <div className="hpd-preview-metrics">
+                    <article>
+                      <strong>784</strong>
+                      <span>records</span>
+                    </article>
+                    <article>
+                      <strong>45</strong>
+                      <span>source PDFs</span>
+                    </article>
+                    <article>
+                      <strong>1</strong>
+                      <span>alert</span>
+                    </article>
+                  </div>
+
+                  <div className="hpd-preview-table">
+                    <div className="hpd-preview-row hpd-preview-row-head">
+                      <span>Arrested</span>
+                      <span>Person</span>
+                      <span>Charge</span>
+                    </div>
+                    <div className="hpd-preview-row">
+                      <span>03/12 22:15</span>
+                      <span>DOE, JOHN</span>
+                      <span>Disorderly conduct</span>
+                    </div>
+                    <div className="hpd-preview-row">
+                      <span>03/12 18:40</span>
+                      <span>SMITH, JANE</span>
+                      <span>Bench warrant</span>
+                    </div>
+                    <div className="hpd-preview-row">
+                      <span>03/11 09:20</span>
+                      <span>LEE, DAVID</span>
+                      <span>Unauthorized entry</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </article>
+
           <div className="track-grid">
             {projectTracks.map((track, index) => (
               <article
@@ -851,6 +954,10 @@ function PortfolioHome() {
 
 function App() {
   const pathname = typeof window === 'undefined' ? '/' : normalizePath(window.location.pathname)
+
+  if (pathname === HPD_ARREST_LOG_ROUTE) {
+    return <HpdArrestLogPage />
+  }
 
   if (pathname === VIM_PROTOCOL_ROUTE || pathname === VIM_PROTOCOL_LEGACY_ROUTE) {
     return <VimProtocolPage />

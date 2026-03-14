@@ -9,7 +9,9 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "check:deploy": "npm run lint && npm run build",
-    "sync:vim-protocol": "node scripts/sync-vim-protocol.mjs"
+    "sync:vim-protocol": "node scripts/sync-vim-protocol.mjs",
+    "sync:hpd-arrest-log": "node scripts/sync-hpd-arrest-log.mjs",
+    "sync:projects": "npm run sync:vim-protocol && npm run sync:hpd-arrest-log"
   },
   "engines": {
     "node": "^20.19.0 || >=22.12.0",
