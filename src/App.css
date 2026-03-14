@@ -26,12 +26,23 @@
 .vim-protocol-shell {
   opacity: 0;
   transform: scale(1.01);
-  transition: opacity 360ms ease, transform 520ms ease;
+  visibility: visible;
+  transition: opacity 360ms ease, transform 520ms ease, visibility 0s linear 360ms;
+}
+
+.vim-protocol-shell.is-prerender {
+  visibility: hidden;
+}
+
+.vim-protocol-shell.has-styles.is-staged {
+  visibility: visible;
 }
 
 .vim-protocol-shell.is-live {
   opacity: 1;
   transform: none;
+  visibility: visible;
+  transition-delay: 0s;
 }
 
 .vim-boot-screen {

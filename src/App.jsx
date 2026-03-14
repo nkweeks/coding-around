@@ -301,6 +301,7 @@ function CodingAroundMark() {
 function VimProtocolPage() {
   const [stylesReady, setStylesReady] = useState(false)
   const [gameReady, setGameReady] = useState(false)
+  const shellRef = useRef(null)
   const bootPhaseLabel = stylesReady ? 'Mission shell online' : 'Securing terminal skin'
   const bootPhaseDetail = stylesReady ? 'Injecting command runtime' : 'Warming neon grid'
 
@@ -335,6 +336,10 @@ function VimProtocolPage() {
 
     const createdLinks = []
     const createdScripts = []
+
+    if (shellRef.current && shellRef.current.innerHTML.trim() !== vimProtocolShell.trim()) {
+      shellRef.current.innerHTML = vimProtocolShell
+    }
 
     const nextFrame = () =>
       new Promise((resolve) => {
@@ -448,12 +453,10 @@ function VimProtocolPage() {
 
   return (
     <div className="vim-protocol-page">
-      {stylesReady ? (
-        <div
-          className={`vim-protocol-shell ${gameReady ? 'is-live' : 'is-staged'}`}
-          dangerouslySetInnerHTML={{ __html: vimProtocolShell }}
-        />
-      ) : null}
+      <div
+        ref={shellRef}
+        className={`vim-protocol-shell ${stylesReady ? 'has-styles' : 'is-prerender'} ${gameReady ? 'is-live' : 'is-staged'}`}
+      />
 
       <div className={`vim-boot-screen ${stylesReady ? 'is-styled' : ''} ${gameReady ? 'is-hidden' : ''}`}>
         <div className="vim-boot-panel">
