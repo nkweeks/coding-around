@@ -33,6 +33,17 @@ const VIM_PROTOCOL_SCRIPT_PATHS = [
   `${VIM_PROTOCOL_ASSET_BASE}/js/ui/skill-log.js`,
   `${VIM_PROTOCOL_ASSET_BASE}/js/ui/terminal.js`,
 ]
+const VIM_BOOT_FEED = [
+  'Linking BLADE mission profile',
+  'Restoring BYTE advisory channel',
+  'Calibrating command-history relay',
+  'Arming normal-mode traversal core',
+]
+const VIM_BOOT_STATUS_CARDS = [
+  { label: 'Operatives', value: 'BLADE // BYTE' },
+  { label: 'Target', value: 'NEXUS TERMINAL' },
+  { label: 'Mode', value: 'TRAINING SHARD' },
+]
 
 const projectTracks = [
   {
@@ -290,6 +301,8 @@ function CodingAroundMark() {
 function VimProtocolPage() {
   const [stylesReady, setStylesReady] = useState(false)
   const [gameReady, setGameReady] = useState(false)
+  const bootPhaseLabel = stylesReady ? 'Mission shell online' : 'Securing terminal skin'
+  const bootPhaseDetail = stylesReady ? 'Injecting command runtime' : 'Warming neon grid'
 
   useEffect(() => {
     document.title = 'VIM Protocol | Coding Around'
@@ -447,15 +460,50 @@ function VimProtocolPage() {
           <p className="vim-boot-kicker">Coding Around // launch sequence</p>
           <h1>VIM Protocol</h1>
           <p className="vim-boot-copy">
-            Loading the mission shell, command systems, and story runtime before the interface goes
-            live.
+            The crew is staging a live terminal run. Mission layers, command systems, and story
+            channels come online before operator control is released.
           </p>
+          <div className="vim-boot-chips" aria-hidden="true">
+            <span>OPERATIVE: BLADE</span>
+            <span>ADVISOR: BYTE</span>
+            <span>THREAT: NEXUS</span>
+          </div>
           <div className="vim-boot-progress" aria-hidden="true">
             <span className={stylesReady ? 'is-advanced' : ''} />
           </div>
           <div className="vim-boot-meta">
-            <span>{stylesReady ? 'Styles armed' : 'Styling systems'}</span>
-            <span>{stylesReady && !gameReady ? 'Booting mission systems' : 'Preparing shell'}</span>
+            <span>{bootPhaseLabel}</span>
+            <span>{bootPhaseDetail}</span>
+          </div>
+          <div className="vim-boot-grid">
+            <section className="vim-boot-card">
+              <div className="vim-boot-card-head">
+                <span className="vim-boot-card-dot" />
+                <p>MISSION FEED</p>
+              </div>
+              <div className="vim-boot-log">
+                {VIM_BOOT_FEED.map((item, index) => (
+                  <p key={item} style={{ '--boot-delay': `${index * 110}ms` }}>
+                    <span>&gt;</span>
+                    {item}
+                  </p>
+                ))}
+              </div>
+            </section>
+            <section className="vim-boot-card">
+              <div className="vim-boot-card-head">
+                <span className="vim-boot-card-dot" />
+                <p>MISSION STATUS</p>
+              </div>
+              <div className="vim-boot-status-grid">
+                {VIM_BOOT_STATUS_CARDS.map((item) => (
+                  <article key={item.label}>
+                    <span>{item.label}</span>
+                    <strong>{item.value}</strong>
+                  </article>
+                ))}
+              </div>
+            </section>
           </div>
         </div>
       </div>

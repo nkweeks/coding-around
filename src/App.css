@@ -48,6 +48,27 @@
   transition: opacity 280ms ease, visibility 280ms ease;
 }
 
+.vim-boot-screen::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.16;
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  background-size: 100% 4px, 4px 100%;
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+
+.vim-boot-screen.is-styled {
+  background:
+    radial-gradient(circle at 50% 32%, rgba(0, 245, 255, 0.16), transparent 26%),
+    radial-gradient(circle at 50% 36%, rgba(153, 92, 255, 0.24), transparent 36%),
+    radial-gradient(circle at 52% 60%, rgba(57, 255, 20, 0.1), transparent 30%),
+    linear-gradient(180deg, #04060e 0%, #12061f 44%, #050710 100%);
+}
+
 .vim-boot-screen.is-hidden {
   opacity: 0;
   visibility: hidden;
@@ -55,6 +76,7 @@
 }
 
 .vim-boot-panel {
+  position: relative;
   width: min(32rem, 100%);
   border-radius: 1.2rem;
   border: 1px solid rgba(170, 102, 255, 0.28);
@@ -66,6 +88,17 @@
     0 0 0 1px rgba(57, 255, 20, 0.06),
     0 1.8rem 4rem rgba(0, 0, 0, 0.52),
     0 0 3rem rgba(157, 78, 221, 0.14);
+  overflow: hidden;
+}
+
+.vim-boot-panel::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 100% 0%, rgba(57, 255, 20, 0.08), transparent 24%),
+    radial-gradient(circle at 0% 100%, rgba(0, 245, 255, 0.08), transparent 28%);
+  pointer-events: none;
 }
 
 .vim-boot-kicker {
@@ -92,6 +125,25 @@
   margin: 0.9rem 0 0;
   color: #cdb8ef;
   line-height: 1.55;
+}
+
+.vim-boot-chips {
+  margin-top: 0.95rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.48rem;
+}
+
+.vim-boot-chips span {
+  border-radius: 999px;
+  padding: 0.26rem 0.56rem;
+  border: 1px solid rgba(151, 64, 255, 0.24);
+  background: rgba(20, 8, 36, 0.86);
+  color: #8ef7d2;
+  font-family: var(--terminal-font);
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .vim-boot-progress {
@@ -127,6 +179,98 @@
   color: #8ef7d2;
 }
 
+.vim-boot-grid {
+  margin-top: 1rem;
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 0.8rem;
+}
+
+.vim-boot-card {
+  border-radius: 0.95rem;
+  border: 1px solid rgba(161, 97, 255, 0.18);
+  padding: 0.9rem;
+  background:
+    linear-gradient(160deg, rgba(11, 6, 24, 0.94), rgba(6, 10, 17, 0.96)),
+    radial-gradient(circle at 100% 0%, rgba(0, 245, 255, 0.08), transparent 42%);
+}
+
+.vim-boot-card-head {
+  display: flex;
+  align-items: center;
+  gap: 0.42rem;
+}
+
+.vim-boot-card-head p {
+  margin: 0;
+  font-family: var(--cyber-font);
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  color: #e5cbff;
+}
+
+.vim-boot-card-dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 999px;
+  background: #39ff14;
+  box-shadow: 0 0 0.9rem rgba(57, 255, 20, 0.68);
+}
+
+.vim-boot-log {
+  margin-top: 0.78rem;
+  display: grid;
+  gap: 0.45rem;
+}
+
+.vim-boot-log p {
+  margin: 0;
+  opacity: 0;
+  transform: translateY(0.2rem);
+  animation: vimBootLogReveal 520ms ease forwards;
+  animation-delay: var(--boot-delay, 0ms);
+  color: #cdb8ef;
+  font-family: var(--terminal-font);
+  font-size: 0.76rem;
+  line-height: 1.45;
+}
+
+.vim-boot-log p span {
+  margin-right: 0.48rem;
+  color: #39ff14;
+}
+
+.vim-boot-status-grid {
+  margin-top: 0.78rem;
+  display: grid;
+  gap: 0.58rem;
+}
+
+.vim-boot-status-grid article {
+  border-radius: 0.78rem;
+  border: 1px solid rgba(161, 97, 255, 0.14);
+  padding: 0.62rem 0.68rem;
+  background: rgba(17, 8, 32, 0.82);
+}
+
+.vim-boot-status-grid span {
+  display: block;
+  color: #8fa1c4;
+  font-family: var(--terminal-font);
+  font-size: 0.66rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.vim-boot-status-grid strong {
+  display: block;
+  margin-top: 0.24rem;
+  color: #f1ddff;
+  font-family: var(--cyber-font);
+  font-size: 0.82rem;
+  letter-spacing: 0.06em;
+}
+
 @keyframes vimBootPulse {
   from {
     transform: translateX(0);
@@ -136,6 +280,13 @@
   to {
     transform: translateX(6%);
     filter: brightness(1.14);
+  }
+}
+
+@keyframes vimBootLogReveal {
+  to {
+    opacity: 1;
+    transform: none;
   }
 }
 
@@ -2106,6 +2257,7 @@ footer {
   .track-grid,
   .spectrum-grid,
   .roadmap-grid,
+  .vim-boot-grid,
   .hpd-utility-grid,
   .hpd-hero,
   .hpd-content-grid,
@@ -2140,6 +2292,15 @@ footer {
   .project-page-header nav {
     justify-content: center;
     flex-wrap: wrap;
+  }
+
+  .vim-boot-panel {
+    padding: 1.15rem;
+  }
+
+  .vim-boot-meta {
+    flex-direction: column;
+    align-items: flex-start;
   }
 
   .hero-stage {
