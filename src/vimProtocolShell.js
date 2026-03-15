@@ -195,6 +195,7 @@ const vimProtocolShell = String.raw`
   
   
   
+  
 
   <!-- Initialize Game -->
 `

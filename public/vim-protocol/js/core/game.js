@@ -559,6 +559,30 @@ class Game {
             ${endingMessage}
           </div>
           ${endingQuote}
+          <div style="margin-top: 24px; text-align: center;">
+            <button id="cert-download-btn" style="
+              font-family: 'JetBrains Mono', monospace;
+              font-size: 12px;
+              font-weight: bold;
+              letter-spacing: 1px;
+              padding: 10px 22px;
+              background: transparent;
+              border: 1.5px solid #9d4edd;
+              color: #9d4edd;
+              cursor: pointer;
+              text-transform: uppercase;
+              border-radius: 2px;
+              transition: all 0.2s;
+            "
+            onmouseover="this.style.background='rgba(157,78,221,0.15)';this.style.color='#c77dff';this.style.borderColor='#c77dff';"
+            onmouseout="this.style.background='transparent';this.style.color='#9d4edd';this.style.borderColor='#9d4edd';"
+            onclick="(new CertificateGenerator('${path}')).generate();">
+              ⬇ DOWNLOAD CERTIFICATE [PDF]
+            </button>
+            <p style="margin-top: 8px; font-size: 10px; color: #5a189a; font-family: 'JetBrains Mono', monospace;">
+              3-page cyberpunk reference — all commands &amp; story
+            </p>
+          </div>
         </div>
       `,
       'NEW GAME',
