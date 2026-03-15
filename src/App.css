@@ -425,13 +425,13 @@ main {
 
 .hero-stage {
   position: relative;
-  min-height: 144vh;
+  min-height: 112vh;
 }
 
 .hero-pin {
   position: sticky;
   top: 4.9rem;
-  min-height: calc(86vh - 4.9rem);
+  min-height: calc(74vh - 4.9rem);
   display: grid;
   grid-template-columns: 1.02fr 0.98fr;
   align-items: center;
@@ -1952,7 +1952,7 @@ footer {
 
 @media (max-width: 1120px) {
   .hero-stage {
-    min-height: 132vh;
+    min-height: 108vh;
   }
 
   .hero-pin {
@@ -2024,7 +2024,7 @@ footer {
 
   .hero-stage {
     min-height: auto;
-    padding-top: 2.4rem;
+    padding-top: 1.5rem;
   }
 
   .hero-pin {
