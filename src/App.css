@@ -425,13 +425,13 @@ main {
 
 .hero-stage {
   position: relative;
-  min-height: 112vh;
+  min-height: 96vh;
 }
 
 .hero-pin {
   position: sticky;
   top: 4.9rem;
-  min-height: calc(74vh - 4.9rem);
+  min-height: calc(64vh - 4.9rem);
   display: grid;
   grid-template-columns: 1.02fr 0.98fr;
   align-items: center;
@@ -576,7 +576,7 @@ main {
 
 .hero-layers {
   position: relative;
-  min-height: 27rem;
+  min-height: 24rem;
 }
 
 .hero-mark,
@@ -683,7 +683,7 @@ main {
 }
 
 .projects {
-  margin-top: 2rem;
+  margin-top: 1rem;
 }
 
 .featured-project-card {
@@ -1952,7 +1952,7 @@ footer {
 
 @media (max-width: 1120px) {
   .hero-stage {
-    min-height: 108vh;
+    min-height: 94vh;
   }
 
   .hero-pin {
@@ -1962,7 +1962,7 @@ footer {
   }
 
   .hero-layers {
-    min-height: 30rem;
+    min-height: 26rem;
   }
 
   .hero-mark {
