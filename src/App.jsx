@@ -50,6 +50,7 @@ const featuredProject = {
   label: 'Featured Project',
   summary:
     'A modern photo-first community platform made for people named Ben, with clean posting, profile, and discovery flows.',
+  orchardSummary: 'A photo-first social product for people named Ben.',
   stack: ['React', 'Node.js', 'PostgreSQL', 'AWS S3'],
   status: 'Live now',
   url: 'https://benstagram.net',
@@ -60,6 +61,7 @@ const featuredSubproject = {
   label: 'Featured Subproject',
   summary:
     'A cyber training simulator built around a custom Vim engine, branching missions, and character-driven progression.',
+  orchardSummary: 'A command-driven training game built on a custom Vim engine.',
   stack: ['Vanilla JS', 'Custom Vim engine', 'Branching story', 'Terminal UI'],
   status: 'Playable now',
   source: 'Source project: hacking_game',
@@ -71,6 +73,7 @@ const featuredOpsProject = {
   label: 'Featured Operational Tool',
   summary:
     'A local-first intake and review tool that downloads arrest-log PDFs, parses structured records, and surfaces watch alerts through a fast operational dashboard.',
+  orchardSummary: 'A fast local review tool for arrest-log PDFs and alerts.',
   stack: ['Python', 'Flask', 'PDF parsing', 'Watch alerts'],
   status: 'Snapshot synced',
   source: 'Source project: hpd_arrest_log_viewer',
@@ -541,17 +544,17 @@ function PortfolioHome() {
   const farLift = heroTravel * -0.74 * depth
   const orbitScale = 1 + Math.min(0.26, motion.heroPhase * 0.24) * depth
   const year = new Date().getFullYear()
-  const heroKicker = isOrchardTheme ? 'Orchard mode' : 'Curated software portfolio'
-  const heroHeadingLead = isOrchardTheme ? 'A quieter frame.' : 'Three live builds.'
+  const heroKicker = isOrchardTheme ? 'Coding Around' : 'Curated software portfolio'
+  const heroHeadingLead = isOrchardTheme ? 'The work comes first.' : 'Three live builds.'
   const heroHeadingTail = isOrchardTheme
-    ? ' Same work, stripped back.'
+    ? ' Open any project.'
     : ' Three different kinds of software.'
   const heroDescription = isOrchardTheme
-    ? 'The same three projects stay in view, but the presentation shifts to a simpler product-first system with lighter surfaces and calmer motion.'
+    ? 'A simpler view of the same portfolio.'
     : 'Coding Around now leads with the work itself: one social product, one playable terminal game, and one operational data tool. Less filler, more software.'
-  const sectionTitle = isOrchardTheme ? 'Three projects. No noise.' : 'Three projects worth opening'
+  const sectionTitle = isOrchardTheme ? 'Open the three projects.' : 'Three projects worth opening'
   const sectionSummary = isOrchardTheme
-    ? 'This alternate presentation keeps the emphasis on clarity, pacing, and product detail while preserving the same routes.'
+    ? 'Each card leads directly to the real product.'
     : 'The portfolio home now stays narrow on purpose: three representative builds, each with a direct path into the real product.'
 
   useEffect(() => {
@@ -728,9 +731,9 @@ function PortfolioHome() {
             <div className="featured-project-copy">
               <p className="featured-project-kicker">{featuredProject.label}</p>
               <h3>{featuredProject.name}</h3>
-              <p>{featuredProject.summary}</p>
+              <p>{isOrchardTheme ? featuredProject.orchardSummary : featuredProject.summary}</p>
               <div className="featured-project-tags">
-                {featuredProject.stack.map((item) => (
+                {(isOrchardTheme ? featuredProject.stack.slice(0, 2) : featuredProject.stack).map((item) => (
                   <span key={item}>{item}</span>
                 ))}
               </div>
@@ -773,9 +776,9 @@ function PortfolioHome() {
                 {featuredSubproject.label}
               </p>
               <h3>{featuredSubproject.name}</h3>
-              <p>{featuredSubproject.summary}</p>
+              <p>{isOrchardTheme ? featuredSubproject.orchardSummary : featuredSubproject.summary}</p>
               <div className="featured-project-tags featured-project-tags-vim">
-                {featuredSubproject.stack.map((item) => (
+                {(isOrchardTheme ? featuredSubproject.stack.slice(0, 2) : featuredSubproject.stack).map((item) => (
                   <span key={item}>{item}</span>
                 ))}
               </div>
@@ -830,9 +833,9 @@ function PortfolioHome() {
                 {featuredOpsProject.label}
               </p>
               <h3>{featuredOpsProject.name}</h3>
-              <p>{featuredOpsProject.summary}</p>
+              <p>{isOrchardTheme ? featuredOpsProject.orchardSummary : featuredOpsProject.summary}</p>
               <div className="featured-project-tags featured-project-tags-hpd">
-                {featuredOpsProject.stack.map((item) => (
+                {(isOrchardTheme ? featuredOpsProject.stack.slice(0, 2) : featuredOpsProject.stack).map((item) => (
                   <span key={item}>{item}</span>
                 ))}
               </div>
