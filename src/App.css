@@ -401,6 +401,12 @@
   box-shadow: 0 0 0.9rem rgba(157, 173, 255, 0.72);
 }
 
+.top-bar-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
 .top-bar nav {
   display: flex;
   align-items: center;
@@ -417,6 +423,47 @@
 
 .top-bar nav a:hover {
   color: var(--text-main);
+}
+
+.orange-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.9rem;
+  height: 2.9rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 181, 71, 0.28);
+  padding: 0;
+  cursor: pointer;
+  background:
+    radial-gradient(circle at 35% 28%, rgba(255, 224, 160, 0.26), transparent 48%),
+    linear-gradient(180deg, rgba(33, 23, 12, 0.88), rgba(12, 11, 8, 0.94));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 232, 192, 0.08),
+    0 0.8rem 1.8rem rgba(0, 0, 0, 0.22);
+  transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+}
+
+.orange-toggle:hover {
+  transform: translateY(-1px);
+  border-color: rgba(255, 183, 92, 0.52);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 232, 192, 0.12),
+    0 1rem 2rem rgba(0, 0, 0, 0.24);
+}
+
+.orange-toggle.is-active {
+  border-color: rgba(255, 147, 55, 0.54);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 232, 192, 0.14),
+    0 0 0 0.18rem rgba(255, 170, 71, 0.16),
+    0 1rem 2rem rgba(0, 0, 0, 0.18);
+}
+
+.orange-toggle-icon {
+  width: 1.62rem;
+  height: 1.62rem;
+  display: block;
 }
 
 main {
@@ -1950,6 +1997,273 @@ footer {
   letter-spacing: 0.07em;
 }
 
+.app-shell.theme-orchard {
+  color: #151821;
+}
+
+.app-shell.theme-orchard .parallax-scene {
+  background:
+    radial-gradient(circle at 50% 8%, rgba(255, 183, 94, 0.18), transparent 24%),
+    radial-gradient(circle at 16% 18%, rgba(255, 255, 255, 0.8), transparent 34%),
+    radial-gradient(circle at 84% 12%, rgba(220, 230, 252, 0.86), transparent 34%),
+    linear-gradient(180deg, #fafafc 0%, #f2f4f7 52%, #eaedf2 100%);
+}
+
+.app-shell.theme-orchard .scene-stars {
+  opacity: 0.08;
+  background-image:
+    radial-gradient(circle at 14% 24%, rgba(17, 24, 39, 0.34) 0.06rem, transparent 0.08rem),
+    radial-gradient(circle at 82% 28%, rgba(17, 24, 39, 0.24) 0.05rem, transparent 0.08rem),
+    radial-gradient(circle at 30% 70%, rgba(17, 24, 39, 0.18) 0.05rem, transparent 0.08rem),
+    radial-gradient(circle at 71% 66%, rgba(17, 24, 39, 0.22) 0.06rem, transparent 0.08rem);
+}
+
+.app-shell.theme-orchard .scene-grid {
+  opacity: 0.1;
+  background-image:
+    linear-gradient(rgba(17, 24, 39, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(17, 24, 39, 0.06) 1px, transparent 1px);
+  mask-image: radial-gradient(circle at 50% 20%, black 20%, transparent 72%);
+}
+
+.app-shell.theme-orchard .scene-rays {
+  opacity: 0.16;
+  background:
+    conic-gradient(
+      from 110deg at 50% 46%,
+      transparent 0deg,
+      rgba(255, 175, 81, 0.14) 36deg,
+      transparent 88deg,
+      rgba(166, 186, 229, 0.12) 150deg,
+      transparent 210deg,
+      rgba(255, 151, 63, 0.1) 284deg,
+      transparent 360deg
+    );
+  filter: blur(56px);
+}
+
+.app-shell.theme-orchard .scene-orbit {
+  opacity: 0.18;
+  background:
+    radial-gradient(circle at 74% 15%, rgba(255, 166, 78, 0.18), transparent 40%),
+    radial-gradient(circle at 16% 76%, rgba(163, 187, 235, 0.14), transparent 42%),
+    radial-gradient(circle at 54% 52%, rgba(255, 208, 143, 0.2), transparent 44%);
+  filter: blur(18px);
+}
+
+.app-shell.theme-orchard .scene-noise {
+  opacity: 0.03;
+}
+
+.app-shell.theme-orchard .top-bar {
+  background: rgba(255, 255, 255, 0.72);
+  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+  box-shadow: 0 0.9rem 2rem rgba(15, 23, 42, 0.04);
+}
+
+.app-shell.theme-orchard .top-brand,
+.app-shell.theme-orchard .top-bar nav a {
+  color: #2d3442;
+}
+
+.app-shell.theme-orchard .top-bar nav a:hover {
+  color: #111827;
+}
+
+.app-shell.theme-orchard .brand-dot {
+  background: linear-gradient(135deg, #ffd37f, #ff8f3b);
+  box-shadow: 0 0 0.9rem rgba(255, 162, 77, 0.28);
+}
+
+.app-shell.theme-orchard .orange-toggle {
+  border-color: rgba(255, 157, 73, 0.22);
+  background:
+    radial-gradient(circle at 35% 28%, rgba(255, 235, 197, 0.88), transparent 48%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(243, 245, 249, 0.96));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.92),
+    0 0.8rem 1.8rem rgba(15, 23, 42, 0.08);
+}
+
+.app-shell.theme-orchard .hero-ghost {
+  color: rgba(17, 24, 39, 0.04);
+}
+
+.app-shell.theme-orchard .kicker,
+.app-shell.theme-orchard .section-summary,
+.app-shell.theme-orchard .mark-subtitle,
+.app-shell.theme-orchard .depth-card p,
+.app-shell.theme-orchard footer {
+  color: #677285;
+}
+
+.app-shell.theme-orchard .hero-copy h1,
+.app-shell.theme-orchard .section-head h2,
+.app-shell.theme-orchard .featured-project-copy h3,
+.app-shell.theme-orchard .mark-title,
+.app-shell.theme-orchard .depth-card span {
+  color: #11131a;
+}
+
+.app-shell.theme-orchard .hero-copy h1 span {
+  color: #11131a;
+  text-shadow: none;
+}
+
+.app-shell.theme-orchard .hero-description,
+.app-shell.theme-orchard .featured-project-copy p {
+  color: #5e697c;
+}
+
+.app-shell.theme-orchard .hero-project-strip a,
+.app-shell.theme-orchard .btn-outline,
+.app-shell.theme-orchard .btn-quiet {
+  color: #111827;
+  border-color: rgba(17, 24, 39, 0.1);
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow: 0 1rem 2rem rgba(15, 23, 42, 0.05);
+}
+
+.app-shell.theme-orchard .hero-mark,
+.app-shell.theme-orchard .depth-card,
+.app-shell.theme-orchard .featured-project-card {
+  border: 1px solid rgba(17, 24, 39, 0.08);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(243, 245, 248, 0.96));
+  box-shadow: 0 1.6rem 3.4rem rgba(15, 23, 42, 0.08);
+}
+
+.app-shell.theme-orchard .featured-project-card-vim {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(239, 246, 243, 0.97));
+}
+
+.app-shell.theme-orchard .featured-project-card-hpd {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(241, 245, 248, 0.97));
+}
+
+.app-shell.theme-orchard .featured-project-kicker,
+.app-shell.theme-orchard .featured-project-kicker-vim,
+.app-shell.theme-orchard .featured-project-kicker-hpd {
+  color: #7b8597;
+}
+
+.app-shell.theme-orchard .featured-project-tags span {
+  border-color: rgba(17, 24, 39, 0.08);
+  color: #2c3442;
+  background: rgba(250, 250, 252, 0.96);
+}
+
+.app-shell.theme-orchard .featured-project-actions span {
+  color: #6f3f00;
+  background: linear-gradient(135deg, #ffe2a9, #ffb56d);
+}
+
+.app-shell.theme-orchard .featured-project-actions-vim span {
+  color: #12493f;
+  background: linear-gradient(135deg, #d8fff1, #aaf3d6);
+}
+
+.app-shell.theme-orchard .featured-project-actions-hpd span {
+  color: #123648;
+  background: linear-gradient(135deg, #d8efff, #ffd5a7);
+}
+
+.app-shell.theme-orchard .featured-project-actions a,
+.app-shell.theme-orchard .featured-project-actions-vim a,
+.app-shell.theme-orchard .featured-project-actions-hpd a {
+  border-color: rgba(17, 24, 39, 0.12);
+  color: #111827;
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.app-shell.theme-orchard .featured-project-actions-vim strong,
+.app-shell.theme-orchard .featured-project-actions-hpd strong {
+  color: #677285;
+}
+
+.app-shell.theme-orchard .featured-project-visual {
+  border-left: 1px solid rgba(17, 24, 39, 0.08);
+  background: linear-gradient(180deg, rgba(247, 248, 251, 0.94), rgba(236, 239, 244, 0.98));
+}
+
+.app-shell.theme-orchard .featured-project-visual-vim {
+  background: linear-gradient(180deg, rgba(243, 247, 246, 0.96), rgba(232, 238, 236, 0.98));
+}
+
+.app-shell.theme-orchard .featured-project-visual-hpd {
+  background: linear-gradient(180deg, rgba(244, 247, 250, 0.96), rgba(234, 239, 244, 0.98));
+}
+
+.app-shell.theme-orchard .ben-preview-shell {
+  border-color: rgba(17, 24, 39, 0.08);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(243, 245, 249, 0.98));
+  box-shadow: 0 1.4rem 2.8rem rgba(15, 23, 42, 0.08);
+}
+
+.app-shell.theme-orchard .ben-preview-topbar p,
+.app-shell.theme-orchard .hpd-preview-topbar p {
+  color: #2d3442;
+}
+
+.app-shell.theme-orchard .ben-post-card {
+  border-color: rgba(17, 24, 39, 0.08);
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 1.2rem 2.4rem rgba(15, 23, 42, 0.08);
+}
+
+.app-shell.theme-orchard .ben-post-card header p {
+  color: #15202b;
+}
+
+.app-shell.theme-orchard .ben-post-card footer span {
+  background: rgba(17, 24, 39, 0.24);
+}
+
+.app-shell.theme-orchard .hpd-preview-shell {
+  border-color: rgba(17, 24, 39, 0.08);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(242, 245, 249, 0.98));
+  box-shadow: 0 1.4rem 2.8rem rgba(15, 23, 42, 0.08);
+}
+
+.app-shell.theme-orchard .hpd-preview-topbar {
+  background: rgba(248, 249, 252, 0.94);
+  border-bottom-color: rgba(17, 24, 39, 0.08);
+}
+
+.app-shell.theme-orchard .hpd-preview-chip,
+.app-shell.theme-orchard .hpd-preview-toolbar span,
+.app-shell.theme-orchard .hpd-preview-metrics article,
+.app-shell.theme-orchard .hpd-preview-table {
+  border-color: rgba(17, 24, 39, 0.08);
+  background: rgba(255, 255, 255, 0.92);
+}
+
+.app-shell.theme-orchard .hpd-preview-chip {
+  color: #4d617e;
+}
+
+.app-shell.theme-orchard .hpd-preview-toolbar span,
+.app-shell.theme-orchard .hpd-preview-row span,
+.app-shell.theme-orchard .hpd-preview-metrics span {
+  color: #677285;
+}
+
+.app-shell.theme-orchard .hpd-preview-metrics strong,
+.app-shell.theme-orchard .hpd-preview-row-head span {
+  color: #1f2937;
+}
+
+.app-shell.theme-orchard .hpd-preview-row {
+  border-top-color: rgba(17, 24, 39, 0.06);
+}
+
+.app-shell.theme-orchard .hpd-preview-row-head {
+  background: rgba(244, 246, 249, 0.96);
+}
+
+.app-shell.theme-orchard footer {
+  border-top: 1px solid rgba(17, 24, 39, 0.08);
+}
+
 @media (max-width: 1120px) {
   .hero-stage {
     min-height: 94vh;
@@ -2002,6 +2316,7 @@ footer {
     justify-content: center;
   }
 
+  .top-bar-controls,
   .top-bar nav {
     justify-content: center;
     flex-wrap: wrap;

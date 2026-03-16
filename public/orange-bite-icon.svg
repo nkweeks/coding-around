@@ -1,49 +1,31 @@
-<svg width="256" height="256" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg">
+<svg width="96" height="96" viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <radialGradient id="orangeGlow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(126 136) rotate(90) scale(120)">
-      <stop offset="0" stop-color="#FFB547"/>
-      <stop offset="0.58" stop-color="#FF8A1D"/>
-      <stop offset="1" stop-color="#E15A00"/>
+    <radialGradient id="orangeBody" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(36 28) rotate(49) scale(42.5)">
+      <stop offset="0" stop-color="#FFD27D"/>
+      <stop offset="0.58" stop-color="#FF9A2F"/>
+      <stop offset="1" stop-color="#EF6C00"/>
     </radialGradient>
-    <radialGradient id="orangeHighlight" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(98 92) rotate(57) scale(88)">
-      <stop offset="0" stop-color="#FFF0B7" stop-opacity="0.92"/>
-      <stop offset="0.38" stop-color="#FFD36E" stop-opacity="0.58"/>
-      <stop offset="1" stop-color="#FFD36E" stop-opacity="0"/>
-    </radialGradient>
-    <linearGradient id="orangeRind" x1="57" y1="50" x2="190" y2="212" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#FFC84F"/>
-      <stop offset="1" stop-color="#FF7A00"/>
+    <linearGradient id="orangeLeaf" x1="55" y1="10" x2="83" y2="36" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#8EF1A8"/>
+      <stop offset="1" stop-color="#29B46F"/>
     </linearGradient>
-    <linearGradient id="leafFill" x1="140" y1="35" x2="191" y2="76" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#8BFFAF"/>
-      <stop offset="1" stop-color="#2CCB7E"/>
-    </linearGradient>
-    <filter id="shadow" x="24" y="18" width="205" height="208" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
-      <feDropShadow dx="0" dy="22" stdDeviation="18" flood-color="#090B17" flood-opacity="0.26"/>
-    </filter>
-    <mask id="biteMask">
-      <rect width="256" height="256" fill="white"/>
-      <circle cx="202" cy="102" r="30" fill="black"/>
-      <circle cx="219" cy="128" r="23" fill="black"/>
-      <circle cx="198" cy="151" r="19" fill="black"/>
+    <mask id="orangeBiteMask">
+      <rect width="96" height="96" fill="white"/>
+      <circle cx="74" cy="35" r="10" fill="black"/>
+      <circle cx="83" cy="48" r="8" fill="black"/>
+      <circle cx="73" cy="59" r="6.5" fill="black"/>
     </mask>
   </defs>
 
-  <g filter="url(#shadow)">
-    <path d="M122 52C122 40.954 130.954 32 142 32C153.046 32 162 40.954 162 52V58H122V52Z" fill="#3D2A16"/>
-    <path d="M157 36C173.992 36 189.205 43.61 198 55.608C188.312 56.669 176.693 53.301 167.544 46.147C163.016 42.607 159.508 39.05 157 36Z" fill="url(#leafFill)"/>
-    <path d="M177.5 50.5C170.662 51.787 163.408 55.727 157 61.5" stroke="#D6FFE0" stroke-opacity="0.68" stroke-width="4" stroke-linecap="round"/>
+  <path d="M46 14C46 8.477 50.477 4 56 4C61.523 4 66 8.477 66 14V18H46V14Z" fill="#4F3112"/>
+  <path d="M61 10C69.6 10 77.7 13.8 83 20.3C76.1 21.1 68.7 18.8 62.9 13.9A33.6 33.6 0 0 1 61 10Z" fill="url(#orangeLeaf)"/>
+  <path d="M68.5 20C64.1 20.8 59.7 23.2 56 26.8" stroke="#DDFFE8" stroke-opacity="0.72" stroke-width="2.4" stroke-linecap="round"/>
 
-    <g mask="url(#biteMask)">
-      <circle cx="128" cy="132" r="82" fill="url(#orangeGlow)"/>
-      <circle cx="128" cy="132" r="77" stroke="url(#orangeRind)" stroke-width="10"/>
-      <circle cx="128" cy="132" r="82" fill="url(#orangeHighlight)"/>
-      <path d="M92 95C106.61 84.8795 127.334 81.0433 146.746 85.0376" stroke="#FFE7A2" stroke-opacity="0.7" stroke-width="8" stroke-linecap="round"/>
-      <path d="M84 126C108.842 112.506 142.351 111.387 168.035 123.18" stroke="#FFF4CF" stroke-opacity="0.34" stroke-width="7" stroke-linecap="round"/>
-      <path d="M88 165C105.355 175.309 127.55 178.396 147.24 173.457" stroke="#F96400" stroke-opacity="0.32" stroke-width="8" stroke-linecap="round"/>
-      <circle cx="202" cy="102" r="29" stroke="#FFF2CF" stroke-opacity="0.48" stroke-width="3"/>
-      <circle cx="219" cy="128" r="22" stroke="#FFF2CF" stroke-opacity="0.42" stroke-width="3"/>
-      <circle cx="198" cy="151" r="18" stroke="#FFF2CF" stroke-opacity="0.36" stroke-width="3"/>
-    </g>
+  <g mask="url(#orangeBiteMask)">
+    <circle cx="48" cy="50" r="28" fill="url(#orangeBody)"/>
+    <circle cx="48" cy="50" r="25.5" stroke="#FFC15E" stroke-width="3.8"/>
+    <path d="M35 38C40.4 34.3 48.1 32.9 55.2 34.4" stroke="#FFF1BF" stroke-opacity="0.8" stroke-width="3" stroke-linecap="round"/>
+    <path d="M31.5 48.5C40.6 43.7 53.1 43.5 62.5 48.5" stroke="#FFF7D7" stroke-opacity="0.38" stroke-width="2.6" stroke-linecap="round"/>
+    <path d="M34 61C39.8 64.8 47.7 66.2 54.8 64.7" stroke="#D85800" stroke-opacity="0.26" stroke-width="3" stroke-linecap="round"/>
   </g>
 </svg>

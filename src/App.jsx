@@ -78,6 +78,7 @@ const featuredOpsProject = {
 }
 
 const featuredCollection = [featuredProject, featuredSubproject, featuredOpsProject]
+const HOME_THEME_STORAGE_KEY = 'coding-around-home-theme'
 
 function normalizePath(pathname) {
   if (!pathname || pathname === '/') {
@@ -148,6 +149,74 @@ function CodingAroundMark() {
       />
       <circle cx="161" cy="84" r="5" fill="#90f3ff" />
       <circle cx="64" cy="156" r="5.5" fill="#9da8ff" />
+    </svg>
+  )
+}
+
+function OrangeBiteMark({ className = '' }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 96 96"
+      role="img"
+      aria-label="Orange with a bite taken out"
+    >
+      <defs>
+        <radialGradient id="orangeBody" cx="36%" cy="30%" r="70%">
+          <stop offset="0%" stopColor="#ffd27d" />
+          <stop offset="58%" stopColor="#ff9a2f" />
+          <stop offset="100%" stopColor="#ef6c00" />
+        </radialGradient>
+        <linearGradient id="orangeLeaf" x1="28%" y1="18%" x2="86%" y2="88%">
+          <stop offset="0%" stopColor="#8ef1a8" />
+          <stop offset="100%" stopColor="#29b46f" />
+        </linearGradient>
+        <mask id="orangeBiteMask">
+          <rect width="96" height="96" fill="#fff" />
+          <circle cx="74" cy="35" r="10" fill="#000" />
+          <circle cx="83" cy="48" r="8" fill="#000" />
+          <circle cx="73" cy="59" r="6.5" fill="#000" />
+        </mask>
+      </defs>
+
+      <path d="M46 14c0-5.5 4.5-10 10-10s10 4.5 10 10v4H46v-4Z" fill="#4f3112" />
+      <path
+        d="M61 10c8.6 0 16.7 3.8 22 10.3-6.9.8-14.3-1.5-20.1-6.4A33.6 33.6 0 0 1 61 10Z"
+        fill="url(#orangeLeaf)"
+      />
+      <path
+        d="M68.5 20c-4.4.8-8.8 3.2-12.5 6.8"
+        stroke="#ddffe8"
+        strokeOpacity="0.72"
+        strokeWidth="2.4"
+        strokeLinecap="round"
+      />
+
+      <g mask="url(#orangeBiteMask)">
+        <circle cx="48" cy="50" r="28" fill="url(#orangeBody)" />
+        <circle cx="48" cy="50" r="25.5" fill="none" stroke="#ffc15e" strokeWidth="3.8" />
+        <path
+          d="M35 38c5.4-3.7 13.1-5.1 20.2-3.6"
+          stroke="#fff1bf"
+          strokeOpacity="0.8"
+          strokeWidth="3"
+          strokeLinecap="round"
+        />
+        <path
+          d="M31.5 48.5c9.1-4.8 21.6-5 31 0"
+          stroke="#fff7d7"
+          strokeOpacity="0.38"
+          strokeWidth="2.6"
+          strokeLinecap="round"
+        />
+        <path
+          d="M34 61c5.8 3.8 13.7 5.2 20.8 3.7"
+          stroke="#d85800"
+          strokeOpacity="0.26"
+          strokeWidth="3"
+          strokeLinecap="round"
+        />
+      </g>
     </svg>
   )
 }
@@ -369,6 +438,15 @@ function VimProtocolPage() {
 }
 
 function PortfolioHome() {
+  const [themeMode, setThemeMode] = useState(() => {
+    if (typeof window === 'undefined') {
+      return 'cinematic'
+    }
+
+    return window.localStorage.getItem(HOME_THEME_STORAGE_KEY) === 'orchard'
+      ? 'orchard'
+      : 'cinematic'
+  })
   const [motion, setMotion] = useState({
     scrollY: 0,
     progress: 0,
@@ -382,6 +460,7 @@ function PortfolioHome() {
   const frameRef = useRef(0)
   const pointerRef = useRef({ x: 0, y: 0 })
   const latestRef = useRef({ ...motion })
+  const isOrchardTheme = themeMode === 'orchard'
 
   useEffect(() => {
     const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
@@ -455,20 +534,41 @@ function PortfolioHome() {
     }
   }, [])
 
-  const depth = reducedMotion ? 0.45 : 1
+  const depth = (reducedMotion ? 0.45 : 1) * (isOrchardTheme ? 0.22 : 1)
   const heroTravel = Math.min(motion.heroScroll, motion.viewportH * 1.05)
   const nearLift = heroTravel * -0.32 * depth
   const midLift = heroTravel * -0.54 * depth
   const farLift = heroTravel * -0.74 * depth
   const orbitScale = 1 + Math.min(0.26, motion.heroPhase * 0.24) * depth
   const year = new Date().getFullYear()
+  const heroKicker = isOrchardTheme ? 'Orchard mode' : 'Curated software portfolio'
+  const heroHeadingLead = isOrchardTheme ? 'A quieter frame.' : 'Three live builds.'
+  const heroHeadingTail = isOrchardTheme
+    ? ' Same work, stripped back.'
+    : ' Three different kinds of software.'
+  const heroDescription = isOrchardTheme
+    ? 'The same three projects stay in view, but the presentation shifts to a simpler product-first system with lighter surfaces and calmer motion.'
+    : 'Coding Around now leads with the work itself: one social product, one playable terminal game, and one operational data tool. Less filler, more software.'
+  const sectionTitle = isOrchardTheme ? 'Three projects. No noise.' : 'Three projects worth opening'
+  const sectionSummary = isOrchardTheme
+    ? 'This alternate presentation keeps the emphasis on clarity, pacing, and product detail while preserving the same routes.'
+    : 'The portfolio home now stays narrow on purpose: three representative builds, each with a direct path into the real product.'
 
   useEffect(() => {
     document.title = 'Coding Around | Development Portfolio'
   }, [])
 
+  useEffect(() => {
+    document.body.classList.toggle('body-orchard', isOrchardTheme)
+    window.localStorage.setItem(HOME_THEME_STORAGE_KEY, themeMode)
+
+    return () => {
+      document.body.classList.remove('body-orchard')
+    }
+  }, [isOrchardTheme, themeMode])
+
   return (
-    <div className="app-shell">
+    <div className={`app-shell ${isOrchardTheme ? 'theme-orchard' : ''}`}>
       <div className="parallax-scene" aria-hidden="true">
         <div
           className="scene-layer scene-stars"
@@ -502,15 +602,27 @@ function PortfolioHome() {
           <span className="brand-dot" />
           coding around
         </a>
-        <nav>
-          <a href="#projects">Projects</a>
-          <a href={featuredProject.url} target="_blank" rel="noreferrer">
-            Benstagram
-          </a>
-          <a href={featuredOpsProject.url}>HPD Log</a>
-          <a href={featuredSubproject.url}>VIM Protocol</a>
-          <a href="mailto:hello@codingaround.dev">Contact</a>
-        </nav>
+        <div className="top-bar-controls">
+          <nav>
+            <a href="#projects">Projects</a>
+            <a href={featuredProject.url} target="_blank" rel="noreferrer">
+              Benstagram
+            </a>
+            <a href={featuredOpsProject.url}>HPD Log</a>
+            <a href={featuredSubproject.url}>VIM Protocol</a>
+            <a href="mailto:hello@codingaround.dev">Contact</a>
+          </nav>
+          <button
+            className={`orange-toggle ${isOrchardTheme ? 'is-active' : ''}`}
+            type="button"
+            aria-label={isOrchardTheme ? 'Return to cinematic style' : 'Switch to orchard style'}
+            aria-pressed={isOrchardTheme}
+            onClick={() => setThemeMode(isOrchardTheme ? 'cinematic' : 'orchard')}
+            title={isOrchardTheme ? 'Return to cinematic style' : 'Switch to orchard style'}
+          >
+            <OrangeBiteMark className="orange-toggle-icon" />
+          </button>
+        </div>
       </header>
 
       <main>
@@ -532,15 +644,12 @@ function PortfolioHome() {
                 transform: `translate3d(0, ${nearLift}px, 0) scale(${1 - Math.min(0.05, motion.heroPhase * 0.035) * depth})`,
               }}
             >
-              <p className="kicker">Curated software portfolio</p>
+              <p className="kicker">{heroKicker}</p>
               <h1>
-                Three live builds.
-                <span> Three different kinds of software.</span>
+                {heroHeadingLead}
+                <span>{heroHeadingTail}</span>
               </h1>
-              <p className="hero-description">
-                Coding Around now leads with the work itself: one social product, one playable
-                terminal game, and one operational data tool. Less filler, more software.
-              </p>
+              <p className="hero-description">{heroDescription}</p>
               <div className="hero-project-strip" aria-label="Featured project links">
                 {featuredCollection.map((project) => (
                   <a
@@ -555,10 +664,10 @@ function PortfolioHome() {
               </div>
               <div className="hero-actions">
                 <a className="btn btn-outline" href="#projects">
-                  View projects
+                  {isOrchardTheme ? 'Browse work' : 'View projects'}
                 </a>
                 <a className="btn btn-quiet" href="mailto:hello@codingaround.dev">
-                  Email hello@codingaround.dev
+                  {isOrchardTheme ? 'Start a conversation' : 'Email hello@codingaround.dev'}
                 </a>
               </div>
             </div>
@@ -611,11 +720,8 @@ function PortfolioHome() {
         <section className="projects" id="projects">
           <div className="section-head">
             <p className="kicker">Selected work</p>
-            <h2>Three projects worth opening</h2>
-            <p className="section-summary">
-              The portfolio home now stays narrow on purpose: three representative builds, each
-              with a direct path into the real product.
-            </p>
+            <h2>{sectionTitle}</h2>
+            <p className="section-summary">{sectionSummary}</p>
           </div>
 
           <article className="featured-project-card">
