@@ -32,6 +32,7 @@ const VIM_PROTOCOL_SCRIPT_PATHS = [
   `${VIM_PROTOCOL_ASSET_BASE}/js/ui/hud.js`,
   `${VIM_PROTOCOL_ASSET_BASE}/js/ui/skill-log.js`,
   `${VIM_PROTOCOL_ASSET_BASE}/js/ui/terminal.js`,
+  'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js',
   `${VIM_PROTOCOL_ASSET_BASE}/js/ui/certificate-generator.js`,
 ]
 const VIM_BOOT_FEED = [
