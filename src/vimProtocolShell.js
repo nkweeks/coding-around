@@ -69,6 +69,10 @@ const vimProtocolShell = String.raw`
         <span class="glitch" data-text="OPERATION: FIRST CONTACT">OPERATION: FIRST CONTACT</span>
       </div>
       <div class="level-info">
+        <div class="mobile-panel-toggles">
+          <button class="mob-panel-btn" id="mob-mission-btn">MISSION</button>
+          <button class="mob-panel-btn" id="mob-log-btn">LOG</button>
+        </div>
         <span id="level-number">LEVEL 01</span>
         <span class="separator">//</span>
         <span id="timer">00:00</span>
@@ -168,6 +172,56 @@ const vimProtocolShell = String.raw`
 
   </div>
 
+  <!-- Mobile panel backdrop -->
+  <div id="mobile-backdrop" class="mobile-backdrop"></div>
+
+  <!-- Mobile virtual keyboard (mobile only, hidden on desktop via CSS) -->
+  <div id="mobile-vim-controls" class="mobile-vim-controls">
+    <div id="mobile-keypad" class="mobile-keypad hidden">
+      <div class="vk-row">
+        <button class="vk-key vk-esc-key" data-key="Escape">ESC</button>
+        <button class="vk-key" data-key="h">h</button>
+        <button class="vk-key" data-key="j">j</button>
+        <button class="vk-key" data-key="k">k</button>
+        <button class="vk-key" data-key="l">l</button>
+        <button class="vk-key" data-key="w">w</button>
+        <button class="vk-key" data-key="b">b</button>
+        <button class="vk-key" data-key="e">e</button>
+      </div>
+      <div class="vk-row">
+        <button class="vk-key" data-key="i">i</button>
+        <button class="vk-key" data-key="a">a</button>
+        <button class="vk-key" data-key="o">o</button>
+        <button class="vk-key" data-key="A">A</button>
+        <button class="vk-key" data-key="x">x</button>
+        <button class="vk-key" data-key="u">u</button>
+        <button class="vk-key" data-key="d">d</button>
+        <button class="vk-key" data-key="y">y</button>
+        <button class="vk-key" data-key="p">p</button>
+      </div>
+      <div class="vk-row">
+        <button class="vk-key" data-key="0">0</button>
+        <button class="vk-key" data-key="$">$</button>
+        <button class="vk-key" data-key="G">G</button>
+        <button class="vk-key" data-key="g">g</button>
+        <button class="vk-key" data-key="%">%</button>
+        <button class="vk-key" data-key="v">v</button>
+        <button class="vk-key" data-key="c">c</button>
+        <button class="vk-key" data-key="J">J</button>
+        <button class="vk-key" data-key=">">&gt;&gt;</button>
+      </div>
+    </div>
+    <div class="vk-toolbar">
+      <button class="vk-esc-pill" id="vk-esc-pill">ESC</button>
+      <button id="vk-toggle" class="vk-toggle">⌨ KEYS</button>
+    </div>
+  </div>
+
+  <!-- Hidden input: captures soft keyboard text in INSERT mode on mobile -->
+  <input id="mobile-insert-input" type="text" autocomplete="off" autocorrect="off"
+    autocapitalize="none" spellcheck="false"
+    style="position:fixed;opacity:0;pointer-events:none;width:1px;height:1px;top:-9999px;left:-9999px;">
+
   <!-- Background Effects -->
   <div class="bg-grid"></div>
   <div class="scanline"></div>
@@ -198,6 +252,12 @@ const vimProtocolShell = String.raw`
   
   
   
+  
+
+  <!-- Mobile panel drawer controls -->
+  
+
+  <!-- Mobile virtual keyboard controls -->
   
 
   <!-- Initialize Game -->

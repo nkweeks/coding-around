@@ -13,6 +13,7 @@
   <link rel="stylesheet" href="css/vim-editor.css">
   <link rel="stylesheet" href="css/ui-components.css">
   <link rel="stylesheet" href="css/characters.css">
+  <link rel="stylesheet" href="css/mobile.css">
 
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -94,6 +95,10 @@
         <span class="glitch" data-text="OPERATION: FIRST CONTACT">OPERATION: FIRST CONTACT</span>
       </div>
       <div class="level-info">
+        <div class="mobile-panel-toggles">
+          <button class="mob-panel-btn" id="mob-mission-btn">MISSION</button>
+          <button class="mob-panel-btn" id="mob-log-btn">LOG</button>
+        </div>
         <span id="level-number">LEVEL 01</span>
         <span class="separator">//</span>
         <span id="timer">00:00</span>
@@ -193,6 +198,56 @@
 
   </div>
 
+  <!-- Mobile panel backdrop -->
+  <div id="mobile-backdrop" class="mobile-backdrop"></div>
+
+  <!-- Mobile virtual keyboard (mobile only, hidden on desktop via CSS) -->
+  <div id="mobile-vim-controls" class="mobile-vim-controls">
+    <div id="mobile-keypad" class="mobile-keypad hidden">
+      <div class="vk-row">
+        <button class="vk-key vk-esc-key" data-key="Escape">ESC</button>
+        <button class="vk-key" data-key="h">h</button>
+        <button class="vk-key" data-key="j">j</button>
+        <button class="vk-key" data-key="k">k</button>
+        <button class="vk-key" data-key="l">l</button>
+        <button class="vk-key" data-key="w">w</button>
+        <button class="vk-key" data-key="b">b</button>
+        <button class="vk-key" data-key="e">e</button>
+      </div>
+      <div class="vk-row">
+        <button class="vk-key" data-key="i">i</button>
+        <button class="vk-key" data-key="a">a</button>
+        <button class="vk-key" data-key="o">o</button>
+        <button class="vk-key" data-key="A">A</button>
+        <button class="vk-key" data-key="x">x</button>
+        <button class="vk-key" data-key="u">u</button>
+        <button class="vk-key" data-key="d">d</button>
+        <button class="vk-key" data-key="y">y</button>
+        <button class="vk-key" data-key="p">p</button>
+      </div>
+      <div class="vk-row">
+        <button class="vk-key" data-key="0">0</button>
+        <button class="vk-key" data-key="$">$</button>
+        <button class="vk-key" data-key="G">G</button>
+        <button class="vk-key" data-key="g">g</button>
+        <button class="vk-key" data-key="%">%</button>
+        <button class="vk-key" data-key="v">v</button>
+        <button class="vk-key" data-key="c">c</button>
+        <button class="vk-key" data-key="J">J</button>
+        <button class="vk-key" data-key=">">&gt;&gt;</button>
+      </div>
+    </div>
+    <div class="vk-toolbar">
+      <button class="vk-esc-pill" id="vk-esc-pill">ESC</button>
+      <button id="vk-toggle" class="vk-toggle">⌨ KEYS</button>
+    </div>
+  </div>
+
+  <!-- Hidden input: captures soft keyboard text in INSERT mode on mobile -->
+  <input id="mobile-insert-input" type="text" autocomplete="off" autocorrect="off"
+    autocapitalize="none" spellcheck="false"
+    style="position:fixed;opacity:0;pointer-events:none;width:1px;height:1px;top:-9999px;left:-9999px;">
+
   <!-- Background Effects -->
   <div class="bg-grid"></div>
   <div class="scanline"></div>
@@ -224,6 +279,153 @@
   <script src="js/ui/skill-log.js"></script>
   <script src="js/ui/terminal.js"></script>
   <script src="js/ui/certificate-generator.js"></script>
+
+  <!-- Mobile panel drawer controls -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const leftPanel   = document.querySelector('.left-panel');
+      const rightPanel  = document.querySelector('.right-panel');
+      const backdrop    = document.getElementById('mobile-backdrop');
+      const missionBtn  = document.getElementById('mob-mission-btn');
+      const logBtn      = document.getElementById('mob-log-btn');
+
+      function closeAll() {
+        leftPanel.classList.remove('mobile-open');
+        rightPanel.classList.remove('mobile-open');
+        backdrop.classList.remove('active');
+        missionBtn && missionBtn.classList.remove('active');
+        logBtn && logBtn.classList.remove('active');
+      }
+
+      missionBtn && missionBtn.addEventListener('click', () => {
+        const opening = !leftPanel.classList.contains('mobile-open');
+        closeAll();
+        if (opening) {
+          leftPanel.classList.add('mobile-open');
+          backdrop.classList.add('active');
+          missionBtn.classList.add('active');
+        }
+      });
+
+      logBtn && logBtn.addEventListener('click', () => {
+        const opening = !rightPanel.classList.contains('mobile-open');
+        closeAll();
+        if (opening) {
+          rightPanel.classList.add('mobile-open');
+          backdrop.classList.add('active');
+          logBtn.classList.add('active');
+        }
+      });
+
+      backdrop && backdrop.addEventListener('click', closeAll);
+    });
+  </script>
+
+  <!-- Mobile virtual keyboard controls -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const keypad      = document.getElementById('mobile-keypad');
+      const vkToggle    = document.getElementById('vk-toggle');
+      const escPill     = document.getElementById('vk-esc-pill');
+      const insertInput = document.getElementById('mobile-insert-input');
+
+      // ── Key dispatch ────────────────────────────────────────────
+      function sendVimKey(key) {
+        // Ensure vim is active before dispatching
+        if (window.game && window.game.vim && !window.game.vim.isActive) {
+          window.game.vim.focus();
+        }
+        document.dispatchEvent(new KeyboardEvent('keydown', {
+          key, bubbles: true, cancelable: true, composed: true
+        }));
+      }
+
+      // ── Toggle keypad open/closed ────────────────────────────────
+      vkToggle && vkToggle.addEventListener('click', () => {
+        const opening = keypad.classList.contains('hidden');
+        keypad.classList.toggle('hidden', !opening);
+        vkToggle.classList.toggle('active', opening);
+      });
+
+      // ── Wire up all virtual keys ─────────────────────────────────
+      function wireKey(btn) {
+        // Prevent the button tap from blurring vim / stealing focus
+        btn.addEventListener('mousedown', e => e.preventDefault());
+        btn.addEventListener('touchstart', e => e.preventDefault(), { passive: false });
+
+        let tapped = false;
+        btn.addEventListener('touchend', (e) => {
+          e.preventDefault();
+          tapped = true;
+          const key = btn.dataset.key;
+          sendVimKey(key);
+          // If entering INSERT mode, focus hidden input to bring up soft keyboard
+          if (['i','a','o','A','c','s'].includes(key)) {
+            setTimeout(() => insertInput && insertInput.focus(), 80);
+          }
+          setTimeout(() => { tapped = false; }, 300);
+        });
+
+        btn.addEventListener('click', () => {
+          if (tapped) return; // already handled by touchend
+          const key = btn.dataset.key;
+          sendVimKey(key);
+          if (['i','a','o','A','c','s'].includes(key)) {
+            setTimeout(() => insertInput && insertInput.focus(), 80);
+          }
+        });
+      }
+
+      document.querySelectorAll('.vk-key').forEach(wireKey);
+      escPill && wireKey(Object.assign(escPill, { dataset: { key: 'Escape' } }));
+
+      // ── Hidden input: forward soft-keyboard text to vim in INSERT mode ──
+      if (insertInput) {
+        // Forward each typed character as a synthetic keydown
+        insertInput.addEventListener('input', (e) => {
+          if (!e.data) return;
+          const vim = window.game && window.game.vim;
+          if (vim && vim.mode === 'INSERT') {
+            for (const ch of e.data) {
+              sendVimKey(ch);
+            }
+          }
+          // Clear so the input doesn't accumulate text
+          insertInput.value = '';
+        });
+
+        // Forward Backspace and Enter (keydown is reliable for these)
+        insertInput.addEventListener('keydown', (e) => {
+          const vim = window.game && window.game.vim;
+          if (vim && vim.mode === 'INSERT') {
+            if (e.key === 'Backspace' || e.key === 'Enter') {
+              e.preventDefault();
+              sendVimKey(e.key);
+            } else if (e.key === 'Escape') {
+              e.preventDefault();
+              sendVimKey('Escape');
+              insertInput.blur();
+            }
+          } else {
+            // Not in INSERT mode — blur the hidden input
+            insertInput.blur();
+          }
+        });
+
+        // Auto-blur hidden input when vim exits INSERT mode
+        // (checked via stateChange polling via a lightweight observer)
+        let lastMode = '';
+        setInterval(() => {
+          const vim = window.game && window.game.vim;
+          if (!vim) return;
+          if (lastMode === 'INSERT' && vim.mode !== 'INSERT') {
+            insertInput.blur();
+          }
+          lastMode = vim.mode;
+        }, 100);
+      }
+    });
+  </script>
 
   <!-- Initialize Game -->
   <script>

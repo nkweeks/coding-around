@@ -13,6 +13,7 @@ const VIM_PROTOCOL_STYLE_PATHS = [
   `${VIM_PROTOCOL_ASSET_BASE}/css/vim-editor.css`,
   `${VIM_PROTOCOL_ASSET_BASE}/css/ui-components.css`,
   `${VIM_PROTOCOL_ASSET_BASE}/css/characters.css`,
+  `${VIM_PROTOCOL_ASSET_BASE}/css/mobile.css`,
 ]
 const VIM_PROTOCOL_SCRIPT_PATHS = [
   `${VIM_PROTOCOL_ASSET_BASE}/js/vim/buffer.js`,
