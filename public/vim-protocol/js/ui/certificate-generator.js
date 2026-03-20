@@ -667,7 +667,7 @@ class CertificateGenerator {
       const imageMap = {
         robot_happy: '/vim-protocol/images/robot_happy.jpg',
         ninja:       '/vim-protocol/images/ninja.jpg',
-        shell:       '/vim-protocol/images/shell.png',
+        shell:       '/vim-protocol/images/shell2.jpg',
       };
       if (this.storyPath === 'robot') {
         imageMap.ending = '/vim-protocol/images/robot_defeats_ninja.jpg';

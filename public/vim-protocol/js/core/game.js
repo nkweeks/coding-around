@@ -122,6 +122,7 @@ class Game {
     const newGameBtn = document.getElementById('menu-new-game');
     const continueBtn = document.getElementById('menu-continue');
     const levelSelectBtn = document.getElementById('menu-level-select');
+    const certBtn = document.getElementById('menu-certificate');
     const progressSpan = document.getElementById('menu-progress');
 
     if (!mainMenu) return;
@@ -129,6 +130,7 @@ class Game {
     // Check for saved progress
     const saveData = this.storage.load();
     const hasProgress = saveData && saveData.levelsCompleted && saveData.levelsCompleted.length > 0;
+    const gameComplete = saveData && saveData.gameComplete;
 
     if (hasProgress) {
       this.stateManager.setState({
@@ -136,6 +138,18 @@ class Game {
       });
       continueBtn.classList.remove('hidden');
       progressSpan.textContent = `${saveData.levelsCompleted.length}/${LEVELS.length} complete`;
+    }
+
+    if (certBtn) {
+      if (gameComplete) {
+        certBtn.classList.remove('hidden');
+      } else {
+        certBtn.classList.add('hidden');
+      }
+
+      certBtn.onclick = () => {
+        this.showCertificateDownload(saveData.storyPath || null, saveData.playerName || '');
+      };
     }
 
     // Show the menu
@@ -182,6 +196,89 @@ class Game {
       }
     };
     document.addEventListener('keydown', this.menuKeyHandler);
+  }
+
+  // Show certificate download modal (accessible from main menu)
+  showCertificateDownload(storyPath, savedName) {
+    const path = storyPath || null;
+    const pathLabel = path === 'robot' ? 'Neural Network Path'
+                    : path === 'ninja' ? 'Shadow Protocol Path'
+                    : 'Operation Blackout';
+
+    this.modal.showCustom(
+      'DOWNLOAD YOUR CERTIFICATE',
+      `
+        <div class="level-complete">
+          <p style="color: var(--text-secondary); margin-bottom: 8px;">
+            You completed <strong style="color: #9d4edd;">${pathLabel}</strong>.
+          </p>
+          <p style="color: var(--text-secondary); margin-bottom: 20px; font-size: 12px;">
+            Enter your name to personalize your certificate, then download.
+          </p>
+          <div style="margin-bottom: 12px;">
+            <label style="
+              display: block;
+              font-family: 'JetBrains Mono', monospace;
+              font-size: 9px;
+              letter-spacing: 2px;
+              color: #5a189a;
+              margin-bottom: 6px;
+              text-transform: uppercase;
+            ">Agent name for certificate</label>
+            <input id="menu-cert-name-input" type="text" maxlength="40"
+              placeholder="Agent Name"
+              value="${savedName.replace(/"/g, '&quot;')}"
+              onkeydown="event.stopPropagation();"
+              style="
+                font-family: 'JetBrains Mono', monospace;
+                font-size: 13px;
+                font-weight: bold;
+                letter-spacing: 1px;
+                padding: 8px 14px;
+                background: rgba(10, 0, 20, 0.8);
+                border: 1.5px solid #5a189a;
+                color: #00d4ff;
+                border-radius: 2px;
+                width: 220px;
+                text-align: center;
+                outline: none;
+              "
+              onfocus="this.style.borderColor='#9d4edd';"
+              onblur="this.style.borderColor='#5a189a';"
+            >
+          </div>
+          <button style="
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            padding: 10px 22px;
+            background: transparent;
+            border: 1.5px solid #9d4edd;
+            color: #9d4edd;
+            cursor: pointer;
+            text-transform: uppercase;
+            border-radius: 2px;
+            transition: all 0.2s;
+          "
+          onmouseover="this.style.background='rgba(157,78,221,0.15)';this.style.color='#c77dff';this.style.borderColor='#c77dff';"
+          onmouseout="this.style.background='transparent';this.style.color='#9d4edd';this.style.borderColor='#9d4edd';"
+          onclick="
+            const name = document.getElementById('menu-cert-name-input').value;
+            (new CertificateGenerator('${path}', name)).generate();
+            try { const sd = JSON.parse(localStorage.getItem('vim_game_save') || '{}'); sd.playerName = name; localStorage.setItem('vim_game_save', JSON.stringify(sd)); } catch(e) {}
+          ">
+            ⬇ DOWNLOAD CERTIFICATE [PDF]
+          </button>
+          <p style="margin-top: 8px; font-size: 10px; color: #5a189a; font-family: 'JetBrains Mono', monospace;">
+            3-page cyberpunk reference — all commands &amp; story
+          </p>
+        </div>
+      `,
+      'CLOSE',
+      () => { this.showMainMenu(); }
+    );
+    this.modal.disableKeyboard();
   }
 
   // Hide main menu
@@ -502,6 +599,9 @@ class Game {
     this.vim.blur();
     const path = storyManager.getStoryPath();
 
+    // Persist completion so the main menu can offer cert download
+    this.saveGame({ gameComplete: true });
+
     let endingImage = '';
     let endingMessage = '';
     let endingQuote = '';
@@ -606,7 +706,11 @@ class Game {
             "
             onmouseover="this.style.background='rgba(157,78,221,0.15)';this.style.color='#c77dff';this.style.borderColor='#c77dff';"
             onmouseout="this.style.background='transparent';this.style.color='#9d4edd';this.style.borderColor='#9d4edd';"
-            onclick="(new CertificateGenerator('${path}', document.getElementById('cert-name-input').value)).generate();">
+            onclick="
+              const name = document.getElementById('cert-name-input').value;
+              (new CertificateGenerator('${path}', name)).generate();
+              try { const sd = JSON.parse(localStorage.getItem('vim_game_save') || '{}'); sd.playerName = name; localStorage.setItem('vim_game_save', JSON.stringify(sd)); } catch(e) {}
+            ">
               ⬇ DOWNLOAD CERTIFICATE [PDF]
             </button>
             <p style="margin-top: 8px; font-size: 10px; color: #5a189a; font-family: 'JetBrains Mono', monospace;">
@@ -628,14 +732,15 @@ class Game {
   }
 
   // Save game (includes story path)
-  saveGame() {
+  saveGame(extra = {}) {
     const state = this.stateManager.getState();
 
     const saveData = {
       currentLevel: state.currentLevel,
       levelsCompleted: state.levelsCompleted,
       playerStats: state.playerStats,
-      storyPath: storyManager.getStoryPath()
+      storyPath: storyManager.getStoryPath(),
+      ...extra
     };
 
     this.storage.save(saveData);

@@ -159,7 +159,7 @@ const CHARACTERS = {
     accentColor: '#9fff5b',
     role: 'Old-school hacker, been coding since the 80s',
     personality: 'Grumpy but secretly caring, hates modern tools',
-    image: '/vim-protocol/images/shell.png',
+    image: '/vim-protocol/images/shell2.jpg',
 
     avatar: [
       '┌───┐',

@@ -34,6 +34,9 @@ const vimProtocolShell = String.raw`
         <button id="menu-level-select" class="menu-btn">
           <span class="btn-icon">≡</span> LEVEL SELECT
         </button>
+        <button id="menu-certificate" class="menu-btn hidden" style="border-color: #9d4edd; color: #9d4edd;">
+          <span class="btn-icon">⬇</span> DOWNLOAD CERTIFICATE
+        </button>
       </div>
 
       <div class="menu-footer">
