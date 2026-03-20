@@ -621,6 +621,10 @@ class Game {
         location.reload();
       }
     );
+    // Disable keyboard so Enter/Space can't accidentally trigger NEW GAME
+    // while the user is typing their name or waiting for the PDF to generate.
+    // The NEW GAME button is still clickable.
+    this.modal.disableKeyboard();
   }
 
   // Save game (includes story path)
