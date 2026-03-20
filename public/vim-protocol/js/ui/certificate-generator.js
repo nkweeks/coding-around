@@ -1,7 +1,8 @@
 // CertificateGenerator - Generates a cyberpunk PDF certificate on game completion
 class CertificateGenerator {
-  constructor(storyPath) {
+  constructor(storyPath, playerName = '') {
     this.storyPath = storyPath; // 'robot', 'ninja', or null
+    this.playerName = (playerName || '').trim().toUpperCase() || 'AGENT';
     this.doc = null;
     this.W = 297; // A4 landscape width in mm
     this.H = 210; // A4 landscape height in mm
@@ -26,7 +27,7 @@ class CertificateGenerator {
     };
   }
 
-  // Load an image src as a base64 dataURL via canvas
+  // Load an image — returns {dataURL, width, height} to preserve aspect ratio
   async loadImage(src) {
     return new Promise((resolve) => {
       const img = new Image();
@@ -36,11 +37,29 @@ class CertificateGenerator {
         canvas.width = img.naturalWidth;
         canvas.height = img.naturalHeight;
         canvas.getContext('2d').drawImage(img, 0, 0);
-        resolve(canvas.toDataURL('image/jpeg', 0.85));
+        resolve({ dataURL: canvas.toDataURL('image/jpeg', 0.85), width: img.naturalWidth, height: img.naturalHeight });
       };
       img.onerror = () => resolve(null);
       img.src = src;
     });
+  }
+
+  // Scale image to fit inside boxW × boxH (object-fit: contain), return centered rect
+  fitInBox(img, boxX, boxY, boxW, boxH) {
+    const imgRatio = img.width / img.height;
+    const boxRatio = boxW / boxH;
+    let w, h;
+    if (imgRatio > boxRatio) { w = boxW; h = boxW / imgRatio; }
+    else                      { h = boxH; w = boxH * imgRatio; }
+    return { x: boxX + (boxW - w) / 2, y: boxY + (boxH - h) / 2, w, h };
+  }
+
+  // addImage wrapper that respects aspect ratio inside a box
+  addImageFit(imgObj, boxX, boxY, boxW, boxH) {
+    if (!imgObj) return;
+    const { x, y, w, h } = this.fitInBox(imgObj, boxX, boxY, boxW, boxH);
+    this.doc.addImage(imgObj.dataURL, 'JPEG', x, y, w, h, undefined, 'SLOW');
+    return { x, y, w, h };
   }
 
   // Shorthand: fill a rect with a color
@@ -156,7 +175,8 @@ class CertificateGenerator {
     this.drawCornerBrackets(imgX - 2, imgY - 2, imgW + 4, imgH + 4, this.c.purple);
 
     if (this.images.ending) {
-      this.doc.addImage(this.images.ending, 'JPEG', imgX, imgY, imgW, imgH, undefined, 'SLOW');
+      this.fillRect(imgX, imgY, imgW, imgH, this.c.bgDeep);
+      this.addImageFit(this.images.ending, imgX, imgY, imgW, imgH);
     } else {
       this.fillRect(imgX, imgY, imgW, imgH, this.c.bgDeep);
       this.doc.setFont('helvetica', 'bold');
@@ -176,6 +196,7 @@ class CertificateGenerator {
 
     // ── Right: Certificate Content ────────────────────────────────
     const rx = 128;
+    const rW = this.W - rx - 9; // usable right-column width
     let ry = 28;
 
     // Big title
@@ -187,31 +208,48 @@ class CertificateGenerator {
     this.doc.setFontSize(15);
     this.doc.setTextColor(this.c.brightPurple[0], this.c.brightPurple[1], this.c.brightPurple[2]);
     this.doc.text('OF COMPLETION', rx, ry);
-    ry += 6;
+    ry += 7;
 
     // Separator
-    this.fillRect(rx, ry, this.W - rx - 9, 0.8, this.c.cyan);
-    this.fillRect(rx, ry + 1.2, this.W - rx - 9, 0.3, this.c.purple);
-    ry += 10;
+    this.fillRect(rx, ry, rW, 0.8, this.c.cyan);
+    this.fillRect(rx, ry + 1.2, rW, 0.3, this.c.purple);
+    ry += 8;
 
-    // Sub-label
+    // ── Awarded to ────────────────────────────────────────────────
     this.doc.setFont('courier', 'normal');
-    this.doc.setFontSize(8);
+    this.doc.setFontSize(6.5);
     this.doc.setTextColor(this.c.dimPurple[0], this.c.dimPurple[1], this.c.dimPurple[2]);
-    this.doc.text('This certifies successful completion of', rx, ry);
+    this.doc.text('AWARDED TO', rx, ry);
     ry += 7;
+
+    this.doc.setFont('helvetica', 'bold');
+    this.doc.setFontSize(18);
+    this.doc.setTextColor(this.c.cyan[0], this.c.cyan[1], this.c.cyan[2]);
+    this.doc.text(this.playerName, rx, ry);
+    ry += 8;
+
+    // Thin rule under name
+    this.fillRect(rx, ry, rW, 0.3, this.c.deepPurple);
+    ry += 7;
+
+    // Program label
+    this.doc.setFont('courier', 'normal');
+    this.doc.setFontSize(7.5);
+    this.doc.setTextColor(this.c.dimPurple[0], this.c.dimPurple[1], this.c.dimPurple[2]);
+    this.doc.text('for completing', rx, ry);
+    ry += 6;
 
     this.doc.setFont('helvetica', 'bold');
     this.doc.setFontSize(13);
     this.doc.setTextColor(this.c.cyan[0], this.c.cyan[1], this.c.cyan[2]);
     this.doc.text('OPERATION BLACKOUT', rx, ry);
-    ry += 6;
+    ry += 5;
 
     this.doc.setFont('courier', 'normal');
-    this.doc.setFontSize(7.5);
+    this.doc.setFontSize(7);
     this.doc.setTextColor(this.c.dimPurple[0], this.c.dimPurple[1], this.c.dimPurple[2]);
     this.doc.text('A 20-Mission Vim Mastery Program', rx, ry);
-    ry += 14;
+    ry += 11;
 
     // Path badge
     const pathLabel = this.storyPath === 'robot' ? 'NEURAL NETWORK PATH'
@@ -222,37 +260,37 @@ class CertificateGenerator {
                     :                               this.c.purple;
 
     const badgeW = 82;
-    this.fillRect(rx, ry - 4, badgeW, 13, [
+    this.fillRect(rx, ry - 4, badgeW, 12, [
       Math.round(pathColor[0] * 0.08),
       Math.round(pathColor[1] * 0.08),
       Math.round(pathColor[2] * 0.08),
     ]);
-    this.strokeRect(rx, ry - 4, badgeW, 13, pathColor, 0.5);
+    this.strokeRect(rx, ry - 4, badgeW, 12, pathColor, 0.5);
     this.doc.setFont('helvetica', 'bold');
-    this.doc.setFontSize(10);
+    this.doc.setFontSize(9.5);
     this.doc.setTextColor(pathColor[0], pathColor[1], pathColor[2]);
-    this.doc.text(pathLabel, rx + badgeW / 2, ry + 4, { align: 'center' });
-    ry += 20;
+    this.doc.text(pathLabel, rx + badgeW / 2, ry + 3.5, { align: 'center' });
+    ry += 17;
 
     // Stats
     const stats = [
-      { label: 'MISSIONS COMPLETED', value: '20 / 20' },
+      { label: 'MISSIONS COMPLETED',    value: '20 / 20' },
       { label: 'VIM COMMANDS MASTERED', value: '30+' },
-      { label: 'THREAT STATUS', value: 'NEXUS ELIMINATED' },
+      { label: 'THREAT STATUS',         value: 'NEXUS ELIMINATED' },
     ];
     for (const s of stats) {
       this.doc.setFont('courier', 'normal');
       this.doc.setFontSize(6.5);
       this.doc.setTextColor(this.c.dimPurple[0], this.c.dimPurple[1], this.c.dimPurple[2]);
       this.doc.text(s.label, rx, ry);
-      ry += 5;
+      ry += 4;
       this.doc.setFont('courier', 'bold');
-      this.doc.setFontSize(9.5);
+      this.doc.setFontSize(9);
       this.doc.setTextColor(this.c.lightPurple[0], this.c.lightPurple[1], this.c.lightPurple[2]);
       this.doc.text(s.value, rx, ry);
       ry += 3;
-      this.fillRect(rx, ry, this.W - rx - 9, 0.2, this.c.bgPanel);
-      ry += 8;
+      this.fillRect(rx, ry, rW, 0.2, this.c.bgPanel);
+      ry += 6;
     }
 
     ry += 2;
@@ -264,38 +302,16 @@ class CertificateGenerator {
       ? ['"The mission is complete. No traces.', 'No loose ends. You fought well." — BLADE']
       : ['"NEXUS eliminated. The network is secure.', 'Welcome to the Hall of Fame." — THE CREW'];
 
-    const qH = 28;
-    const qW = this.W - rx - 9;
-    this.fillRect(rx, ry, qW, qH, this.c.bgSecondary);
-    this.fillRect(rx, ry, 2.5, qH, pathColor);    // left accent bar
+    const qH = 24;
+    this.fillRect(rx, ry, rW, qH, this.c.bgSecondary);
+    this.fillRect(rx, ry, 2.5, qH, pathColor);
     this.fillRect(rx + 2.5, ry, 0.5, qH, this.c.cyan);
 
     this.doc.setFont('courier', 'normal');
-    this.doc.setFontSize(8);
+    this.doc.setFontSize(7.5);
     this.doc.setTextColor(this.c.brightPurple[0], this.c.brightPurple[1], this.c.brightPurple[2]);
-    this.doc.text(quoteLines[0], rx + 6, ry + 10);
-    this.doc.text(quoteLines[1], rx + 6, ry + 19);
-
-    ry += qH + 8;
-
-    // Small character portraits at bottom-right
-    const portraitPairs = this.storyPath === 'robot'
-      ? [{ key: 'robot_happy', color: this.c.cyan }, { key: 'ninja', color: this.c.pink }]
-      : this.storyPath === 'ninja'
-      ? [{ key: 'ninja', color: this.c.pink }, { key: 'robot_happy', color: this.c.cyan }]
-      : [{ key: 'robot_happy', color: this.c.cyan }, { key: 'ninja', color: this.c.pink }];
-
-    const pH = 24;
-    const pW = 22;
-    let px = this.W - 10;
-    for (const p of [...portraitPairs].reverse()) {
-      px -= pW + 2;
-      this.fillRect(px, ry, pW, pH, this.c.bgPanel);
-      this.strokeRect(px, ry, pW, pH, p.color, 0.4);
-      if (this.images[p.key]) {
-        this.doc.addImage(this.images[p.key], 'JPEG', px + 0.5, ry + 0.5, pW - 1, pH - 1, undefined, 'SLOW');
-      }
-    }
+    this.doc.text(quoteLines[0], rx + 6, ry + 9);
+    this.doc.text(quoteLines[1], rx + 6, ry + 17);
   }
 
   // ─── PAGE 2: Vim Command Codex ─────────────────────────────────────────────
@@ -423,7 +439,8 @@ class CertificateGenerator {
     const gapX = 5;
     const colW = (this.W - padL - padR - gapX * (cols - 1)) / cols;
     const startY = 42;
-    const rowH = 41;
+    const rows = Math.ceil(cats.length / cols);
+    const rowH = Math.floor((this.H - 14 - startY) / rows); // fit all rows above bottom bar
 
     cats.forEach((cat, i) => {
       const col = i % cols;
@@ -520,7 +537,7 @@ class CertificateGenerator {
         name: 'SHELL',
         title: 'THE VETERAN',
         color: this.c.green,
-        imgKey: null,
+        imgKey: 'shell',
         initial: 'S',
         description: 'A legendary hacker from the early days of the Resistance. SHELL has seen every NEXUS trick in the book. Gruff but invaluable — when Shell speaks, operatives listen.',
         traits: 'Experienced · Direct · Reliable',
@@ -552,7 +569,8 @@ class CertificateGenerator {
       const imgY2 = cardY + 6;
 
       if (ch.imgKey && this.images[ch.imgKey]) {
-        this.doc.addImage(this.images[ch.imgKey], 'JPEG', imgX, imgY2, imgW, imgH, undefined, 'SLOW');
+        this.fillRect(imgX, imgY2, imgW, imgH, this.c.bgDeep);
+        const fit = this.addImageFit(this.images[ch.imgKey], imgX, imgY2, imgW, imgH);
         this.strokeRect(imgX, imgY2, imgW, imgH, ch.color, 0.4);
       } else {
         // Placeholder with initial
@@ -603,7 +621,7 @@ class CertificateGenerator {
 
     // Story arc summary bar
     const barY = cardY + cardH + 6;
-    const barH = 22;
+    const barH = 26;
     this.fillRect(9, barY, this.W - 18, barH, this.c.bgSecondary);
     this.strokeRect(9, barY, this.W - 18, barH, this.c.purple, 0.3);
 
@@ -649,6 +667,7 @@ class CertificateGenerator {
       const imageMap = {
         robot_happy: '/vim-protocol/images/robot_happy.jpg',
         ninja:       '/vim-protocol/images/ninja.jpg',
+        shell:       '/vim-protocol/images/shell.png',
       };
       if (this.storyPath === 'robot') {
         imageMap.ending = '/vim-protocol/images/robot_defeats_ninja.jpg';

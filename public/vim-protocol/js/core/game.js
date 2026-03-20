@@ -560,6 +560,36 @@ class Game {
           </div>
           ${endingQuote}
           <div style="margin-top: 24px; text-align: center;">
+            <div style="margin-bottom: 12px;">
+              <label style="
+                display: block;
+                font-family: 'JetBrains Mono', monospace;
+                font-size: 9px;
+                letter-spacing: 2px;
+                color: #5a189a;
+                margin-bottom: 6px;
+                text-transform: uppercase;
+              ">Enter your name for the certificate</label>
+              <input id="cert-name-input" type="text" maxlength="40" placeholder="Agent Name"
+                onkeydown="event.stopPropagation();"
+                style="
+                  font-family: 'JetBrains Mono', monospace;
+                  font-size: 13px;
+                  font-weight: bold;
+                  letter-spacing: 1px;
+                  padding: 8px 14px;
+                  background: rgba(10, 0, 20, 0.8);
+                  border: 1.5px solid #5a189a;
+                  color: #00d4ff;
+                  border-radius: 2px;
+                  width: 220px;
+                  text-align: center;
+                  outline: none;
+                "
+                onfocus="this.style.borderColor='#9d4edd';"
+                onblur="this.style.borderColor='#5a189a';"
+              >
+            </div>
             <button id="cert-download-btn" style="
               font-family: 'JetBrains Mono', monospace;
               font-size: 12px;
@@ -576,7 +606,7 @@ class Game {
             "
             onmouseover="this.style.background='rgba(157,78,221,0.15)';this.style.color='#c77dff';this.style.borderColor='#c77dff';"
             onmouseout="this.style.background='transparent';this.style.color='#9d4edd';this.style.borderColor='#9d4edd';"
-            onclick="(new CertificateGenerator('${path}')).generate();">
+            onclick="(new CertificateGenerator('${path}', document.getElementById('cert-name-input').value)).generate();">
               ⬇ DOWNLOAD CERTIFICATE [PDF]
             </button>
             <p style="margin-top: 8px; font-size: 10px; color: #5a189a; font-family: 'JetBrains Mono', monospace;">

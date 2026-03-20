@@ -500,11 +500,11 @@ class VimSimulator {
     this.executeMotion(motion, count);
     const endPos = { line: this.cursor.line, col: this.cursor.col };
 
-    // For 'w' motion, we need to include the character at cursor position
-    let adjustedEnd = endPos.col;
-    if (motion === 'w' || motion === 'W') {
-      // w motion in vim for delete/change goes up to but not including the next word
-      // But we've already moved there, so end is correct
+    // w/W are exclusive motions: the character at the destination is NOT deleted
+    // (e.g. dw on "hello world" deletes "hello " not "hello w")
+    let endAdjustment = 0;
+    if ((motion === 'w' || motion === 'W') && endPos.col > startPos.col) {
+      endAdjustment = -1;
     }
 
     // Restore cursor for operation
@@ -514,7 +514,7 @@ class VimSimulator {
     if (startPos.line === endPos.line) {
       // Same line operation
       const start = Math.min(startPos.col, endPos.col);
-      const end = Math.max(startPos.col, endPos.col);
+      const end = Math.max(startPos.col, endPos.col) + endAdjustment;
 
       switch (operator) {
         case 'd':
@@ -586,7 +586,7 @@ class VimSimulator {
     if (found) {
       const endCol = this.cursor.col;
       const start = Math.min(startCol, endCol);
-      const end = Math.max(startCol, endCol) + 1; // +1 to include the character
+      const end = Math.max(startCol, endCol); // deleteRange/yankRange are inclusive
 
       this.cursor.col = startCol; // Restore
 
@@ -654,18 +654,18 @@ class VimSimulator {
 
     switch (operator) {
       case 'd':
-        this.buffer.deleteRange(line, bounds.start, bounds.end + 1);
+        this.buffer.deleteRange(line, bounds.start, bounds.end);
         this.cursor.setPosition(line, bounds.start);
         break;
 
       case 'c':
-        this.buffer.deleteRange(line, bounds.start, bounds.end + 1);
+        this.buffer.deleteRange(line, bounds.start, bounds.end);
         this.cursor.setPosition(line, bounds.start);
         this.enterInsertMode();
         break;
 
       case 'y':
-        this.buffer.yankRange(line, bounds.start, bounds.end + 1);
+        this.buffer.yankRange(line, bounds.start, bounds.end);
         this.message = 'Yanked';
         break;
 

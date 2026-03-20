@@ -106,9 +106,10 @@ class StoryManager {
     const isLast = this.dialogueQueue.length === 0;
     const continueLabel = isLast ? 'OK [Enter]' : 'CONTINUE [Enter]';
 
-    // Portrait: use image if provided, otherwise ascii avatar
-    const portraitHtml = dialogueData.image
-      ? `<img class="dialogue-portrait-img" src="${dialogueData.image}" alt="${character.name}">`
+    // Portrait: use explicit image, then character default image, then ascii avatar
+    const portraitSrc = dialogueData.image || character.image || null;
+    const portraitHtml = portraitSrc
+      ? `<img class="dialogue-portrait-img" src="${portraitSrc}" alt="${character.name}">`
       : `<div class="dialogue-avatar" style="color: ${character.color}">${character.avatar.join('<br>')}</div>`;
 
     container.innerHTML = `
