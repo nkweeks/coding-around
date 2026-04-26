@@ -108,6 +108,12 @@ class HUD {
         </div>
       `;
     }).join('');
+
+    // Scroll the active objective into view
+    const activeEl = this.objectivesList.querySelector('.objective-item.active');
+    if (activeEl) {
+      activeEl.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    }
   }
 
   // Flash objective on completion with celebration effect

@@ -177,19 +177,23 @@
   }
 
   /* ── DIALOGUE BAR ───────────────────────────────────────── */
+  .character-dialogue {
+    bottom: 40px; /* sit above the status bar */
+  }
+
   .dialogue-bar {
-    grid-template-columns: 76px 1fr;
-    min-height: 95px;
-    max-height: 130px;
+    grid-template-columns: 72px 1fr;
+    min-height: 110px;
+    max-height: 42vh; /* allow expanding for long dialogue */
   }
 
   .dialogue-portrait {
-    padding: 8px 8px;
+    padding: 8px 6px;
   }
 
   .dialogue-portrait-img {
-    width: 56px;
-    height: 56px;
+    width: 52px;
+    height: 52px;
   }
 
   .dialogue-avatar {
@@ -206,17 +210,22 @@
   }
 
   .dialogue-body {
-    padding: 8px 12px 8px;
+    padding: 10px 12px 10px;
+    overflow-y: auto; /* allow scrolling if text overflows */
+    min-height: 0;
   }
 
   .dialogue-text {
-    font-size: 12px;
-    line-height: 1.5;
+    font-size: 13px;
+    line-height: 1.6;
+    overflow-y: visible; /* let parent .dialogue-body scroll */
+    flex: unset; /* don't shrink text to nothing */
   }
 
   .dialogue-continue {
     font-size: 9px;
-    margin-top: 3px;
+    margin-top: 6px;
+    flex-shrink: 0;
   }
 
   /* ── MAIN MENU ──────────────────────────────────────────── */

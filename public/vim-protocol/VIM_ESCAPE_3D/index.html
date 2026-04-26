@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VIM Escape 3D</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles/game.css">
+</head>
+<body>
+  <main id="game-shell">
+    <canvas id="world"></canvas>
+
+    <section class="hud top-left" aria-live="polite">
+      <div class="mission-kicker" id="mission-kicker">MISSION 01</div>
+      <h1 id="mission-title">VIM ESCAPE 3D</h1>
+      <div class="focus-strip" id="focus-strip"></div>
+    </section>
+
+    <section class="hud top-right status-cluster">
+      <div>
+        <span class="stat-label">MODE</span>
+        <span class="stat-value" id="mode-label">NORMAL</span>
+      </div>
+      <div>
+        <span class="stat-label">KEYS</span>
+        <span class="stat-value" id="keys-label">-</span>
+      </div>
+      <div>
+        <span class="stat-label">STROKES</span>
+        <span class="stat-value" id="strokes-label">0</span>
+      </div>
+    </section>
+
+    <section class="hud objective-chip" id="objective-chip">
+      <div class="objective-index" id="objective-index">01/01</div>
+      <div>
+        <div class="objective-text" id="objective-text"></div>
+        <div class="objective-hint" id="objective-hint"></div>
+      </div>
+    </section>
+
+    <section class="terminal-panel" id="terminal-panel">
+      <div class="panel-bar">
+        <span>NEXUS_BUFFER</span>
+        <span id="cursor-label">L1 C0</span>
+      </div>
+      <div class="editor" id="editor" tabindex="0"></div>
+      <div class="command-row">
+        <span id="message-label">Press any Vim command to begin.</span>
+      </div>
+    </section>
+
+    <aside class="drawer" id="drawer">
+      <div class="drawer-header">
+        <div>
+          <span class="drawer-eyebrow">FIELD LOG</span>
+          <h2 id="guide-name">ZERO</h2>
+        </div>
+        <button class="icon-button" id="drawer-toggle" type="button" aria-label="Toggle field log">?</button>
+      </div>
+      <img id="guide-portrait" src="../images/robot_happy.jpg" alt="">
+      <p id="briefing-text"></p>
+      <div class="log-list" id="command-log"></div>
+    </aside>
+
+    <nav class="action-bar" aria-label="Game actions">
+      <button id="prev-mission" type="button" aria-label="Previous mission">‹</button>
+      <button id="restart-mission" type="button" aria-label="Restart mission">↻</button>
+      <button id="next-mission" type="button" aria-label="Next mission">›</button>
+      <button id="log-button" type="button" aria-label="Open field log">?</button>
+    </nav>
+
+    <div class="boot-panel" id="boot-panel">
+      <div class="boot-copy">
+        <span class="boot-eyebrow">OPERATION BLACKOUT // TRAINING ROOM</span>
+        <h2>VIM Escape 3D</h2>
+        <p>Move through the NEXUS training facility with real Vim commands. Every door, terminal, and edit puzzle maps to a practical motion or operation.</p>
+        <button id="start-game" type="button">ENTER SIM</button>
+      </div>
+      <div class="boot-cast">
+        <img src="../images/robot_happy.jpg" alt="BYTE">
+        <img src="../images/ninja.jpg" alt="BLADE">
+      </div>
+    </div>
+
+    <div class="mobile-keys" id="mobile-keys" aria-label="Mobile Vim keys"></div>
+  </main>
+
+  <script type="module" src="src/main.js"></script>
+</body>
+</html>

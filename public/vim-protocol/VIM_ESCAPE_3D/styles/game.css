@@ -1,0 +1,514 @@
+:root {
+  color-scheme: dark;
+  --bg: #06080f;
+  --panel: rgba(8, 15, 24, 0.78);
+  --panel-strong: rgba(5, 10, 18, 0.93);
+  --line: rgba(139, 232, 255, 0.24);
+  --cyan: #54dcff;
+  --cyan-soft: #a8f2ff;
+  --pink: #ff3fa4;
+  --green: #5bff98;
+  --amber: #ffd166;
+  --red: #ff5c7a;
+  --text: #e8fbff;
+  --muted: #89aab4;
+  --shadow: 0 16px 70px rgba(0, 0, 0, 0.45);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+button {
+  font: inherit;
+}
+
+#game-shell {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  min-height: 620px;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 24% 16%, rgba(84, 220, 255, 0.12), transparent 28%),
+    linear-gradient(180deg, #07101a 0%, #04060b 100%);
+}
+
+#world {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.hud,
+.terminal-panel,
+.drawer,
+.action-bar,
+.boot-panel,
+.mobile-keys {
+  position: absolute;
+  z-index: 5;
+}
+
+.hud,
+.terminal-panel,
+.drawer {
+  border: 1px solid var(--line);
+  background: var(--panel);
+  backdrop-filter: blur(16px);
+  box-shadow: var(--shadow);
+}
+
+.top-left {
+  top: 18px;
+  left: 18px;
+  width: min(430px, calc(100vw - 36px));
+  padding: 14px 16px;
+}
+
+.mission-kicker,
+.drawer-eyebrow,
+.boot-eyebrow,
+.stat-label {
+  display: block;
+  color: var(--muted);
+  font-size: 0.68rem;
+  line-height: 1.3;
+  letter-spacing: 0;
+}
+
+h1,
+h2,
+p {
+  margin: 0;
+}
+
+h1,
+h2 {
+  font-family: "Orbitron", "JetBrains Mono", monospace;
+  letter-spacing: 0;
+}
+
+h1 {
+  margin-top: 4px;
+  font-size: clamp(1.1rem, 2.6vw, 1.8rem);
+  color: var(--cyan-soft);
+  text-shadow: 0 0 22px rgba(84, 220, 255, 0.38);
+}
+
+.focus-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.focus-strip span,
+.objective-index,
+.command-log-item,
+.mobile-keys button {
+  border: 1px solid rgba(84, 220, 255, 0.28);
+  background: rgba(84, 220, 255, 0.08);
+}
+
+.focus-strip span {
+  min-width: 28px;
+  padding: 3px 7px;
+  color: var(--green);
+  text-align: center;
+}
+
+.top-right {
+  top: 18px;
+  right: 18px;
+}
+
+.status-cluster {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(76px, 1fr));
+  gap: 10px;
+  padding: 12px;
+}
+
+.stat-value {
+  display: block;
+  margin-top: 3px;
+  color: var(--cyan-soft);
+  font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.objective-chip {
+  left: 50%;
+  top: 18px;
+  transform: translateX(-50%);
+  width: min(500px, calc(100vw - 520px));
+  min-width: 320px;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 12px;
+  padding: 12px;
+}
+
+.objective-index {
+  align-self: start;
+  min-width: 52px;
+  padding: 6px 8px;
+  color: var(--amber);
+  text-align: center;
+}
+
+.objective-text {
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.objective-hint {
+  margin-top: 5px;
+  color: var(--muted);
+  font-size: 0.78rem;
+  line-height: 1.4;
+}
+
+.terminal-panel {
+  left: 18px;
+  bottom: 18px;
+  width: min(760px, calc(100vw - 392px));
+  min-height: 290px;
+}
+
+.panel-bar,
+.command-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 36px;
+  padding: 0 12px;
+  border-bottom: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.command-row {
+  border-top: 1px solid var(--line);
+  border-bottom: 0;
+  color: var(--cyan-soft);
+}
+
+.editor {
+  max-height: 226px;
+  padding: 10px 12px;
+  overflow: auto;
+  outline: 0;
+  font-size: clamp(0.72rem, 1.45vw, 0.93rem);
+  line-height: 1.62;
+  scrollbar-width: thin;
+}
+
+.editor-line {
+  display: grid;
+  grid-template-columns: 3ch 1fr;
+  gap: 10px;
+  min-height: 1.62em;
+  white-space: pre;
+}
+
+.line-number {
+  color: rgba(137, 170, 180, 0.62);
+  text-align: right;
+  user-select: none;
+}
+
+.line-text {
+  min-width: 0;
+}
+
+.cursor {
+  display: inline-block;
+  min-width: 0.66ch;
+  color: #061017;
+  background: var(--cyan-soft);
+  box-shadow: 0 0 14px rgba(84, 220, 255, 0.75);
+}
+
+.cursor.insert {
+  min-width: 2px;
+  color: inherit;
+  background: var(--green);
+}
+
+.complete-line {
+  color: var(--green);
+}
+
+.drawer {
+  right: 18px;
+  bottom: 18px;
+  width: 330px;
+  max-height: min(560px, calc(100vh - 170px));
+  padding: 14px;
+  overflow: auto;
+  transform: translateX(calc(100% + 24px));
+  transition: transform 180ms ease;
+}
+
+.drawer.open {
+  transform: translateX(0);
+}
+
+.drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.drawer h2 {
+  margin-top: 3px;
+  color: var(--pink);
+  font-size: 1.05rem;
+}
+
+.drawer img {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  margin: 12px 0;
+  border: 1px solid rgba(255, 63, 164, 0.28);
+}
+
+.drawer p {
+  color: #cde6ec;
+  font-size: 0.84rem;
+  line-height: 1.55;
+}
+
+.icon-button,
+.action-bar button,
+.boot-panel button {
+  border: 1px solid rgba(84, 220, 255, 0.38);
+  background: rgba(84, 220, 255, 0.1);
+  color: var(--cyan-soft);
+  cursor: pointer;
+}
+
+.icon-button {
+  width: 34px;
+  height: 34px;
+}
+
+.log-list {
+  display: grid;
+  gap: 6px;
+  margin-top: 14px;
+}
+
+.command-log-item {
+  padding: 7px 8px;
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+
+.command-log-item strong {
+  color: var(--green);
+}
+
+.action-bar {
+  right: 18px;
+  top: 104px;
+  display: flex;
+  gap: 8px;
+}
+
+.action-bar button {
+  width: 42px;
+  height: 42px;
+  font-size: 1.22rem;
+}
+
+.boot-panel {
+  inset: 0;
+  display: grid;
+  place-items: center;
+  grid-template-columns: minmax(280px, 560px) minmax(180px, 330px);
+  gap: 28px;
+  padding: 24px;
+  background:
+    linear-gradient(90deg, rgba(3, 6, 11, 0.9), rgba(3, 6, 11, 0.62)),
+    radial-gradient(circle at 68% 40%, rgba(255, 63, 164, 0.18), transparent 30%);
+  transition: opacity 180ms ease, visibility 180ms ease;
+}
+
+.boot-panel.hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.boot-copy {
+  width: 100%;
+}
+
+.boot-copy h2 {
+  margin-top: 8px;
+  font-size: clamp(2rem, 7vw, 4.2rem);
+  color: var(--cyan-soft);
+}
+
+.boot-copy p {
+  max-width: 58ch;
+  margin-top: 12px;
+  color: #c9e5ea;
+  font-size: 1rem;
+  line-height: 1.65;
+}
+
+.boot-copy button {
+  margin-top: 22px;
+  min-height: 44px;
+  padding: 0 18px;
+  color: #041017;
+  background: var(--cyan);
+  font-weight: 800;
+}
+
+.boot-cast {
+  display: grid;
+  gap: 14px;
+}
+
+.boot-cast img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border: 1px solid rgba(84, 220, 255, 0.24);
+  box-shadow: var(--shadow);
+}
+
+.mobile-keys {
+  display: none;
+}
+
+@media (hover: hover) {
+  button:hover {
+    border-color: var(--green);
+    color: var(--green);
+  }
+
+  .boot-copy button:hover {
+    color: #041017;
+    background: var(--green);
+  }
+}
+
+@media (max-width: 1060px) {
+  #game-shell {
+    min-height: 720px;
+  }
+
+  .top-left,
+  .top-right,
+  .objective-chip {
+    top: 12px;
+  }
+
+  .top-left {
+    width: calc(100vw - 24px);
+    left: 12px;
+  }
+
+  .top-right {
+    top: 112px;
+    left: 12px;
+    right: auto;
+  }
+
+  .objective-chip {
+    left: 12px;
+    right: 12px;
+    top: 186px;
+    width: auto;
+    min-width: 0;
+    transform: none;
+  }
+
+  .terminal-panel {
+    left: 12px;
+    right: 12px;
+    bottom: 80px;
+    width: auto;
+  }
+
+  .drawer {
+    right: 12px;
+    bottom: 80px;
+    width: min(330px, calc(100vw - 24px));
+  }
+
+  .action-bar {
+    top: auto;
+    right: 12px;
+    bottom: 22px;
+  }
+}
+
+@media (max-width: 720px) {
+  #game-shell {
+    min-height: 780px;
+  }
+
+  .boot-panel {
+    grid-template-columns: 1fr;
+    align-content: center;
+  }
+
+  .boot-cast {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .status-cluster {
+    width: calc(100vw - 24px);
+  }
+
+  .terminal-panel {
+    bottom: 142px;
+    min-height: 250px;
+  }
+
+  .editor {
+    max-height: 184px;
+  }
+
+  .mobile-keys {
+    left: 12px;
+    right: 140px;
+    bottom: 18px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .mobile-keys button {
+    min-width: 34px;
+    height: 34px;
+    color: var(--cyan-soft);
+  }
+
+  .drawer {
+    bottom: 142px;
+  }
+}
