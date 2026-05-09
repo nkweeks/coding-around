@@ -4,289 +4,198 @@ const IMAGE_ROOT = "../images/";
 const WORD = /[A-Za-z0-9_]/;
 
 const characters = {
-  zero: {
-    name: "ZERO",
-    title: "The Architect",
-    color: 0x9d4edd,
-    portrait: `${IMAGE_ROOT}robot_happy.jpg`
-  },
   byte: {
     name: "BYTE",
-    title: "AI Analysis Unit",
-    color: 0x54dcff,
-    portrait: `${IMAGE_ROOT}robot_happy.jpg`
+    portrait: `${IMAGE_ROOT}robot_happy.jpg`,
+    color: 0x5ce7ff,
+    coach: "I score outcomes, not obedience. Solve the ticket cleanly and the room systems will come back online."
   },
   blade: {
     name: "BLADE",
-    title: "Shadow Operative",
+    portrait: `${IMAGE_ROOT}ninja.jpg`,
     color: 0xff3fa4,
-    portrait: `${IMAGE_ROOT}ninja.jpg`
+    coach: "Do not crawl. Search, jump, change, leave no trace."
   },
   shell: {
     name: "SHELL",
-    title: "Veteran Operator",
-    color: 0x5bff98,
-    portrait: `${IMAGE_ROOT}shell2.jpg`
+    portrait: `${IMAGE_ROOT}shell2.jpg`,
+    color: 0x69ff9d,
+    coach: "This is what Vim is for: fast repair work in ugly files under pressure."
+  },
+  zero: {
+    name: "ZERO",
+    portrait: `${IMAGE_ROOT}robot_happy.jpg`,
+    color: 0x9d4edd,
+    coach: "The room is a simulation. The skill is real: read the task, choose the edit, verify the buffer."
   }
 };
 
 const missions = [
   {
-    title: "First Contact",
-    focus: ["h", "j", "k", "l"],
+    title: "Incident Triage",
+    bufferName: "incident_417.log",
     guide: "byte",
-    briefing: "The NEXUS floor grid is a live buffer. Move the cursor-agent with h, j, k, and l until your body understands the home row before the mission becomes dangerous.",
+    par: 4,
+    focus: ["/", "n", "w", "b"],
+    task: "Find the real root cause in the noisy incident log and put the cursor on the word poisoned.",
+    lesson: "Practical Vim starts with navigation under uncertainty. Use search to jump to meaning, then word motions to land precisely.",
+    hints: [
+      "Search for ROOT_CAUSE instead of walking line by line.",
+      "After the search lands, use w to move through the line by words.",
+      "One clean route: /ROOT_CAUSE, Enter, then w until poisoned."
+    ],
     buffer: [
-      "// NEXUS_TRAINING_GRID.log",
-      ">> breach detected",
-      ">> move to TARGET",
-      ">> [TARGET] access point alpha",
-      ">> use h j k l only",
-      ">> [CHECKPOINT] return vector",
-      "mission_state = AWAITING_AGENT"
+      "// incident_417.log",
+      "time=03:17 status=OPEN",
+      "service=nexus-gateway",
+      "noise: heartbeat accepted",
+      "noise: auth cache warm",
+      "ROOT_CAUSE: token cache poisoned",
+      "owner=unknown"
     ],
     cursor: { line: 0, col: 0 },
-    objectives: [
-      {
-        text: "Press j twice to descend to line 3.",
-        hint: "j moves down. Keep your index finger on home row.",
-        target: { line: 2, col: 0 },
-        check: (s) => s.cursor.line === 2
-      },
-      {
-        text: "Move down to the [TARGET] line.",
-        hint: "One more j reaches the access point.",
-        target: { line: 3, col: 3 },
-        check: (s) => s.cursor.line === 3
-      },
-      {
-        text: "Use l until your cursor touches TARGET.",
-        hint: "l moves right across the line.",
-        target: { line: 3, col: 4 },
-        check: (s) => s.cursor.line === 3 && s.cursor.col === 4
-      },
-      {
-        text: "Descend to the [CHECKPOINT] line.",
-        hint: "Use j until the checkpoint row lights up.",
-        target: (s) => textTarget(s, "CHECKPOINT"),
-        check: (s) => s.cursor.line === 5
-      },
-      {
-        text: "Use k to climb back to the practice line.",
-        hint: "k moves up. Vim navigation is reversible.",
-        target: { line: 4, col: 0 },
-        check: (s) => s.cursor.line === 4
-      }
+    systems: [
+      { label: "Root-cause line located", check: (s) => s.cursor.line === findLine(s, "ROOT_CAUSE") },
+      { label: "Cursor on poisoned", check: (s) => onWord(s, "poisoned") }
     ]
   },
   {
-    title: "Word Runner",
-    focus: ["w", "b", "e"],
+    title: "Kill Switch Config",
+    bufferName: "nexus.conf",
     guide: "blade",
-    briefing: "Code is not crossed one character at a time. Words are rooftops. Leap with w, retreat with b, and land on the edge with e.",
-    buffer: [
-      "// INTERCEPTED_TRANSMISSION.txt",
-      "Agent codename SHADOW reporting in",
-      "Priority keywords ACCESS BREACH NEXUS",
-      "System MONITOR detected intrusion"
+    par: 10,
+    focus: ["/", "cw", "Esc"],
+    task: "Turn off telemetry, quarantine the mode, and close the open endpoint.",
+    lesson: "This is the everyday Vim loop: search for the value, change the word, return to Normal mode, repeat.",
+    hints: [
+      "Use /true, /observe, and /open to jump directly to values.",
+      "Use cw on each value, type the replacement, then Escape.",
+      "Targets: true -> false, observe -> quarantine, open -> closed."
     ],
-    cursor: { line: 1, col: 0 },
-    objectives: [
-      {
-        text: "Use w to jump to codename.",
-        hint: "w advances to the next word start.",
-        target: (s) => textTarget(s, "codename"),
-        check: (s) => onText(s, "codename")
-      },
-      {
-        text: "Continue with w until you reach SHADOW.",
-        hint: "Stop when the cursor sits on the S.",
-        target: (s) => textTarget(s, "SHADOW"),
-        check: (s) => onText(s, "SHADOW")
-      },
-      {
-        text: "Use w to reach NEXUS on the next line.",
-        hint: "w crosses line breaks when the next word is below.",
-        target: (s) => textTarget(s, "NEXUS"),
-        check: (s) => onText(s, "NEXUS")
-      },
-      {
-        text: "Use b to retreat to BREACH.",
-        hint: "b moves back to the previous word start.",
-        target: (s) => textTarget(s, "BREACH"),
-        check: (s) => onText(s, "BREACH")
-      }
-    ]
-  },
-  {
-    title: "Line Hopper",
-    focus: ["0", "$", "gg", "G", "5G"],
-    guide: "zero",
-    briefing: "Real files are vertical cities. Jump to roof, basement, line starts, and line ends without walking the stairs.",
     buffer: [
-      "[NEXUS_DATABASE_SCAN]",
-      ">>START_MARKER<< Begin scan here",
-      "Record_001: encrypted user block",
-      "Record_002: public access ok",
-      "Record_003: admin credentials",
-      "Record_004: surveillance relay",
-      ">>END_MARKER<< Scan complete"
-    ],
-    cursor: { line: 3, col: 12 },
-    objectives: [
-      {
-        text: "Use gg to jump to the first line.",
-        hint: "g then g means go to the top.",
-        target: { line: 0, col: 0 },
-        check: (s) => s.cursor.line === 0
-      },
-      {
-        text: "Use G to jump to the final line.",
-        hint: "Shift+G goes to the bottom unless you give it a number.",
-        target: (s) => ({ line: s.buffer.length - 1, col: 0 }),
-        check: (s) => s.cursor.line === s.buffer.length - 1
-      },
-      {
-        text: "Use $ to hit the end marker.",
-        hint: "$ lands on the last character of the current line.",
-        target: (s) => ({ line: s.cursor.line, col: lineMax(s, s.cursor.line) }),
-        check: (s) => s.cursor.col === lineMax(s, s.cursor.line)
-      },
-      {
-        text: "Use 0 to return to the line start.",
-        hint: "0 is the origin column.",
-        target: (s) => ({ line: s.cursor.line, col: 0 }),
-        check: (s) => s.cursor.col === 0
-      },
-      {
-        text: "Use 5G to jump directly to line 5.",
-        hint: "Number plus G targets a specific line.",
-        target: { line: 4, col: 0 },
-        check: (s) => s.cursor.line === 4
-      }
-    ]
-  },
-  {
-    title: "Target Lock",
-    focus: ["f", "F", "t", "T"],
-    guide: "blade",
-    briefing: "Character search is how experts thread tight syntax. Lock onto braces, quotes, commas, and operators before editing.",
-    buffer: [
-      "// NEXUS_AUTH_MODULE.js",
-      "function authenticate(user, pass) {",
-      "  const hash = encrypt(pass, 'SALT_KEY');",
-      "  return verify(user, hash) && log(user);",
-      "}",
-      "const SECRET = 'NEXUS_OVERRIDE_2026';"
-    ],
-    cursor: { line: 1, col: 0 },
-    objectives: [
-      {
-        text: "Use f( to find the opening parenthesis.",
-        hint: "f finds a character forward on this line.",
-        target: (s) => charTarget(s, 1, "("),
-        check: (s) => charAtCursor(s) === "("
-      },
-      {
-        text: "Use f{ to lock onto the opening brace.",
-        hint: "Stay on the function line and search forward again.",
-        target: (s) => charTarget(s, 1, "{"),
-        check: (s) => s.cursor.line === 1 && charAtCursor(s) === "{"
-      },
-      {
-        text: "Move to line 3 and use f' to find the quote.",
-        hint: "Use j to descend, then f followed by a single quote.",
-        target: (s) => charTarget(s, 2, "'"),
-        check: (s) => s.cursor.line === 2 && charAtCursor(s) === "'"
-      },
-      {
-        text: "Use T, to stop just after the previous comma.",
-        hint: "T searches backward and lands till the target.",
-        target: { line: 2, col: 28 },
-        check: (s) => s.cursor.line === 2 && s.cursor.col === 28
-      }
-    ]
-  },
-  {
-    title: "Edit Breach",
-    focus: ["x", "dw", "D", "dd", "u"],
-    guide: "shell",
-    briefing: "Navigation is only half the job. Now remove bad code with small, reversible edits. Precision deletion is practical Vim.",
-    buffer: [
-      "NEXUS_SURVEILLANCE v2.0",
-      "TRACK = trZue; // remove this comment",
-      "LOG = true;",
-      "DELETE_THIS_LINE",
-      "function spy() { return true; }",
-      "export { LOG };"
-    ],
-    cursor: { line: 1, col: 10 },
-    objectives: [
-      {
-        text: "Press x to delete the rogue Z in trZue.",
-        hint: "x deletes the character under the cursor.",
-        target: { line: 1, col: 10 },
-        check: (s) => s.buffer[1].includes("true") && !s.buffer[1].includes("Z")
-      },
-      {
-        text: "Use f/ then D to delete the comment.",
-        hint: "Find the slash, then D deletes to end of line.",
-        target: (s) => charTarget(s, 1, "/"),
-        check: (s) => !s.buffer[1].includes("//")
-      },
-      {
-        text: "Delete DELETE_THIS_LINE with dd.",
-        hint: "Move to the line and press d twice.",
-        target: (s) => textTarget(s, "DELETE_THIS_LINE"),
-        check: (s) => !s.buffer.some((line) => line.includes("DELETE_THIS_LINE"))
-      },
-      {
-        text: "Delete the word spy with dw.",
-        hint: "Put the cursor on the s in spy before pressing dw.",
-        target: (s) => textTarget(s, "spy"),
-        check: (s) => !s.buffer.some((line) => line.includes("spy"))
-      }
-    ]
-  },
-  {
-    title: "Patch Bay",
-    focus: ["i", "A", "o", "cw", "yy", "p"],
-    guide: "byte",
-    briefing: "The final room mixes practical editing: enter insert mode, append config, open lines, change words, yank a known-good row, and paste it where the system expects it.",
-    buffer: [
-      "// payload.config",
-      "target = NEXUS_CORE",
+      "# nexus.conf",
+      "telemetry = true",
       "mode = observe",
-      "token = ACCESS_OK",
-      "",
-      "// duplicate token below"
+      "endpoint = /v1/nexus/open",
+      "retries = 3"
     ],
-    cursor: { line: 2, col: 7 },
-    objectives: [
-      {
-        text: "Use cw to change observe into disable.",
-        hint: "Press cw, type disable, then Escape.",
-        target: (s) => textTarget(s, "observe"),
-        check: (s) => s.buffer[2].includes("disable")
-      },
-      {
-        text: "Use A to append ; verified to the token line.",
-        hint: "Move to token, press A, type ; verified, then Escape.",
-        target: (s) => textTarget(s, "ACCESS_OK"),
-        check: (s) => s.buffer[3].endsWith("; verified")
-      },
-      {
-        text: "Use yy on the token line and p below the comment.",
-        hint: "yy copies a line. p pastes below the current line.",
-        target: { line: 5, col: 0 },
-        check: (s) => s.buffer.filter((line) => line.includes("token = ACCESS_OK")).length >= 2
-      },
-      {
-        text: "Use o to open a final line and type escape = true.",
-        hint: "o opens below and enters INSERT mode. Escape returns to NORMAL.",
-        target: (s) => ({ line: s.buffer.length - 1, col: lineMax(s, s.buffer.length - 1) }),
-        check: (s) => s.buffer.some((line) => line.trim() === "escape = true") && s.mode === "NORMAL"
-      }
+    cursor: { line: 0, col: 0 },
+    systems: [
+      { label: "Telemetry disabled", check: (s) => hasLine(s, "telemetry = false") },
+      { label: "Mode quarantined", check: (s) => hasLine(s, "mode = quarantine") },
+      { label: "Endpoint closed", check: (s) => hasLine(s, "endpoint = /v1/nexus/closed") }
+    ]
+  },
+  {
+    title: "Access List Cleanup",
+    bufferName: "access.rules",
+    guide: "shell",
+    par: 9,
+    focus: ["dd", "D", "cw", "/"],
+    task: "Remove the duplicate root rule, redact the leaked token, and strip the deploy comment.",
+    lesson: "Deletion is practical when it has scope: whole line with dd, to end of line with D, and word-level replacement with cw.",
+    hints: [
+      "Search for duplicate, delete that line with dd.",
+      "Search LEAK_ME, use cw to type REDACTED.",
+      "Use f/ then D to remove the comment tail."
+    ],
+    buffer: [
+      "# access.rules",
+      "allow root",
+      "allow ops",
+      "deny malware",
+      "allow root  # duplicate",
+      "token = LEAK_ME; // remove before deploy"
+    ],
+    cursor: { line: 0, col: 0 },
+    systems: [
+      { label: "Only one root allow rule remains", check: (s) => countLines(s, /^allow root\b/) === 1 },
+      { label: "Leaked token redacted", check: (s) => bufferText(s).includes("token = REDACTED;") },
+      { label: "Deploy comment removed", check: (s) => !bufferText(s).includes("// remove before deploy") }
+    ]
+  },
+  {
+    title: "Payload Surgery",
+    bufferName: "payload.json",
+    guide: "blade",
+    par: 10,
+    focus: ["a", "ci\"", "r", "/"],
+    task: "Repair the malformed payload: active must be true, role must be operator, and route must be /prod.",
+    lesson: "Text objects make structured editing feel direct. ci\" changes inside quotes without counting columns.",
+    hints: [
+      "Search tru, use e then a to append the missing e.",
+      "Search admin and use ci\"operator, then Escape.",
+      "Search debug and use ci\"/prod, then Escape."
+    ],
+    buffer: [
+      "{",
+      "  \"agent\": \"rookie\",",
+      "  \"active\": tru,",
+      "  \"role\": \"admin\",",
+      "  \"route\": \"/debug\"",
+      "}"
+    ],
+    cursor: { line: 0, col: 0 },
+    systems: [
+      { label: "Boolean repaired", check: (s) => hasLine(s, "  \"active\": true,") },
+      { label: "Role downgraded", check: (s) => hasLine(s, "  \"role\": \"operator\",") },
+      { label: "Route points to production", check: (s) => hasLine(s, "  \"route\": \"/prod\"") }
+    ]
+  },
+  {
+    title: "Refactor Sweep",
+    bufferName: "ship.js",
+    guide: "zero",
+    par: 3,
+    focus: [":%s", "g", "u"],
+    task: "Rename the temporary variable tmp to payload everywhere without manually editing each occurrence.",
+    lesson: "Global substitution is one of Vim's sharpest practical tools. Use it when the intent is broad and mechanical.",
+    hints: [
+      "Open command-line mode with :",
+      "Run %s/tmp/payload/g and press Enter.",
+      "If the replacement is wrong, use u to undo and try again."
+    ],
+    buffer: [
+      "function ship(tmp) {",
+      "  validate(tmp);",
+      "  send(tmp);",
+      "  return tmp.id;",
+      "}"
+    ],
+    cursor: { line: 0, col: 0 },
+    systems: [
+      { label: "tmp fully removed", check: (s) => !bufferText(s).includes("tmp") },
+      { label: "payload used everywhere", check: (s) => (bufferText(s).match(/payload/g) || []).length === 4 }
+    ]
+  },
+  {
+    title: "Launch Commit",
+    bufferName: "deploy.js",
+    guide: "byte",
+    par: 13,
+    focus: ["yy", "p", "ci\"", "o"],
+    task: "Add the missing backup check, promote staging to production, and add confirmed: true to the deploy object.",
+    lesson: "Real edits combine small Vim ideas. Copy structure with yy/p, change quoted text with ci\", and open new lines with o.",
+    hints: [
+      "Duplicate the logs line with yy then p, then use ci\"backup.",
+      "Search staging and use ci\"production.",
+      "On the stage line, use o and type two spaces plus confirmed: true."
+    ],
+    buffer: [
+      "const checks = [",
+      "  \"auth\",",
+      "  \"logs\"",
+      "];",
+      "",
+      "deploy({",
+      "  stage: \"staging\"",
+      "});"
+    ],
+    cursor: { line: 0, col: 0 },
+    systems: [
+      { label: "Backup check added", check: (s) => bufferText(s).includes("\"backup\"") },
+      { label: "Production stage set", check: (s) => bufferText(s).includes("stage: \"production\"") },
+      { label: "Deploy confirmation added", check: (s) => bufferText(s).includes("confirmed: true") }
     ]
   }
 ];
@@ -298,44 +207,49 @@ const els = {
   focusStrip: document.querySelector("#focus-strip"),
   mode: document.querySelector("#mode-label"),
   keys: document.querySelector("#keys-label"),
-  strokes: document.querySelector("#strokes-label"),
-  objectiveIndex: document.querySelector("#objective-index"),
-  objectiveText: document.querySelector("#objective-text"),
-  objectiveHint: document.querySelector("#objective-hint"),
+  score: document.querySelector("#score-label"),
+  par: document.querySelector("#par-label"),
+  task: document.querySelector("#task-text"),
+  lesson: document.querySelector("#lesson-text"),
+  hintButton: document.querySelector("#hint-button"),
+  hintText: document.querySelector("#hint-text"),
+  bufferName: document.querySelector("#buffer-name"),
   editor: document.querySelector("#editor"),
   cursorLabel: document.querySelector("#cursor-label"),
   message: document.querySelector("#message-label"),
-  drawer: document.querySelector("#drawer"),
-  guideName: document.querySelector("#guide-name"),
   guidePortrait: document.querySelector("#guide-portrait"),
-  briefing: document.querySelector("#briefing-text"),
+  guideName: document.querySelector("#guide-name"),
+  coach: document.querySelector("#coach-text"),
+  systems: document.querySelector("#system-list"),
+  quality: document.querySelector("#quality-list"),
   commandLog: document.querySelector("#command-log"),
   boot: document.querySelector("#boot-panel"),
   start: document.querySelector("#start-game"),
   prev: document.querySelector("#prev-mission"),
   next: document.querySelector("#next-mission"),
   restart: document.querySelector("#restart-mission"),
-  logButton: document.querySelector("#log-button"),
-  drawerToggle: document.querySelector("#drawer-toggle"),
   mobileKeys: document.querySelector("#mobile-keys")
 };
 
 const state = {
   missionIndex: 0,
-  objectiveIndex: 0,
   buffer: [],
   cursor: { line: 0, col: 0 },
   preferredCol: 0,
   mode: "NORMAL",
-  keySeq: "",
+  pending: "",
+  input: "",
   commandCount: 0,
+  keyCount: 0,
   history: [],
   undo: [],
-  yank: "",
-  yankType: "char",
-  message: "",
+  yank: { text: "", type: "char" },
+  search: "",
+  hintsUsed: 0,
+  systemStatus: [],
   active: false,
-  finished: false
+  finished: false,
+  message: "Press Enter Sim to begin."
 };
 
 const renderer = new THREE.WebGLRenderer({
@@ -348,207 +262,224 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 
 const scene = new THREE.Scene();
-scene.fog = new THREE.FogExp2(0x05080f, 0.035);
+scene.fog = new THREE.FogExp2(0x03070b, 0.035);
 
-const camera = new THREE.PerspectiveCamera(52, 1, 0.1, 120);
-camera.position.set(0, 10.5, 16);
+const camera = new THREE.PerspectiveCamera(52, 1, 0.1, 140);
+camera.position.set(0, 9.5, 15);
 
 const clock = new THREE.Clock();
-const world = new THREE.Group();
-const markers = new THREE.Group();
-scene.add(world, markers);
+const room = new THREE.Group();
+const systemNodes = [];
+scene.add(room);
 
-const player = createPlayer();
-const targetBeacon = createBeacon();
-scene.add(player, targetBeacon);
-
-const ambient = new THREE.HemisphereLight(0x8be8ff, 0x07111a, 1.6);
+const ambient = new THREE.HemisphereLight(0x8eeaff, 0x031018, 1.55);
 const keyLight = new THREE.DirectionalLight(0xffffff, 1.9);
-keyLight.position.set(6, 10, 6);
-const rimLight = new THREE.PointLight(0xff3fa4, 90, 28);
-rimLight.position.set(-7, 5, -7);
-scene.add(ambient, keyLight, rimLight);
-
-const rayFloor = new THREE.GridHelper(32, 32, 0x54dcff, 0x143344);
-rayFloor.material.transparent = true;
-rayFloor.material.opacity = 0.3;
-scene.add(rayFloor);
+keyLight.position.set(7, 11, 7);
+const alarmLight = new THREE.PointLight(0xff3fa4, 130, 30);
+alarmLight.position.set(-6, 5, -5);
+scene.add(ambient, keyLight, alarmLight);
 
 const textureLoader = new THREE.TextureLoader();
-const billboards = new THREE.Group();
-scene.add(billboards);
+const avatarCards = new THREE.Group();
+scene.add(avatarCards);
 
-function createPlayer() {
-  const group = new THREE.Group();
-  const body = new THREE.Mesh(
-    new THREE.CapsuleGeometry(0.28, 0.72, 6, 12),
-    new THREE.MeshStandardMaterial({
-      color: 0x54dcff,
-      emissive: 0x0f5c7a,
-      roughness: 0.34,
-      metalness: 0.18
-    })
-  );
-  body.position.y = 0.72;
-  const visor = new THREE.Mesh(
-    new THREE.BoxGeometry(0.38, 0.08, 0.08),
-    new THREE.MeshBasicMaterial({ color: 0xe8fbff })
-  );
-  visor.position.set(0, 1.15, 0.25);
-  group.add(body, visor);
-  return group;
-}
+const core = new THREE.Mesh(
+  new THREE.CylinderGeometry(0.55, 0.72, 2.6, 32),
+  new THREE.MeshStandardMaterial({
+    color: 0x132838,
+    emissive: 0x082434,
+    roughness: 0.36,
+    metalness: 0.28
+  })
+);
+core.position.set(0, 1.3, -1.8);
+scene.add(core);
 
-function createBeacon() {
-  const group = new THREE.Group();
-  const ring = new THREE.Mesh(
-    new THREE.TorusGeometry(0.55, 0.025, 8, 40),
-    new THREE.MeshBasicMaterial({ color: 0xffd166 })
-  );
-  ring.rotation.x = Math.PI / 2;
-  const cone = new THREE.Mesh(
-    new THREE.ConeGeometry(0.28, 0.9, 4),
-    new THREE.MeshBasicMaterial({ color: 0xff3fa4, wireframe: true })
-  );
-  cone.position.y = 1.0;
-  group.add(ring, cone);
-  return group;
-}
+const door = new THREE.Mesh(
+  new THREE.BoxGeometry(3.8, 2.8, 0.12),
+  new THREE.MeshStandardMaterial({
+    color: 0x311024,
+    emissive: 0x250018,
+    roughness: 0.5,
+    metalness: 0.2
+  })
+);
+door.position.set(0, 1.4, -7.25);
+scene.add(door);
 
 function startMission(index) {
   const mission = missions[wrap(index, missions.length)];
   state.missionIndex = wrap(index, missions.length);
-  state.objectiveIndex = 0;
   state.buffer = [...mission.buffer];
   state.cursor = { ...mission.cursor };
   state.preferredCol = state.cursor.col;
   state.mode = "NORMAL";
-  state.keySeq = "";
+  state.pending = "";
+  state.input = "";
   state.commandCount = 0;
+  state.keyCount = 0;
   state.history = [];
   state.undo = [];
-  state.yank = "";
-  state.yankType = "char";
-  state.message = "NORMAL mode ready.";
+  state.yank = { text: "", type: "char" };
+  state.search = "";
+  state.hintsUsed = 0;
   state.finished = false;
-  rebuildWorld();
+  state.message = "Read the ticket. Solve the buffer.";
+  state.systemStatus = mission.systems.map((system) => Boolean(system.check(state)));
+  rebuildRoom();
   updateAll();
 }
 
-function rebuildWorld() {
-  clearGroup(world);
-  clearGroup(markers);
-  clearGroup(billboards);
-
-  const mission = currentMission();
-  const rows = mission.buffer.length;
-  const width = Math.max(...mission.buffer.map((line) => line.length), 24);
+function rebuildRoom() {
+  clearGroup(room);
+  clearGroup(avatarCards);
+  systemNodes.length = 0;
 
   const floor = new THREE.Mesh(
-    new THREE.BoxGeometry(17, 0.16, rows * 1.18 + 2.6),
-    new THREE.MeshStandardMaterial({
-      color: 0x08131e,
-      roughness: 0.72,
-      metalness: 0.22
-    })
+    new THREE.BoxGeometry(15.5, 0.16, 13),
+    new THREE.MeshStandardMaterial({ color: 0x08131d, roughness: 0.76, metalness: 0.18 })
   );
-  floor.position.y = -0.1;
-  world.add(floor);
+  floor.position.y = -0.08;
+  room.add(floor);
 
-  for (let line = 0; line < rows; line += 1) {
-    const row = new THREE.Mesh(
-      new THREE.BoxGeometry(15.5, 0.04, 0.74),
-      new THREE.MeshBasicMaterial({
-        color: line % 2 ? 0x123247 : 0x0d2232,
-        transparent: true,
-        opacity: 0.62
-      })
-    );
-    row.position.set(0, 0.02, lineToZ(line, rows));
-    world.add(row);
+  const grid = new THREE.GridHelper(16, 16, 0x285a69, 0x13313c);
+  grid.position.y = 0.03;
+  grid.material.transparent = true;
+  grid.material.opacity = 0.38;
+  room.add(grid);
 
+  for (let i = 0; i < 6; i += 1) {
     const rail = new THREE.Mesh(
-      new THREE.BoxGeometry(15.5, 0.035, 0.035),
-      new THREE.MeshBasicMaterial({ color: 0x1b7893, transparent: true, opacity: 0.5 })
+      new THREE.BoxGeometry(13.5, 0.04, 0.04),
+      new THREE.MeshBasicMaterial({ color: 0x1b7285, transparent: true, opacity: 0.55 })
     );
-    rail.position.set(0, 0.08, lineToZ(line, rows) - 0.38);
-    world.add(rail);
+    rail.position.set(0, 0.08, -5 + i * 1.65);
+    room.add(rail);
   }
 
-  for (const objective of mission.objectives) {
-    const target = resolveTarget(objective);
-    if (!target) continue;
-    const pad = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.18, 0.18, 0.06, 16),
-      new THREE.MeshBasicMaterial({ color: 0xffd166, transparent: true, opacity: 0.45 })
-    );
-    const pos = cursorToWorld(target.line, target.col, width, rows);
-    pad.position.set(pos.x, 0.08, pos.z);
-    markers.add(pad);
+  const mission = currentMission();
+  const total = mission.systems.length;
+  for (let i = 0; i < total; i += 1) {
+    const node = createSystemNode(i, total);
+    systemNodes.push(node);
+    room.add(node);
   }
 
-  addBillboard(characters.byte.portrait, -7.4, 2.4, lineToZ(1, rows), 0x54dcff);
-  addBillboard(characters.blade.portrait, 7.4, 2.4, lineToZ(Math.max(rows - 2, 1), rows), 0xff3fa4);
+  addAvatar(characters.byte.portrait, -6.2, 2.35, -5.2, 0x5ce7ff);
+  addAvatar(characters.blade.portrait, 6.2, 2.35, -5.2, 0xff3fa4);
 }
 
-function addBillboard(src, x, y, z, color) {
+function createSystemNode(index, total) {
+  const group = new THREE.Group();
+  const spacing = 3.2;
+  const x = (index - (total - 1) / 2) * spacing;
+  group.position.set(x, 0, 2.2);
+
+  const baseMaterial = new THREE.MeshStandardMaterial({
+    color: 0x101e2a,
+    emissive: 0x180018,
+    roughness: 0.42,
+    metalness: 0.38
+  });
+  const glowMaterial = new THREE.MeshBasicMaterial({ color: 0xff5c7a });
+
+  const tower = new THREE.Mesh(new THREE.CylinderGeometry(0.36, 0.46, 1.8, 24), baseMaterial);
+  tower.position.y = 0.9;
+  const ring = new THREE.Mesh(new THREE.TorusGeometry(0.62, 0.035, 8, 42), glowMaterial);
+  ring.position.y = 1.82;
+  ring.rotation.x = Math.PI / 2;
+  group.add(tower, ring);
+  group.userData = { tower, ring, baseMaterial, glowMaterial };
+  return group;
+}
+
+function addAvatar(src, x, y, z, color) {
   textureLoader.load(src, (texture) => {
     texture.colorSpace = THREE.SRGBColorSpace;
-    const mat = new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide });
-    const card = new THREE.Mesh(new THREE.PlaneGeometry(2.2, 1.4), mat);
+    const card = new THREE.Mesh(
+      new THREE.PlaneGeometry(2.25, 1.45),
+      new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide })
+    );
     card.position.set(x, y, z);
     card.lookAt(camera.position);
-    billboards.add(card);
+    avatarCards.add(card);
 
     const frame = new THREE.Mesh(
-      new THREE.PlaneGeometry(2.34, 1.54),
+      new THREE.PlaneGeometry(2.4, 1.6),
       new THREE.MeshBasicMaterial({ color, wireframe: true, transparent: true, opacity: 0.8 })
     );
-    frame.position.set(x, y, z - 0.01);
+    frame.position.set(x, y, z - 0.015);
     frame.lookAt(camera.position);
-    billboards.add(frame);
+    avatarCards.add(frame);
   });
 }
 
 function updateAll() {
   clampCursor();
-  checkObjective();
+  updateSystems();
   updateHud();
   renderEditor();
-  updateTargetBeacon();
-  updatePlayerPosition();
+  updateWorldState();
+}
+
+function updateSystems() {
+  const mission = currentMission();
+  state.systemStatus = mission.systems.map((system) => Boolean(system.check(state)));
+  const complete = state.systemStatus.every(Boolean);
+  if (complete && !state.finished) {
+    state.finished = true;
+    state.message = debriefMessage();
+    addHistory("CLEAR", "Room repaired");
+  }
 }
 
 function updateHud() {
   const mission = currentMission();
   const guide = characters[mission.guide];
-  const objective = currentObjective();
-  els.missionKicker.textContent = `MISSION ${String(state.missionIndex + 1).padStart(2, "0")}`;
+  const repaired = state.systemStatus.filter(Boolean).length;
+
+  els.missionKicker.textContent = `ROOM ${String(state.missionIndex + 1).padStart(2, "0")} // ${mission.bufferName}`;
   els.missionTitle.textContent = mission.title;
-  els.focusStrip.innerHTML = mission.focus.map((key) => `<span>${escapeHtml(key)}</span>`).join("");
+  els.focusStrip.innerHTML = mission.focus.map((item) => `<span>${escapeHtml(item)}</span>`).join("");
   els.mode.textContent = state.mode;
-  els.keys.textContent = state.keySeq || "-";
-  els.strokes.textContent = String(state.commandCount);
-  els.objectiveIndex.textContent = `${String(Math.min(state.objectiveIndex + 1, mission.objectives.length)).padStart(2, "0")}/${String(mission.objectives.length).padStart(2, "0")}`;
-  els.objectiveText.textContent = state.finished ? "Mission clear. The exit gate is open." : objective.text;
-  els.objectiveHint.textContent = state.finished ? "Advance to the next room or replay this one for efficiency." : objective.hint;
+  els.keys.textContent = activeCommandLabel();
+  els.score.textContent = `${state.commandCount}/${mission.par}`;
+  els.par.textContent = `PAR ${mission.par}`;
+  els.task.textContent = mission.task;
+  els.lesson.textContent = mission.lesson;
+  els.bufferName.textContent = mission.bufferName;
   els.cursorLabel.textContent = `L${state.cursor.line + 1} C${state.cursor.col}`;
-  els.message.textContent = state.message;
+  els.message.textContent = state.finished ? debriefMessage() : state.message;
+  els.hintText.textContent = hintText();
   els.guideName.textContent = guide.name;
   els.guidePortrait.src = guide.portrait;
   els.guidePortrait.alt = `${guide.name} portrait`;
-  els.briefing.textContent = mission.briefing;
-  els.commandLog.innerHTML = state.history.slice(-9).reverse().map((entry) => (
-    `<div class="command-log-item"><strong>${escapeHtml(entry.keys)}</strong> ${escapeHtml(entry.label)}</div>`
+  els.coach.textContent = state.finished ? debriefMessage() : guide.coach;
+  els.next.disabled = state.missionIndex === missions.length - 1 || !state.finished;
+
+  els.systems.innerHTML = mission.systems.map((system, index) => {
+    const pass = state.systemStatus[index];
+    return `<div class="system-item ${pass ? "pass" : ""}">
+      <span class="system-dot"></span>
+      <span>${escapeHtml(system.label)}</span>
+    </div>`;
+  }).join("");
+
+  els.quality.innerHTML = qualityNotes().map((note) => (
+    `<div class="quality-item ${note.type}">${escapeHtml(note.text)}</div>`
   )).join("");
-  els.next.disabled = state.missionIndex === missions.length - 1 && !state.finished;
+
+  els.commandLog.innerHTML = state.history.slice(-10).reverse().map((entry) => (
+    `<div class="command-item"><strong>${escapeHtml(entry.keys)}</strong> ${escapeHtml(entry.label)}</div>`
+  )).join("");
+
+  document.documentElement.style.setProperty("--room-progress", `${repaired}/${mission.systems.length}`);
 }
 
 function renderEditor() {
   els.editor.innerHTML = state.buffer.map((line, lineIndex) => {
     const isCursorLine = lineIndex === state.cursor.line;
-    const targetLine = currentObjective() && resolveTarget(currentObjective())?.line === lineIndex;
-    let output = "";
+    let rendered;
 
     if (isCursorLine) {
       const col = Math.min(state.cursor.col, line.length);
@@ -557,74 +488,98 @@ function renderEditor() {
       const after = escapeHtml(line.slice(col + (line[col] ? 1 : 0)));
       const cursorClass = state.mode === "INSERT" ? "cursor insert" : "cursor";
       const cursorText = state.mode === "INSERT" ? "" : escapeHtml(char);
-      output = `${before}<span class="${cursorClass}">${cursorText}</span>${after}`;
+      rendered = `${before}<span class="${cursorClass}">${cursorText}</span>${after}`;
     } else {
-      output = escapeHtml(line);
+      rendered = renderSearchHighlight(line);
     }
 
-    return `<div class="editor-line ${targetLine ? "complete-line" : ""}">
+    return `<div class="editor-line">
       <span class="line-number">${lineIndex + 1}</span>
-      <span class="line-text">${output || " "}</span>
+      <span class="line-text">${rendered || " "}</span>
     </div>`;
   }).join("");
 }
 
-function checkObjective() {
-  if (state.finished) return;
-  const objective = currentObjective();
-  if (!objective || !objective.check(state)) return;
-
-  const label = objective.text.replace(/\.$/, "");
-  state.history.push({ keys: state.keySeq || "✓", label });
-  state.objectiveIndex += 1;
-
-  if (state.objectiveIndex >= currentMission().objectives.length) {
-    state.finished = true;
-    state.message = `${currentMission().title} complete in ${state.commandCount} strokes.`;
-    pulseScene(0x5bff98);
-  } else {
-    state.message = "Objective complete. Next gate armed.";
-    pulseScene(0xffd166);
-  }
+function renderSearchHighlight(line) {
+  if (!state.search) return escapeHtml(line);
+  const index = line.indexOf(state.search);
+  if (index === -1) return escapeHtml(line);
+  return `${escapeHtml(line.slice(0, index))}<span class="search-hit">${escapeHtml(state.search)}</span>${escapeHtml(line.slice(index + state.search.length))}`;
 }
 
-function handleKey(key) {
-  if (!state.active) return;
+function updateWorldState() {
+  const allPass = state.systemStatus.every(Boolean);
+  systemNodes.forEach((node, index) => {
+    const pass = state.systemStatus[index];
+    const color = pass ? 0x69ff9d : 0xff5c7a;
+    node.userData.glowMaterial.color.setHex(color);
+    node.userData.baseMaterial.emissive.setHex(pass ? 0x0b4b2c : 0x2b0615);
+    node.userData.baseMaterial.color.setHex(pass ? 0x15372a : 0x101e2a);
+  });
 
-  if (state.mode === "INSERT") {
-    handleInsertKey(key);
-  } else {
-    handleNormalKey(key);
-  }
+  core.material.emissive.setHex(allPass ? 0x0b5a34 : 0x082434);
+  core.material.color.setHex(allPass ? 0x17412f : 0x132838);
+  door.material.emissive.setHex(allPass ? 0x0c4f31 : 0x250018);
+  door.material.color.setHex(allPass ? 0x183f2d : 0x311024);
+  door.position.y += ((allPass ? 3.25 : 1.4) - door.position.y) * 0.08;
+  alarmLight.color.setHex(allPass ? 0x69ff9d : 0xff3fa4);
+}
+
+function handleKey(rawKey) {
+  if (!state.active) return;
+  const key = normalizeKey(rawKey);
+  if (!key) return;
+  state.keyCount += 1;
+
+  if (state.mode === "INSERT") handleInsertKey(key);
+  else if (state.mode === "SEARCH") handleSearchKey(key);
+  else if (state.mode === "COMMAND") handleCommandLineKey(key);
+  else handleNormalKey(key);
 
   updateAll();
 }
 
 function handleNormalKey(key) {
   if (key === "Escape") {
-    state.keySeq = "";
+    state.pending = "";
     state.message = "Command cleared.";
     return;
   }
 
-  state.keySeq += key;
-  const parsed = parseCommand(state.keySeq);
+  if (state.pending === "" && key === "/") {
+    state.mode = "SEARCH";
+    state.input = "";
+    state.pending = "";
+    state.message = "Search: type a pattern, then Enter.";
+    return;
+  }
+
+  if (state.pending === "" && key === ":") {
+    state.mode = "COMMAND";
+    state.input = "";
+    state.pending = "";
+    state.message = "Command-line mode.";
+    return;
+  }
+
+  state.pending += key;
+  const parsed = parseNormalCommand(state.pending);
 
   if (parsed.status === "pending") {
-    state.message = `Pending: ${state.keySeq}`;
+    state.message = `Pending: ${state.pending}`;
     return;
   }
 
   if (parsed.status === "invalid") {
-    state.message = `Unknown command: ${state.keySeq}`;
-    state.keySeq = "";
+    state.message = `Not a supported command: ${state.pending}`;
+    state.pending = "";
     return;
   }
 
-  executeCommand(parsed);
-  state.commandCount += 1;
-  state.history.push({ keys: state.keySeq, label: parsed.label });
-  state.keySeq = "";
+  executeNormalCommand(parsed);
+  state.commandCount += parsed.countsAsCommand === false ? 0 : 1;
+  addHistory(state.pending, parsed.label);
+  state.pending = "";
 }
 
 function handleInsertKey(key) {
@@ -632,27 +587,13 @@ function handleInsertKey(key) {
     state.mode = "NORMAL";
     state.cursor.col = Math.max(0, Math.min(state.cursor.col - 1, lineMax(state, state.cursor.line)));
     state.preferredCol = state.cursor.col;
-    state.commandCount += 1;
-    state.history.push({ keys: "Esc", label: "Return to NORMAL mode" });
-    state.message = "Back in NORMAL mode.";
+    state.message = "Back to NORMAL. Verify the room systems.";
+    addHistory("Esc", "Return to Normal mode");
     return;
   }
 
-  saveUndo();
-
   if (key === "Backspace") {
-    if (state.cursor.col > 0) {
-      const line = currentLine();
-      state.buffer[state.cursor.line] = line.slice(0, state.cursor.col - 1) + line.slice(state.cursor.col);
-      state.cursor.col -= 1;
-    } else if (state.cursor.line > 0) {
-      const prevLength = state.buffer[state.cursor.line - 1].length;
-      state.buffer[state.cursor.line - 1] += currentLine();
-      state.buffer.splice(state.cursor.line, 1);
-      state.cursor.line -= 1;
-      state.cursor.col = prevLength;
-    }
-    state.message = "Insert backspace.";
+    insertBackspace();
     return;
   }
 
@@ -667,90 +608,152 @@ function handleInsertKey(key) {
   }
 
   if (key.length !== 1) return;
-
   const line = currentLine();
   state.buffer[state.cursor.line] = line.slice(0, state.cursor.col) + key + line.slice(state.cursor.col);
   state.cursor.col += 1;
-  state.message = "Typing payload...";
+  state.preferredCol = state.cursor.col;
+  state.message = "Typing...";
 }
 
-function parseCommand(sequence) {
-  const match = sequence.match(/^([1-9]\d*)(.*)$/);
-  const count = match ? Number(match[1]) : 1;
-  const cmd = match ? match[2] : sequence;
+function handleSearchKey(key) {
+  if (key === "Escape") {
+    state.mode = "NORMAL";
+    state.input = "";
+    state.message = "Search cancelled.";
+    return;
+  }
 
-  if (match && cmd === "") return { status: "pending" };
+  if (key === "Backspace") {
+    state.input = state.input.slice(0, -1);
+    state.message = `/${state.input}`;
+    return;
+  }
+
+  if (key === "Enter") {
+    state.search = state.input;
+    state.mode = "NORMAL";
+    state.commandCount += 1;
+    const found = runSearch(1, true);
+    addHistory(`/${state.search}`, found ? "Search forward" : "Search missed");
+    state.message = found ? `Found ${state.search}.` : `No match for ${state.search}.`;
+    state.input = "";
+    return;
+  }
+
+  if (key.length === 1) {
+    state.input += key;
+    state.message = `/${state.input}`;
+  }
+}
+
+function handleCommandLineKey(key) {
+  if (key === "Escape") {
+    state.mode = "NORMAL";
+    state.input = "";
+    state.message = "Command cancelled.";
+    return;
+  }
+
+  if (key === "Backspace") {
+    state.input = state.input.slice(0, -1);
+    state.message = `:${state.input}`;
+    return;
+  }
+
+  if (key === "Enter") {
+    const command = state.input;
+    state.mode = "NORMAL";
+    state.input = "";
+    executeExCommand(command);
+    return;
+  }
+
+  if (key.length === 1) {
+    state.input += key;
+    state.message = `:${state.input}`;
+  }
+}
+
+function parseNormalCommand(sequence) {
+  const countMatch = sequence.match(/^([1-9]\d*)(.*)$/);
+  const count = countMatch ? Number(countMatch[1]) : 1;
+  const cmd = countMatch ? countMatch[2] : sequence;
+
+  if (countMatch && cmd === "") return { status: "pending" };
   if (cmd === "g" || ["f", "F", "t", "T", "r", "d", "c", "y"].includes(cmd)) return { status: "pending" };
   if (/^[dcy][ia]$/.test(cmd)) return { status: "pending" };
-  if (/^[dcy][fFtT]$/.test(cmd)) return { status: "pending" };
 
-  if (cmd === "gg") return { status: "complete", type: "goto", line: count - 1, label: "Jump to top or counted line" };
-  if (cmd === "G") return { status: "complete", type: "goto", line: count > 1 ? count - 1 : "last", label: "Jump to bottom or counted line" };
+  if (cmd === "gg") return complete("goto", { line: count - 1, label: "Jump to top or counted line" });
+  if (cmd === "G") return complete("goto", { line: count > 1 ? count - 1 : "last", label: "Jump to bottom or counted line" });
   if (["h", "j", "k", "l", "w", "b", "e", "0", "$", "^"].includes(cmd)) {
-    return { status: "complete", type: "motion", motion: cmd, count, label: describeMotion(cmd, count) };
+    return complete("motion", { motion: cmd, count, label: describeMotion(cmd, count) });
   }
-  if (/^[fFtT].$/.test(cmd)) {
-    return { status: "complete", type: "find", direction: cmd[0], char: cmd[1], count, label: `Find ${cmd[1]} with ${cmd[0]}` };
-  }
-  if (/^r.$/.test(cmd)) {
-    return { status: "complete", type: "replace", char: cmd[1], count, label: `Replace character with ${cmd[1]}` };
-  }
-  if (["i", "I", "a", "A", "o", "O"].includes(cmd)) {
-    return { status: "complete", type: "insertMode", command: cmd, label: `Enter INSERT with ${cmd}` };
-  }
-  if (["x", "D", "C", "u", "p", "P"].includes(cmd)) {
-    return { status: "complete", type: "single", command: cmd, count, label: describeSingle(cmd) };
-  }
-  if (["dd", "yy", "cc"].includes(cmd)) {
-    return { status: "complete", type: "lineOp", command: cmd, count, label: describeLineOp(cmd) };
-  }
-  if (/^[dcy](w|\$|0)$/.test(cmd)) {
-    return { status: "complete", type: "operatorMotion", operator: cmd[0], motion: cmd[1], count, label: `${cmd[0]}${cmd[1]} operation` };
-  }
-  if (/^[dcy]iw$/.test(cmd)) {
-    return { status: "complete", type: "innerWord", operator: cmd[0], count, label: `${cmd[0]}iw inner word` };
+  if (/^[fFtT].$/.test(cmd)) return complete("find", { direction: cmd[0], char: cmd[1], count, label: `Find ${cmd[1]} with ${cmd[0]}` });
+  if (/^r.$/.test(cmd)) return complete("replace", { char: cmd[1], count, label: `Replace with ${cmd[1]}` });
+  if (["i", "I", "a", "A", "o", "O"].includes(cmd)) return complete("insert", { command: cmd, label: `Insert via ${cmd}` });
+  if (["x", "D", "C", "u", "p", "P", "n", "N"].includes(cmd)) return complete("single", { command: cmd, count, label: describeSingle(cmd) });
+  if (["dd", "yy", "cc"].includes(cmd)) return complete("lineOp", { command: cmd, count, label: describeLineOp(cmd) });
+  if (/^[dcy](w|\$|0)$/.test(cmd)) return complete("operatorMotion", { operator: cmd[0], motion: cmd[1], count, label: `${cmd[0]}${cmd[1]}` });
+  if (/^[dcy][ia](w|["'`(){}\[\]])$/.test(cmd)) {
+    return complete("textObject", { operator: cmd[0], modifier: cmd[1], object: cmd[2], count, label: `${cmd[0]}${cmd[1]}${cmd[2]}` });
   }
 
   return couldStillMatch(cmd) ? { status: "pending" } : { status: "invalid" };
 }
 
-function executeCommand(cmd) {
-  if (!["motion", "goto", "find"].includes(cmd.type)) saveUndo();
+function complete(type, fields) {
+  return { status: "complete", type, ...fields };
+}
 
-  switch (cmd.type) {
-    case "motion":
-      repeat(cmd.count, () => move(cmd.motion));
-      break;
-    case "goto":
-      state.cursor.line = cmd.line === "last" ? state.buffer.length - 1 : clamp(cmd.line, 0, state.buffer.length - 1);
-      clampCursor();
-      break;
-    case "find":
-      repeat(cmd.count, () => findChar(cmd.direction, cmd.char));
-      break;
-    case "replace":
-      replaceChars(cmd.char, cmd.count);
-      break;
-    case "insertMode":
-      enterInsert(cmd.command);
-      break;
-    case "single":
-      executeSingle(cmd.command, cmd.count);
-      break;
-    case "lineOp":
-      executeLineOp(cmd.command, cmd.count);
-      break;
-    case "operatorMotion":
-      executeOperatorMotion(cmd.operator, cmd.motion);
-      break;
-    case "innerWord":
-      executeInnerWord(cmd.operator);
-      break;
-    default:
-      break;
+function executeNormalCommand(cmd) {
+  if (mutates(cmd)) saveUndo();
+
+  if (cmd.type === "motion") repeat(cmd.count, () => move(cmd.motion));
+  if (cmd.type === "goto") {
+    state.cursor.line = cmd.line === "last" ? state.buffer.length - 1 : clamp(cmd.line, 0, state.buffer.length - 1);
+    clampCursor();
   }
+  if (cmd.type === "find") repeat(cmd.count, () => findChar(cmd.direction, cmd.char));
+  if (cmd.type === "replace") replaceChars(cmd.char, cmd.count);
+  if (cmd.type === "insert") enterInsert(cmd.command);
+  if (cmd.type === "single") executeSingle(cmd.command, cmd.count);
+  if (cmd.type === "lineOp") executeLineOp(cmd.command, cmd.count);
+  if (cmd.type === "operatorMotion") executeOperatorMotion(cmd.operator, cmd.motion);
+  if (cmd.type === "textObject") executeTextObject(cmd.operator, cmd.modifier, cmd.object);
 
   state.message = cmd.label;
+}
+
+function executeExCommand(command) {
+  const substitution = command.match(/^%s\/(.+)\/(.*)\/([g]*)$/);
+  if (substitution) {
+    saveUndo();
+    const [, from, to, flags] = substitution;
+    const pattern = new RegExp(escapeRegExp(from), flags.includes("g") ? "g" : "");
+    state.buffer = state.buffer.map((line) => line.replace(pattern, to));
+    state.commandCount += 1;
+    state.message = `Substituted ${from} -> ${to}.`;
+    addHistory(`:${command}`, "Global substitution");
+    return;
+  }
+
+  if (command === "w" || command === "write") {
+    state.commandCount += 1;
+    state.message = "Write simulated. The room validates automatically.";
+    addHistory(`:${command}`, "Write checkpoint");
+    return;
+  }
+
+  state.message = `Unsupported command: :${command}`;
+  addHistory(`:${command}`, "Unsupported Ex command");
+}
+
+function mutates(cmd) {
+  if (cmd.type === "replace" || cmd.type === "insert" || cmd.type === "textObject") return true;
+  if (cmd.type === "single") return ["x", "D", "C", "p", "P"].includes(cmd.command);
+  if (cmd.type === "lineOp") return ["dd", "cc"].includes(cmd.command);
+  if (cmd.type === "operatorMotion") return ["d", "c"].includes(cmd.operator);
+  return false;
 }
 
 function move(motion) {
@@ -770,7 +773,6 @@ function move(motion) {
   if (motion === "0") state.cursor.col = 0;
   if (motion === "$") state.cursor.col = lineMax(state, state.cursor.line);
   if (motion === "^") state.cursor.col = firstNonBlank(currentLine());
-
   if (!["j", "k"].includes(motion)) state.preferredCol = state.cursor.col;
   clampCursor();
 }
@@ -778,12 +780,8 @@ function move(motion) {
 function moveWordForward() {
   let { line, col } = state.cursor;
   let text = state.buffer[line] ?? "";
-
-  if (WORD.test(text[col] ?? "")) {
-    while (col < text.length && WORD.test(text[col] ?? "")) col += 1;
-  } else {
-    col += 1;
-  }
+  if (WORD.test(text[col] ?? "")) while (col < text.length && WORD.test(text[col] ?? "")) col += 1;
+  else col += 1;
 
   while (line < state.buffer.length) {
     text = state.buffer[line] ?? "";
@@ -801,9 +799,8 @@ function moveWordForward() {
 
 function moveWordBackward() {
   let { line, col } = state.cursor;
-
   while (line >= 0) {
-    const text = state.buffer[line];
+    const text = state.buffer[line] ?? "";
     col -= 1;
     while (col >= 0) {
       if (WORD.test(text[col]) && (col === 0 || !WORD.test(text[col - 1]))) {
@@ -819,9 +816,8 @@ function moveWordBackward() {
 
 function moveWordEnd() {
   let { line, col } = state.cursor;
-
   while (line < state.buffer.length) {
-    const text = state.buffer[line];
+    const text = state.buffer[line] ?? "";
     col += 1;
     while (col < text.length) {
       if (WORD.test(text[col]) && (col === text.length - 1 || !WORD.test(text[col + 1]))) {
@@ -851,6 +847,37 @@ function findChar(direction, char) {
   }
 }
 
+function runSearch(direction, includeCurrent = false) {
+  if (!state.search) return false;
+  const startLine = state.cursor.line;
+  const startCol = includeCurrent ? state.cursor.col : state.cursor.col + direction;
+  let line = startLine;
+  let wrapped = false;
+
+  while (true) {
+    const text = state.buffer[line] ?? "";
+    const index = direction > 0
+      ? text.indexOf(state.search, line === startLine ? Math.max(0, startCol) : 0)
+      : text.lastIndexOf(state.search, line === startLine ? Math.max(0, startCol) : text.length);
+    if (index !== -1) {
+      state.cursor = { line, col: index };
+      state.preferredCol = index;
+      return true;
+    }
+
+    line += direction;
+    if (line < 0) {
+      line = state.buffer.length - 1;
+      wrapped = true;
+    }
+    if (line >= state.buffer.length) {
+      line = 0;
+      wrapped = true;
+    }
+    if (line === startLine && wrapped) return false;
+  }
+}
+
 function enterInsert(command) {
   if (command === "I") state.cursor.col = firstNonBlank(currentLine());
   if (command === "a") state.cursor.col = Math.min(currentLine().length, state.cursor.col + 1);
@@ -868,18 +895,18 @@ function enterInsert(command) {
 }
 
 function executeSingle(command, count) {
-  if (command === "x") {
-    repeat(count, () => deleteRange(state.cursor.line, state.cursor.col, state.cursor.line, state.cursor.col + 1));
-  }
-  if (command === "D") {
-    deleteRange(state.cursor.line, state.cursor.col, state.cursor.line, currentLine().length);
-  }
+  if (command === "x") repeat(count, () => deleteRange(state.cursor.line, state.cursor.col, state.cursor.line, state.cursor.col + 1));
+  if (command === "D") deleteRange(state.cursor.line, state.cursor.col, state.cursor.line, currentLine().length);
   if (command === "C") {
     deleteRange(state.cursor.line, state.cursor.col, state.cursor.line, currentLine().length);
     state.mode = "INSERT";
   }
   if (command === "u") restoreUndo();
   if (command === "p" || command === "P") paste(command);
+  if (command === "n" || command === "N") {
+    const found = runSearch(command === "n" ? 1 : -1);
+    state.message = found ? `Found ${state.search}.` : "No search match.";
+  }
 }
 
 function executeLineOp(command, count) {
@@ -888,14 +915,12 @@ function executeLineOp(command, count) {
   const lines = state.buffer.slice(start, end + 1);
 
   if (command === "yy") {
-    state.yank = lines.join("\n");
-    state.yankType = "line";
+    state.yank = { text: lines.join("\n"), type: "line" };
     return;
   }
 
   if (command === "dd") {
-    state.yank = lines.join("\n");
-    state.yankType = "line";
+    state.yank = { text: lines.join("\n"), type: "line" };
     state.buffer.splice(start, lines.length);
     if (state.buffer.length === 0) state.buffer.push("");
     state.cursor.line = clamp(start, 0, state.buffer.length - 1);
@@ -903,8 +928,7 @@ function executeLineOp(command, count) {
   }
 
   if (command === "cc") {
-    state.yank = lines.join("\n");
-    state.yankType = "line";
+    state.yank = { text: lines.join("\n"), type: "line" };
     state.buffer.splice(start, lines.length, "");
     state.cursor.line = start;
     state.cursor.col = 0;
@@ -914,8 +938,18 @@ function executeLineOp(command, count) {
 
 function executeOperatorMotion(operator, motion) {
   if (operator === "y") {
-    state.yank = collectMotionText(motion);
-    state.yankType = "char";
+    if (motion === "w") {
+      const range = wordRange();
+      state.yank = { text: range ? currentLine().slice(range.start, range.end) : "", type: "char" };
+    } else {
+      state.yank = { text: collectMotionText(motion), type: "char" };
+    }
+    return;
+  }
+  if (operator === "c" && motion === "w") {
+    const range = wordRange();
+    if (range) deleteRange(state.cursor.line, range.start, state.cursor.line, range.end);
+    state.mode = "INSERT";
     return;
   }
   if (operator === "d" || operator === "c") {
@@ -924,11 +958,14 @@ function executeOperatorMotion(operator, motion) {
   }
 }
 
-function executeInnerWord(operator) {
-  const range = innerWordRange();
-  if (!range) return;
-  state.yank = currentLine().slice(range.start, range.end);
-  state.yankType = "char";
+function executeTextObject(operator, modifier, object) {
+  const range = textObjectRange(object, modifier);
+  if (!range) {
+    state.message = `No ${object} text object here.`;
+    return;
+  }
+
+  state.yank = { text: currentLine().slice(range.start, range.end), type: "char" };
   if (operator === "d" || operator === "c") {
     deleteRange(state.cursor.line, range.start, state.cursor.line, range.end);
     if (operator === "c") state.mode = "INSERT";
@@ -946,8 +983,8 @@ function deleteMotion(motion) {
     return;
   }
   if (motion === "w") {
-    const range = forwardWordDeleteRange();
-    deleteRange(state.cursor.line, range.start, range.line, range.end);
+    const range = forwardWordRange();
+    deleteRange(state.cursor.line, range.start, state.cursor.line, range.end);
   }
 }
 
@@ -955,14 +992,13 @@ function collectMotionText(motion) {
   if (motion === "$") return currentLine().slice(state.cursor.col);
   if (motion === "0") return currentLine().slice(0, state.cursor.col);
   if (motion === "w") {
-    const range = forwardWordDeleteRange();
-    return state.buffer[range.line].slice(range.start, range.end);
+    const range = forwardWordRange();
+    return currentLine().slice(range.start, range.end);
   }
   return "";
 }
 
-function forwardWordDeleteRange() {
-  const startLine = state.cursor.line;
+function forwardWordRange() {
   const start = state.cursor.col;
   let end = currentLine().length;
   for (let col = start + 1; col < currentLine().length; col += 1) {
@@ -971,7 +1007,35 @@ function forwardWordDeleteRange() {
       break;
     }
   }
-  return { line: startLine, start, end };
+  return { start, end };
+}
+
+function textObjectRange(object, modifier) {
+  if (object === "w") return wordRange();
+  const pairs = { "\"": "\"", "'": "'", "`": "`", "(": ")", ")": ")", "[": "]", "]": "]", "{": "}", "}": "}" };
+  const close = pairs[object];
+  if (!close) return null;
+  const open = ["}", "]", ")"].includes(object) ? { "}": "{", "]": "[", ")": "(" }[object] : object;
+  const line = currentLine();
+  let left = line.lastIndexOf(open, state.cursor.col);
+  let right = line.indexOf(close, Math.max(state.cursor.col, left + 1));
+
+  if (left === -1 || right === -1 || right === left) {
+    left = line.indexOf(open, state.cursor.col);
+    right = left === -1 ? -1 : line.indexOf(close, left + 1);
+  }
+  if (left === -1 || right === -1 || right === left) return null;
+  return modifier === "a" ? { start: left, end: right + 1 } : { start: left + 1, end: right };
+}
+
+function wordRange() {
+  const line = currentLine();
+  if (!line.length) return null;
+  let start = Math.min(state.cursor.col, line.length - 1);
+  while (start > 0 && WORD.test(line[start - 1])) start -= 1;
+  let end = Math.min(state.cursor.col, line.length - 1);
+  while (end < line.length && WORD.test(line[end])) end += 1;
+  return start === end ? null : { start, end };
 }
 
 function replaceChars(char, count) {
@@ -982,9 +1046,9 @@ function replaceChars(char, count) {
 }
 
 function paste(command) {
-  if (!state.yank) return;
-  const lines = state.yank.split("\n");
-  if (state.yankType === "line" || lines.length > 1) {
+  if (!state.yank.text) return;
+  const lines = state.yank.text.split("\n");
+  if (state.yank.type === "line" || lines.length > 1) {
     const insertAt = command === "p" ? state.cursor.line + 1 : state.cursor.line;
     state.buffer.splice(insertAt, 0, ...lines);
     state.cursor.line = insertAt;
@@ -993,17 +1057,32 @@ function paste(command) {
   }
   const line = currentLine();
   const col = command === "p" ? state.cursor.col + 1 : state.cursor.col;
-  state.buffer[state.cursor.line] = line.slice(0, col) + state.yank + line.slice(col);
+  state.buffer[state.cursor.line] = line.slice(0, col) + state.yank.text + line.slice(col);
   state.cursor.col = col;
+}
+
+function insertBackspace() {
+  if (state.cursor.col > 0) {
+    const line = currentLine();
+    state.buffer[state.cursor.line] = line.slice(0, state.cursor.col - 1) + line.slice(state.cursor.col);
+    state.cursor.col -= 1;
+  } else if (state.cursor.line > 0) {
+    const prevLength = state.buffer[state.cursor.line - 1].length;
+    state.buffer[state.cursor.line - 1] += currentLine();
+    state.buffer.splice(state.cursor.line, 1);
+    state.cursor.line -= 1;
+    state.cursor.col = prevLength;
+  }
+  state.preferredCol = state.cursor.col;
+  state.message = "Backspace.";
 }
 
 function deleteRange(startLine, startCol, endLine, endCol) {
   if (startLine !== endLine) return;
   const line = state.buffer[startLine] ?? "";
-  state.yank = line.slice(startCol, endCol);
-  state.yankType = "char";
+  state.yank = { text: line.slice(startCol, endCol), type: "char" };
   state.buffer[startLine] = line.slice(0, startCol) + line.slice(endCol);
-  state.cursor = { line: startLine, col: Math.min(startCol, lineMax(state, startLine)) };
+  state.cursor = { line: startLine, col: Math.min(startCol, state.buffer[startLine].length) };
   state.preferredCol = state.cursor.col;
 }
 
@@ -1013,55 +1092,87 @@ function saveUndo() {
     cursor: { ...state.cursor },
     mode: state.mode
   });
-  if (state.undo.length > 50) state.undo.shift();
+  if (state.undo.length > 60) state.undo.shift();
 }
 
 function restoreUndo() {
   const previous = state.undo.pop();
-  if (!previous) return;
+  if (!previous) {
+    state.message = "Nothing to undo.";
+    return;
+  }
   state.buffer = previous.buffer;
   state.cursor = previous.cursor;
   state.mode = previous.mode;
-  state.message = "Undo restored previous edit.";
+  state.message = "Undo restored previous state.";
+}
+
+function qualityNotes() {
+  const notes = [];
+  const mission = currentMission();
+  const simpleMoves = state.history.filter((entry) => /^[hjkl]$/.test(entry.keys)).length;
+  const usedSearch = state.history.some((entry) => entry.keys.startsWith("/"));
+  const usedSubstitute = state.history.some((entry) => entry.keys.startsWith(":%s"));
+
+  if (state.finished && state.commandCount <= mission.par) notes.push({ type: "good", text: "Clean room clear: inside par." });
+  if (state.finished && state.commandCount > mission.par) notes.push({ type: "warn", text: "Room clear, but try for fewer commands on replay." });
+  if (simpleMoves >= 7) notes.push({ type: "warn", text: "Lots of h/j/k/l. Look for search, word motions, or text objects." });
+  if (usedSearch) notes.push({ type: "good", text: "Good habit: search jumped to intent instead of scanning manually." });
+  if (usedSubstitute) notes.push({ type: "good", text: "Global substitution used for a mechanical refactor." });
+  if (state.hintsUsed > 0) notes.push({ type: "warn", text: `${state.hintsUsed} tactic hint${state.hintsUsed > 1 ? "s" : ""} used.` });
+  if (notes.length === 0) notes.push({ type: "good", text: "No issues yet. Edit until all systems turn green." });
+  return notes;
+}
+
+function debriefMessage() {
+  const mission = currentMission();
+  if (state.commandCount <= mission.par) return `${mission.title} repaired in ${state.commandCount} commands. Efficient and practical.`;
+  return `${mission.title} repaired in ${state.commandCount} commands. Correct result; replay for command economy.`;
+}
+
+function hintText() {
+  const mission = currentMission();
+  if (state.hintsUsed === 0) return "";
+  return mission.hints[Math.min(state.hintsUsed - 1, mission.hints.length - 1)];
+}
+
+function activeCommandLabel() {
+  if (state.mode === "SEARCH") return `/${state.input}`;
+  if (state.mode === "COMMAND") return `:${state.input}`;
+  return state.pending || "-";
+}
+
+function addHistory(keys, label) {
+  state.history.push({ keys, label });
 }
 
 function currentMission() {
   return missions[state.missionIndex];
 }
 
-function currentObjective() {
-  return currentMission().objectives[Math.min(state.objectiveIndex, currentMission().objectives.length - 1)];
-}
-
 function currentLine() {
   return state.buffer[state.cursor.line] ?? "";
 }
 
-function textTarget(s, needle) {
-  for (let line = 0; line < s.buffer.length; line += 1) {
-    const col = s.buffer[line].indexOf(needle);
-    if (col !== -1) return { line, col };
-  }
-  return null;
+function bufferText(s = state) {
+  return s.buffer.join("\n");
 }
 
-function charTarget(s, line, char) {
-  const col = s.buffer[line]?.indexOf(char) ?? -1;
-  return col === -1 ? null : { line, col };
+function hasLine(s, expected) {
+  return s.buffer.some((line) => line === expected);
 }
 
-function resolveTarget(objective) {
-  if (!objective) return null;
-  return typeof objective.target === "function" ? objective.target(state) : objective.target;
+function countLines(s, pattern) {
+  return s.buffer.filter((line) => pattern.test(line)).length;
 }
 
-function onText(s, needle) {
-  const target = textTarget(s, needle);
-  return Boolean(target && s.cursor.line === target.line && s.cursor.col === target.col);
+function findLine(s, needle) {
+  return s.buffer.findIndex((line) => line.includes(needle));
 }
 
-function charAtCursor(s) {
-  return s.buffer[s.cursor.line]?.[s.cursor.col];
+function onWord(s, needle) {
+  const line = s.buffer[s.cursor.line] ?? "";
+  return line.slice(s.cursor.col, s.cursor.col + needle.length) === needle;
 }
 
 function lineMax(s, line) {
@@ -1073,16 +1184,6 @@ function firstNonBlank(line) {
   return index === -1 ? 0 : index;
 }
 
-function innerWordRange() {
-  const line = currentLine();
-  if (!line.length) return null;
-  let start = Math.min(state.cursor.col, line.length - 1);
-  while (start > 0 && WORD.test(line[start - 1])) start -= 1;
-  let end = Math.min(state.cursor.col, line.length - 1);
-  while (end < line.length && WORD.test(line[end])) end += 1;
-  return start === end ? null : { start, end };
-}
-
 function clampCursor() {
   state.cursor.line = clamp(state.cursor.line, 0, state.buffer.length - 1);
   const max = state.mode === "INSERT" ? currentLine().length : lineMax(state, state.cursor.line);
@@ -1090,44 +1191,98 @@ function clampCursor() {
   state.preferredCol = clamp(state.preferredCol, 0, max);
 }
 
-function cursorToWorld(line, col, width = Math.max(...state.buffer.map((item) => item.length), 24), rows = state.buffer.length) {
-  const x = ((col / Math.max(width - 1, 1)) - 0.5) * 14;
-  const z = lineToZ(line, rows);
-  return { x, z };
+function normalizeKey(key) {
+  if (key === "Esc") return "Escape";
+  if (key === "Space") return " ";
+  if (["Shift", "Control", "Alt", "Meta", "CapsLock"].includes(key)) return "";
+  return key;
 }
 
-function lineToZ(line, rows) {
-  return ((line / Math.max(rows - 1, 1)) - 0.5) * Math.max(rows * 1.18, 7.5);
+function describeMotion(motion, count) {
+  const labels = {
+    h: "Move left",
+    j: "Move down",
+    k: "Move up",
+    l: "Move right",
+    w: "Next word",
+    b: "Previous word",
+    e: "End of word",
+    0: "Line start",
+    "$": "Line end",
+    "^": "First nonblank"
+  };
+  return `${labels[motion]}${count > 1 ? ` x${count}` : ""}`;
 }
 
-function updatePlayerPosition() {
-  const pos = cursorToWorld(state.cursor.line, state.cursor.col);
-  player.position.x += (pos.x - player.position.x) * 0.22;
-  player.position.z += (pos.z - player.position.z) * 0.22;
+function describeSingle(command) {
+  return {
+    x: "Delete character",
+    D: "Delete to line end",
+    C: "Change to line end",
+    u: "Undo",
+    p: "Paste after",
+    P: "Paste before",
+    n: "Repeat search",
+    N: "Reverse search"
+  }[command];
 }
 
-function updateTargetBeacon() {
-  const target = resolveTarget(currentObjective());
-  targetBeacon.visible = Boolean(target && !state.finished);
-  if (!target) return;
-  const pos = cursorToWorld(target.line, target.col);
-  targetBeacon.position.x += (pos.x - targetBeacon.position.x) * 0.28;
-  targetBeacon.position.z += (pos.z - targetBeacon.position.z) * 0.28;
-  targetBeacon.position.y = 0.2;
+function describeLineOp(command) {
+  return {
+    dd: "Delete line",
+    yy: "Yank line",
+    cc: "Change line"
+  }[command];
+}
+
+function couldStillMatch(cmd) {
+  return /^(g|[fFtTrdcy]|[dcy][ia]?|[dcy][ia][\"'`(){}\[\]]?)$/.test(cmd);
+}
+
+function clearGroup(group) {
+  while (group.children.length) {
+    const child = group.children.pop();
+    child.geometry?.dispose();
+    if (Array.isArray(child.material)) child.material.forEach((mat) => mat.dispose());
+    else child.material?.dispose();
+  }
+}
+
+function clamp(value, min, max) {
+  return Math.min(Math.max(value, min), max);
+}
+
+function wrap(value, max) {
+  return ((value % max) + max) % max;
+}
+
+function repeat(count, fn) {
+  for (let i = 0; i < count; i += 1) fn();
+}
+
+function escapeHtml(value) {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
+}
+
+function escapeRegExp(value) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
 function animate() {
   const time = clock.getElapsedTime();
-  const delta = clock.getDelta();
-  targetBeacon.rotation.y += delta * 1.9;
-  targetBeacon.children[0].scale.setScalar(1 + Math.sin(time * 4) * 0.08);
-  player.children[0].position.y = 0.72 + Math.sin(time * 6) * 0.025;
-  billboards.children.forEach((item) => item.lookAt(camera.position));
-
-  const desired = new THREE.Vector3(player.position.x * 0.28, 10.2, player.position.z + 15.5);
-  camera.position.lerp(desired, 0.025);
-  camera.lookAt(player.position.x * 0.2, 0.2, player.position.z - 1);
-
+  avatarCards.children.forEach((item) => item.lookAt(camera.position));
+  systemNodes.forEach((node, index) => {
+    node.userData.ring.rotation.z += 0.018 + index * 0.003;
+    node.userData.ring.scale.setScalar(1 + Math.sin(time * 3 + index) * 0.045);
+  });
+  core.rotation.y += 0.006;
+  alarmLight.intensity = 95 + Math.sin(time * 4) * 20;
+  camera.lookAt(0, 0.8, -1.7);
   renderer.render(scene, camera);
   requestAnimationFrame(animate);
 }
@@ -1140,98 +1295,16 @@ function resize() {
   renderer.setSize(width, height, false);
 }
 
-function pulseScene(color) {
-  rimLight.color.setHex(color);
-  rimLight.intensity = 170;
-  setTimeout(() => {
-    rimLight.color.setHex(0xff3fa4);
-    rimLight.intensity = 90;
-  }, 260);
-}
-
 function setupMobileKeys() {
-  const keys = ["Esc", "h", "j", "k", "l", "w", "b", "e", "0", "$", "g", "G", "f", "d", "c", "y", "x", "i", "A", "o", "p"];
-  els.mobileKeys.innerHTML = keys.map((key) => `<button type="button" data-key="${key}">${key}</button>`).join("");
+  const keys = ["Esc", "/", ":", "Enter", "Space", "h", "j", "k", "l", "w", "b", "e", "0", "$", "g", "G", "f", "d", "c", "y", "x", "i", "a", "A", "o", "p", "u", "\""];
+  els.mobileKeys.innerHTML = keys.map((key) => `<button type="button" data-key="${key}">${escapeHtml(key)}</button>`).join("");
   els.mobileKeys.addEventListener("click", (event) => {
     const button = event.target.closest("button");
-    if (!button) return;
-    const key = button.dataset.key === "Esc" ? "Escape" : button.dataset.key;
-    handleKey(key);
+    if (button) handleKey(button.dataset.key);
   });
 }
 
-function wrap(value, max) {
-  return ((value % max) + max) % max;
-}
-
-function clamp(value, min, max) {
-  return Math.min(Math.max(value, min), max);
-}
-
-function repeat(count, fn) {
-  for (let i = 0; i < count; i += 1) fn();
-}
-
-function clearGroup(group) {
-  while (group.children.length) {
-    const child = group.children.pop();
-    child.geometry?.dispose();
-    if (Array.isArray(child.material)) child.material.forEach((mat) => mat.dispose());
-    else child.material?.dispose();
-  }
-}
-
-function couldStillMatch(cmd) {
-  return /^(g|[fFtTrdcy]|[dcy][iafFtT]?)$/.test(cmd);
-}
-
-function describeMotion(motion, count) {
-  const labels = {
-    h: "Move left",
-    j: "Move down",
-    k: "Move up",
-    l: "Move right",
-    w: "Jump to next word",
-    b: "Jump to previous word",
-    e: "Jump to word end",
-    0: "Move to line start",
-    "$": "Move to line end",
-    "^": "Move to first nonblank"
-  };
-  return `${labels[motion]}${count > 1 ? ` x${count}` : ""}`;
-}
-
-function describeSingle(command) {
-  return {
-    x: "Delete character",
-    D: "Delete to end of line",
-    C: "Change to end of line",
-    u: "Undo",
-    p: "Paste after",
-    P: "Paste before"
-  }[command];
-}
-
-function describeLineOp(command) {
-  return {
-    dd: "Delete line",
-    yy: "Yank line",
-    cc: "Change line"
-  }[command];
-}
-
-function escapeHtml(value) {
-  return String(value)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#39;");
-}
-
 document.addEventListener("keydown", (event) => {
-  const ignored = ["Shift", "Control", "Alt", "Meta", "CapsLock"];
-  if (ignored.includes(event.key)) return;
   if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() !== "r") return;
   event.preventDefault();
   handleKey(event.key);
@@ -1241,24 +1314,23 @@ els.start.addEventListener("click", () => {
   state.active = true;
   els.boot.classList.add("hidden");
   els.editor.focus();
-  state.message = "Training room live. Use Vim commands.";
+  state.message = "Simulation live. Repair the buffer.";
+  updateHud();
+});
+
+els.hintButton.addEventListener("click", () => {
+  state.hintsUsed = Math.min(state.hintsUsed + 1, currentMission().hints.length);
+  state.message = "Tactic hint revealed.";
   updateHud();
 });
 
 els.restart.addEventListener("click", () => startMission(state.missionIndex));
 els.prev.addEventListener("click", () => startMission(state.missionIndex - 1));
 els.next.addEventListener("click", () => startMission(state.missionIndex + 1));
-els.logButton.addEventListener("click", () => els.drawer.classList.toggle("open"));
-els.drawerToggle.addEventListener("click", () => els.drawer.classList.toggle("open"));
 
 window.addEventListener("resize", resize);
-window.addEventListener("visibilitychange", () => {
-  if (!document.hidden) resize();
-});
 
 setupMobileKeys();
 resize();
 startMission(0);
-updatePlayerPosition();
-updateTargetBeacon();
 animate();
