@@ -1,4 +1,11 @@
 import * as THREE from "https://unpkg.com/three@0.165.0/build/three.module.js";
+import {
+  animateCyberArena,
+  createCyberArena,
+  createSystemNode,
+  setSystemNodeState,
+  updateCyberArena
+} from "./scene-assets.js";
 
 const IMAGE_ROOT = "../images/";
 const WORD = /[A-Za-z0-9_]/;
@@ -260,52 +267,30 @@ const renderer = new THREE.WebGLRenderer({
 });
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
 const scene = new THREE.Scene();
 scene.fog = new THREE.FogExp2(0x03070b, 0.035);
 
-const camera = new THREE.PerspectiveCamera(52, 1, 0.1, 140);
-camera.position.set(0, 9.5, 15);
+const camera = new THREE.PerspectiveCamera(50, 1, 0.1, 140);
+camera.position.set(0, 5.35, 9.35);
 
 const clock = new THREE.Clock();
-const room = new THREE.Group();
+const arena = await createCyberArena();
 const systemNodes = [];
-scene.add(room);
+scene.add(arena.group);
 
 const ambient = new THREE.HemisphereLight(0x8eeaff, 0x031018, 1.55);
 const keyLight = new THREE.DirectionalLight(0xffffff, 1.9);
 keyLight.position.set(7, 11, 7);
+keyLight.castShadow = true;
+keyLight.shadow.mapSize.set(2048, 2048);
+keyLight.shadow.camera.near = 1;
+keyLight.shadow.camera.far = 35;
 const alarmLight = new THREE.PointLight(0xff3fa4, 130, 30);
 alarmLight.position.set(-6, 5, -5);
 scene.add(ambient, keyLight, alarmLight);
-
-const textureLoader = new THREE.TextureLoader();
-const avatarCards = new THREE.Group();
-scene.add(avatarCards);
-
-const core = new THREE.Mesh(
-  new THREE.CylinderGeometry(0.55, 0.72, 2.6, 32),
-  new THREE.MeshStandardMaterial({
-    color: 0x132838,
-    emissive: 0x082434,
-    roughness: 0.36,
-    metalness: 0.28
-  })
-);
-core.position.set(0, 1.3, -1.8);
-scene.add(core);
-
-const door = new THREE.Mesh(
-  new THREE.BoxGeometry(3.8, 2.8, 0.12),
-  new THREE.MeshStandardMaterial({
-    color: 0x311024,
-    emissive: 0x250018,
-    roughness: 0.5,
-    metalness: 0.2
-  })
-);
-door.position.set(0, 1.4, -7.25);
-scene.add(door);
 
 function startMission(index) {
   const mission = missions[wrap(index, missions.length)];
@@ -331,87 +316,16 @@ function startMission(index) {
 }
 
 function rebuildRoom() {
-  clearGroup(room);
-  clearGroup(avatarCards);
+  clearGroup(arena.systemRig);
   systemNodes.length = 0;
-
-  const floor = new THREE.Mesh(
-    new THREE.BoxGeometry(15.5, 0.16, 13),
-    new THREE.MeshStandardMaterial({ color: 0x08131d, roughness: 0.76, metalness: 0.18 })
-  );
-  floor.position.y = -0.08;
-  room.add(floor);
-
-  const grid = new THREE.GridHelper(16, 16, 0x285a69, 0x13313c);
-  grid.position.y = 0.03;
-  grid.material.transparent = true;
-  grid.material.opacity = 0.38;
-  room.add(grid);
-
-  for (let i = 0; i < 6; i += 1) {
-    const rail = new THREE.Mesh(
-      new THREE.BoxGeometry(13.5, 0.04, 0.04),
-      new THREE.MeshBasicMaterial({ color: 0x1b7285, transparent: true, opacity: 0.55 })
-    );
-    rail.position.set(0, 0.08, -5 + i * 1.65);
-    room.add(rail);
-  }
 
   const mission = currentMission();
   const total = mission.systems.length;
   for (let i = 0; i < total; i += 1) {
     const node = createSystemNode(i, total);
     systemNodes.push(node);
-    room.add(node);
+    arena.systemRig.add(node);
   }
-
-  addAvatar(characters.byte.portrait, -6.2, 2.35, -5.2, 0x5ce7ff);
-  addAvatar(characters.blade.portrait, 6.2, 2.35, -5.2, 0xff3fa4);
-}
-
-function createSystemNode(index, total) {
-  const group = new THREE.Group();
-  const spacing = 3.2;
-  const x = (index - (total - 1) / 2) * spacing;
-  group.position.set(x, 0, 2.2);
-
-  const baseMaterial = new THREE.MeshStandardMaterial({
-    color: 0x101e2a,
-    emissive: 0x180018,
-    roughness: 0.42,
-    metalness: 0.38
-  });
-  const glowMaterial = new THREE.MeshBasicMaterial({ color: 0xff5c7a });
-
-  const tower = new THREE.Mesh(new THREE.CylinderGeometry(0.36, 0.46, 1.8, 24), baseMaterial);
-  tower.position.y = 0.9;
-  const ring = new THREE.Mesh(new THREE.TorusGeometry(0.62, 0.035, 8, 42), glowMaterial);
-  ring.position.y = 1.82;
-  ring.rotation.x = Math.PI / 2;
-  group.add(tower, ring);
-  group.userData = { tower, ring, baseMaterial, glowMaterial };
-  return group;
-}
-
-function addAvatar(src, x, y, z, color) {
-  textureLoader.load(src, (texture) => {
-    texture.colorSpace = THREE.SRGBColorSpace;
-    const card = new THREE.Mesh(
-      new THREE.PlaneGeometry(2.25, 1.45),
-      new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide })
-    );
-    card.position.set(x, y, z);
-    card.lookAt(camera.position);
-    avatarCards.add(card);
-
-    const frame = new THREE.Mesh(
-      new THREE.PlaneGeometry(2.4, 1.6),
-      new THREE.MeshBasicMaterial({ color, wireframe: true, transparent: true, opacity: 0.8 })
-    );
-    frame.position.set(x, y, z - 0.015);
-    frame.lookAt(camera.position);
-    avatarCards.add(frame);
-  });
 }
 
 function updateAll() {
@@ -424,6 +338,11 @@ function updateAll() {
 
 function updateSystems() {
   const mission = currentMission();
+  if (state.finished) {
+    state.systemStatus = mission.systems.map(() => true);
+    return;
+  }
+
   state.systemStatus = mission.systems.map((system) => Boolean(system.check(state)));
   const complete = state.systemStatus.every(Boolean);
   if (complete && !state.finished) {
@@ -511,17 +430,15 @@ function updateWorldState() {
   const allPass = state.systemStatus.every(Boolean);
   systemNodes.forEach((node, index) => {
     const pass = state.systemStatus[index];
-    const color = pass ? 0x69ff9d : 0xff5c7a;
-    node.userData.glowMaterial.color.setHex(color);
-    node.userData.baseMaterial.emissive.setHex(pass ? 0x0b4b2c : 0x2b0615);
-    node.userData.baseMaterial.color.setHex(pass ? 0x15372a : 0x101e2a);
+    setSystemNodeState(node, pass);
   });
 
-  core.material.emissive.setHex(allPass ? 0x0b5a34 : 0x082434);
-  core.material.color.setHex(allPass ? 0x17412f : 0x132838);
-  door.material.emissive.setHex(allPass ? 0x0c4f31 : 0x250018);
-  door.material.color.setHex(allPass ? 0x183f2d : 0x311024);
-  door.position.y += ((allPass ? 3.25 : 1.4) - door.position.y) * 0.08;
+  updateCyberArena(arena, {
+    allPass,
+    repaired: state.systemStatus.filter(Boolean).length,
+    total: state.systemStatus.length,
+    guide: currentMission().guide
+  });
   alarmLight.color.setHex(allPass ? 0x69ff9d : 0xff3fa4);
 }
 
@@ -1242,10 +1159,16 @@ function couldStillMatch(cmd) {
 function clearGroup(group) {
   while (group.children.length) {
     const child = group.children.pop();
+    disposeObject(child);
+  }
+}
+
+function disposeObject(object) {
+  object.traverse((child) => {
     child.geometry?.dispose();
     if (Array.isArray(child.material)) child.material.forEach((mat) => mat.dispose());
     else child.material?.dispose();
-  }
+  });
 }
 
 function clamp(value, min, max) {
@@ -1275,14 +1198,9 @@ function escapeRegExp(value) {
 
 function animate() {
   const time = clock.getElapsedTime();
-  avatarCards.children.forEach((item) => item.lookAt(camera.position));
-  systemNodes.forEach((node, index) => {
-    node.userData.ring.rotation.z += 0.018 + index * 0.003;
-    node.userData.ring.scale.setScalar(1 + Math.sin(time * 3 + index) * 0.045);
-  });
-  core.rotation.y += 0.006;
+  animateCyberArena(arena, systemNodes, time, camera);
   alarmLight.intensity = 95 + Math.sin(time * 4) * 20;
-  camera.lookAt(0, 0.8, -1.7);
+  camera.lookAt(0, 1.48, -2.62);
   renderer.render(scene, camera);
   requestAnimationFrame(animate);
 }

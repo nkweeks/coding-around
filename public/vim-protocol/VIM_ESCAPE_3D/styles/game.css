@@ -1,8 +1,8 @@
 :root {
   color-scheme: dark;
   --bg: #03070b;
-  --panel: rgba(5, 12, 18, 0.82);
-  --panel-hard: rgba(3, 8, 13, 0.94);
+  --panel: rgba(5, 12, 18, 0.66);
+  --panel-hard: rgba(3, 8, 13, 0.86);
   --line: rgba(115, 226, 255, 0.24);
   --line-hot: rgba(255, 63, 164, 0.42);
   --cyan: #5ce7ff;
@@ -52,6 +52,7 @@ button {
   width: 100%;
   height: 100%;
   display: block;
+  filter: saturate(1.18) brightness(1.08);
 }
 
 .hud,
@@ -155,10 +156,10 @@ h1 {
 }
 
 .task-card {
-  top: 150px;
+  top: 132px;
   left: 16px;
-  width: min(620px, calc(100vw - 420px));
-  padding: 14px 16px;
+  width: min(500px, calc(100vw - 540px));
+  padding: 12px 14px;
 }
 
 .task-heading {
@@ -222,8 +223,8 @@ h1 {
 .terminal-panel {
   left: 16px;
   bottom: 16px;
-  width: min(820px, calc(100vw - 430px));
-  min-height: 390px;
+  width: min(500px, calc(100vw - 590px));
+  min-height: 334px;
 }
 
 .panel-bar,
@@ -245,12 +246,12 @@ h1 {
 }
 
 .editor {
-  height: 318px;
+  height: 262px;
   padding: 11px 12px;
   overflow: auto;
   outline: 0;
-  font-size: clamp(0.78rem, 1.28vw, 0.98rem);
-  line-height: 1.62;
+  font-size: clamp(0.76rem, 1.12vw, 0.92rem);
+  line-height: 1.55;
   scrollbar-width: thin;
 }
 
@@ -293,23 +294,23 @@ h1 {
 
 .systems-panel {
   right: 16px;
-  top: 150px;
+  top: 132px;
   bottom: 16px;
-  width: 380px;
-  padding: 14px;
+  width: 324px;
+  padding: 12px;
   overflow: auto;
 }
 
 .guide-card {
   display: grid;
-  grid-template-columns: 86px 1fr;
+  grid-template-columns: 72px 1fr;
   gap: 12px;
   align-items: center;
 }
 
 .guide-card img {
-  width: 86px;
-  height: 86px;
+  width: 72px;
+  height: 72px;
   object-fit: cover;
   border: 1px solid var(--line-hot);
 }
@@ -323,7 +324,7 @@ h1 {
 .guide-card p {
   margin-top: 6px;
   color: #c8e5ea;
-  font-size: 0.78rem;
+  font-size: 0.74rem;
   line-height: 1.45;
 }
 
