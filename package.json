@@ -8,7 +8,8 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "check:deploy": "npm run lint && npm run build",
+    "check:deploy": "npm run check:vim-protocol-fresh && npm run lint && npm run build",
+    "check:vim-protocol-fresh": "node scripts/check-vim-protocol-fresh.mjs",
     "sync:vim-protocol": "node scripts/sync-vim-protocol.mjs",
     "sync:hpd-arrest-log": "node scripts/sync-hpd-arrest-log.mjs",
     "sync:projects": "npm run sync:vim-protocol && npm run sync:hpd-arrest-log"

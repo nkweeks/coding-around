@@ -9,8 +9,14 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 const repoRoot = path.resolve(__dirname, '..')
 const sourceRoot = process.env.VIM_PROTOCOL_SOURCE || DEFAULT_SOURCE
-const targetRoot = path.join(repoRoot, 'public', 'vim-protocol')
-const shellFile = path.join(repoRoot, 'src', 'vimProtocolShell.js')
+// Targets are overridable so a freshness check can sync into a throwaway dir
+// without touching the tracked working tree (see check-vim-protocol-fresh.mjs).
+const targetRoot = process.env.VIM_PROTOCOL_TARGET
+  ? path.resolve(process.env.VIM_PROTOCOL_TARGET)
+  : path.join(repoRoot, 'public', 'vim-protocol')
+const shellFile = process.env.VIM_PROTOCOL_SHELL
+  ? path.resolve(process.env.VIM_PROTOCOL_SHELL)
+  : path.join(repoRoot, 'src', 'vimProtocolShell.js')
 const portfolioImagePrefix = '/vim-protocol/images/'
 const targetIndex = path.join(targetRoot, 'index.html')
 
@@ -22,6 +28,7 @@ if (!fs.existsSync(sourceRoot)) {
 }
 
 fs.mkdirSync(path.dirname(targetRoot), { recursive: true })
+fs.mkdirSync(path.dirname(shellFile), { recursive: true })
 
 execFileSync(
   'rsync',

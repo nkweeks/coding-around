@@ -2,13 +2,13 @@ import * as THREE from "https://unpkg.com/three@0.165.0/build/three.module.js";
 import { GLTFLoader } from "https://unpkg.com/three@0.165.0/examples/jsm/loaders/GLTFLoader.js";
 
 const MODEL_ROOT = "./assets/models/";
-const ASSET_VERSION = "character-quality-20260509";
+const ASSET_VERSION = "portrait-mapped-20260510";
 const gltfLoader = new GLTFLoader();
 let loadedAssets = null;
 
 const POSES = {
-  byte: { x: -0.96, y: 0, z: -1.82, rotationY: 0.54, scale: 1.06 },
-  blade: { x: 0.98, y: 0, z: -1.76, rotationY: -0.58, scale: 1.06 },
+  byte: { x: -1.12, y: 0, z: -1.44, rotationY: 0.44, scale: 1.22 },
+  blade: { x: 1.15, y: 0, z: -1.38, rotationY: -0.50, scale: 1.24 },
   core: { x: 0, y: 0, z: -4.85, scale: 0.48 },
   gate: { x: 0, y: 0, z: -6.72, scale: 1 },
   systemNode: { y: 1.48, z: -1.16, scale: 0.56, passScale: 0.68 }

@@ -16,9 +16,12 @@ COLORS = {
     "dark": (0.035, 0.07, 0.1, 1),
     "steel": (0.09, 0.17, 0.22, 1),
     "bright_steel": (0.52, 0.61, 0.72, 1),
+    "ink": (0.012, 0.012, 0.026, 1),
+    "blade_cloth": (0.06, 0.035, 0.12, 1),
     "purple": (0.34, 0.17, 0.62, 1),
     "purple_mid": (0.48, 0.25, 0.88, 1),
     "purple_hi": (0.68, 0.46, 1.0, 1),
+    "magenta_edge": (0.92, 0.18, 0.82, 1),
     "deep_purple": (0.08, 0.035, 0.16, 1),
     "shadow": (0.025, 0.018, 0.04, 1),
     "cyan": (0.36, 0.9, 1.0, 1),
@@ -26,6 +29,7 @@ COLORS = {
     "pink": (1.0, 0.25, 0.64, 1),
     "green": (0.41, 1.0, 0.62, 1),
     "amber": (1.0, 0.82, 0.4, 1),
+    "yellow": (1.0, 0.92, 0.22, 1),
     "red": (1.0, 0.36, 0.48, 1),
 }
 
@@ -81,9 +85,12 @@ def mats():
         "dark": material("mat_dark_steel", COLORS["dark"]),
         "steel": material("mat_brushed_steel", COLORS["steel"]),
         "bright_steel": material("mat_bright_steel", COLORS["bright_steel"], (0.18, 0.22, 0.28, 1), 0.2),
+        "ink": material("mat_deep_ink", COLORS["ink"], (0.01, 0.0, 0.03, 1), 0.2),
+        "blade_cloth": material("mat_blade_cloth", COLORS["blade_cloth"], (0.05, 0.01, 0.1, 1), 0.35),
         "purple": material("mat_byte_shell", COLORS["purple"], (0.08, 0.03, 0.16, 1), 0.35),
         "purple_mid": material("mat_polished_violet", COLORS["purple_mid"], (0.12, 0.04, 0.2, 1), 0.55),
         "purple_hi": material("mat_violet_edge_highlight", COLORS["purple_hi"], (0.18, 0.08, 0.32, 1), 0.45),
+        "magenta_edge": material("mat_magenta_edge_light", COLORS["magenta_edge"], COLORS["magenta_edge"], 2.4),
         "deep_purple": material("mat_shadow_purple", COLORS["deep_purple"], (0.04, 0.01, 0.09, 1), 0.25),
         "shadow": material("mat_ink_shadow", COLORS["shadow"], (0.02, 0.0, 0.04, 1), 0.18),
         "cyan": material("mat_cyan_emissive", COLORS["cyan"], COLORS["cyan"], 3.4),
@@ -91,6 +98,7 @@ def mats():
         "pink": material("mat_pink_emissive", COLORS["pink"], COLORS["pink"], 3.1),
         "green": material("mat_green_emissive", COLORS["green"], COLORS["green"], 2.8),
         "amber": material("mat_amber_emissive", COLORS["amber"], COLORS["amber"], 3.0),
+        "yellow": material("mat_blade_yellow_visor", COLORS["yellow"], COLORS["yellow"], 4.2),
         "red": material("mat_red_emissive", COLORS["red"], COLORS["red"], 3.0),
         "glass_cyan": material("mat_cyan_glass", COLORS["cyan"], COLORS["cyan"], 1.4, 0.22),
         "glass_pink": material("mat_pink_glass", COLORS["pink"], COLORS["pink"], 1.5, 0.24),
@@ -130,6 +138,24 @@ def cube(name, loc, scale, mat, rot=(0, 0, 0), bevel_width=0.02):
 
 def cylinder(name, loc, radius, depth, mat, vertices=24, rot=(0, 0, 0), bevel_width=0):
     bpy.ops.mesh.primitive_cylinder_add(vertices=vertices, radius=radius, depth=depth, location=loc3(loc), rotation=rot3(rot))
+    obj = bpy.context.object
+    obj.name = name
+    obj.data.materials.append(mat)
+    shade(obj)
+    if bevel_width:
+        bevel(obj, bevel_width)
+    return obj
+
+
+def cone(name, loc, radius1, radius2, depth, mat, vertices=24, rot=(0, 0, 0), bevel_width=0):
+    bpy.ops.mesh.primitive_cone_add(
+        vertices=vertices,
+        radius1=radius1,
+        radius2=radius2,
+        depth=depth,
+        location=loc3(loc),
+        rotation=rot3(rot),
+    )
     obj = bpy.context.object
     obj.name = name
     obj.data.materials.append(mat)
@@ -196,6 +222,36 @@ def cable(name, points, radius, mat):
     obj = bpy.data.objects.new(name, curve)
     bpy.context.collection.objects.link(obj)
     obj.data.materials.append(mat)
+    return obj
+
+
+def flat_star(name, loc, outer, inner, depth, mat, points=4, rot=0.0):
+    verts = []
+    front = []
+    back = []
+    for i in range(points * 2):
+        angle = rot + math.tau * i / (points * 2)
+        radius = outer if i % 2 == 0 else inner
+        # Local X/Z plane maps to game X/Y, local Y provides thickness/depth.
+        front.append(len(verts))
+        verts.append((math.cos(angle) * radius, -depth * 0.5, math.sin(angle) * radius))
+        back.append(len(verts))
+        verts.append((math.cos(angle) * radius, depth * 0.5, math.sin(angle) * radius))
+
+    faces = [front, list(reversed(back))]
+    for i in range(points * 2):
+        j = (i + 1) % (points * 2)
+        faces.append([front[i], front[j], back[j], back[i]])
+
+    mesh = bpy.data.meshes.new(name)
+    mesh.from_pydata(verts, [], faces)
+    mesh.update()
+    obj = bpy.data.objects.new(name, mesh)
+    obj.location = loc3(loc)
+    obj.data.materials.append(mat)
+    bpy.context.collection.objects.link(obj)
+    shade(obj)
+    bevel(obj, outer * 0.045, 1)
     return obj
 
 
@@ -304,54 +360,77 @@ def build_blade() -> None:
     torus("BLADE_Aura_Inner", (0, 0.055, 0), 0.98, 0.012, m["pink"], (math.pi / 2, 0, 0), 72)
     cylinder("BLADE_PlatformShadow", (0, 0.025, 0), 1.0, 0.024, m["shadow"], vertices=64)
 
-    cylinder("BLADE_Body", (0, 1.17, 0), 0.46, 1.16, m["black"], vertices=8, rot=(0, 0, math.pi / 8), bevel_width=0.018)
-    cube("BLADE_CoreArmor", (0, 1.34, 0.29), (0.34, 0.55, 0.055), m["purple"], bevel_width=0.02)
-    cube("BLADE_CrossGuardTop", (0, 1.58, 0.36), (0.43, 0.075, 0.06), m["purple_hi"], rot=(0, 0, -0.28), bevel_width=0.016)
-    cube("BLADE_CrossGuardBottom", (0, 1.26, 0.37), (0.40, 0.07, 0.06), m["purple_hi"], rot=(0, 0, 0.24), bevel_width=0.016)
-    cube("BLADE_Sash", (-0.04, 1.02, 0.36), (0.50, 0.065, 0.06), m["pink"], rot=(0, 0, -0.22), bevel_width=0.012)
-    cube("BLADE_Belt", (0.02, 0.86, 0.16), (0.46, 0.06, 0.26), m["purple_mid"], rot=(0, 0, 0.08), bevel_width=0.012)
-    sphere("BLADE_BeltNode", (0.27, 0.88, 0.34), 0.055, m["cyan"], scale=(1, 1, 0.45), segments=16)
+    cylinder("BLADE_Body", (0, 1.16, 0), 0.42, 1.2, m["blade_cloth"], vertices=8, rot=(0, 0, math.pi / 8), bevel_width=0.018)
+    cube("BLADE_TorsoShadow", (0.03, 1.18, 0.25), (0.39, 0.82, 0.055), m["ink"], bevel_width=0.018)
+    cube("BLADE_CoreArmor", (0, 1.37, 0.32), (0.37, 0.62, 0.07), m["purple"], bevel_width=0.02)
+    cube("BLADE_ChestWrap_Upper", (-0.04, 1.58, 0.39), (0.56, 0.075, 0.065), m["purple_hi"], rot=(0, 0, -0.36), bevel_width=0.012)
+    cube("BLADE_ChestWrap_Lower", (0.02, 1.27, 0.40), (0.55, 0.07, 0.065), m["purple_hi"], rot=(0, 0, 0.34), bevel_width=0.012)
+    cube("BLADE_CyanChestTrimLeft", (-0.23, 1.39, 0.44), (0.035, 0.42, 0.018), m["cyan"], rot=(0, 0, -0.25), bevel_width=0.004)
+    cube("BLADE_CyanChestTrimRight", (0.21, 1.42, 0.44), (0.035, 0.35, 0.018), m["cyan"], rot=(0, 0, 0.28), bevel_width=0.004)
+    cube("BLADE_Sash", (-0.04, 0.99, 0.38), (0.56, 0.075, 0.07), m["magenta_edge"], rot=(0, 0, -0.22), bevel_width=0.012)
+    cube("BLADE_Belt", (0.02, 0.83, 0.18), (0.50, 0.07, 0.28), m["purple_mid"], rot=(0, 0, 0.08), bevel_width=0.012)
+    sphere("BLADE_BeltNode", (0.29, 0.86, 0.36), 0.06, m["cyan"], scale=(1, 1, 0.45), segments=16)
 
-    sphere("BLADE_Hood", (0, 2.04, 0), 0.42, m["purple"], scale=(1.04, 1.18, 0.86), segments=40)
-    sphere("BLADE_FaceShadow", (0, 2.02, 0.19), 0.29, m["shadow"], scale=(1.0, 0.72, 0.5), segments=28)
-    cube("BLADE_Mask", (0, 2.02, 0.382), (0.36, 0.13, 0.024), m["black"], bevel_width=0.014)
-    cube("BLADE_Brow", (0, 2.14, 0.385), (0.39, 0.055, 0.022), m["purple_hi"], rot=(0, 0, 0.03), bevel_width=0.006)
-    cube("BLADE_EyeLeft", (-0.135, 2.095, 0.412), (0.105, 0.027, 0.017), m["amber"], rot=(0, 0, -0.12), bevel_width=0.004)
-    cube("BLADE_EyeRight", (0.135, 2.095, 0.412), (0.105, 0.027, 0.017), m["amber"], rot=(0, 0, 0.12), bevel_width=0.004)
-    cube("BLADE_HoodCrest", (0, 2.41, -0.08), (0.22, 0.22, 0.08), m["purple_mid"], rot=(0.35, 0, 0), bevel_width=0.02)
-    cube("BLADE_NeckWrap", (0, 1.76, 0.06), (0.36, 0.08, 0.24), m["shadow"], bevel_width=0.012)
+    sphere("BLADE_Hood", (0, 2.06, 0), 0.46, m["purple"], scale=(1.02, 1.25, 0.9), segments=48)
+    sphere("BLADE_HoodBackFlare", (0.02, 2.05, -0.18), 0.42, m["blade_cloth"], scale=(1.08, 1.08, 0.44), segments=32)
+    sphere("BLADE_FaceShadow", (0, 2.03, 0.21), 0.32, m["ink"], scale=(1.02, 0.74, 0.48), segments=32)
+    cube("BLADE_Mask", (0, 1.99, 0.41), (0.42, 0.18, 0.03), m["ink"], bevel_width=0.014)
+    cube("BLADE_VisorBridge", (0, 2.095, 0.462), (0.34, 0.060, 0.022), m["amber"], bevel_width=0.006)
+    cube("BLADE_EyeLeft", (-0.155, 2.10, 0.488), (0.17, 0.054, 0.024), m["yellow"], rot=(0, 0, -0.17), bevel_width=0.004)
+    cube("BLADE_EyeRight", (0.155, 2.10, 0.488), (0.17, 0.054, 0.024), m["yellow"], rot=(0, 0, 0.17), bevel_width=0.004)
+    cube("BLADE_EyeLeft_HotCore", (-0.155, 2.10, 0.516), (0.11, 0.024, 0.012), m["amber"], rot=(0, 0, -0.17), bevel_width=0.003)
+    cube("BLADE_EyeRight_HotCore", (0.155, 2.10, 0.516), (0.11, 0.024, 0.012), m["amber"], rot=(0, 0, 0.17), bevel_width=0.003)
+    cube("BLADE_HoodBrow", (0, 2.18, 0.432), (0.47, 0.065, 0.024), m["ink"], rot=(0, 0, 0.02), bevel_width=0.006)
+    torus("BLADE_HoodCyanRim", (0, 2.06, 0.42), 0.36, 0.012, m["cyan"], (math.pi / 2, 0, 0), 64)
+    cube("BLADE_HoodCrest", (0.03, 2.45, -0.04), (0.28, 0.25, 0.09), m["purple_mid"], rot=(0.35, 0, 0), bevel_width=0.02)
+    cube("BLADE_NeckWrap", (0, 1.74, 0.07), (0.38, 0.09, 0.26), m["ink"], bevel_width=0.012)
+
+    # The 2D art sells BLADE through a crouched diagonal silhouette, not a neutral stance.
+    left_shoulder = (-0.44, 1.56, 0.04)
+    left_elbow = (-0.88, 1.05, 0.20)
+    left_wrist = (-1.05, 0.58, 0.36)
+    right_shoulder = (0.42, 1.58, 0.03)
+    right_elbow = (0.98, 1.92, 0.20)
+    right_wrist = (1.30, 2.28, 0.43)
+    for side, sign, shoulder, elbow, wrist in (
+        ("Left", -1, left_shoulder, left_elbow, left_wrist),
+        ("Right", 1, right_shoulder, right_elbow, right_wrist),
+    ):
+        cube(f"BLADE_{side}ShoulderPlate", (shoulder[0] + sign * 0.08, shoulder[1], 0.16), (0.21, 0.095, 0.25), m["purple_mid"], rot=(0, 0, sign * 0.34), bevel_width=0.018)
+        limb(f"BLADE_{side}UpperArm", shoulder, elbow, 0.076, m["purple_mid"])
+        limb(f"BLADE_{side}LowerArm", elbow, wrist, 0.066, m["blade_cloth"])
+        sphere(f"BLADE_{side}ElbowWrap", elbow, 0.092, m["magenta_edge"], scale=(1.0, 0.72, 0.62), segments=18)
+        cube(f"BLADE_{side}WristGuard", wrist, (0.15, 0.06, 0.10), m["purple_hi"], rot=(0, 0, sign * 0.24), bevel_width=0.01)
+        cube(f"BLADE_{side}ForearmGlow", ((elbow[0] + wrist[0]) * 0.5, (elbow[1] + wrist[1]) * 0.5, wrist[2] + 0.035), (0.025, 0.22, 0.012), m["cyan"], rot=(0, 0, sign * 0.32), bevel_width=0.003)
 
     for side, sign in (("Left", -1), ("Right", 1)):
-        shoulder = (sign * 0.43, 1.58, 0.02)
-        elbow = (sign * (0.85 if sign < 0 else 0.92), 1.32 if sign < 0 else 1.76, 0.15)
-        wrist = (sign * (1.08 if sign < 0 else 1.28), 0.92 if sign < 0 else 2.02, 0.28)
-        cube(f"BLADE_{side}ShoulderPlate", (sign * 0.52, 1.57, 0.13), (0.18, 0.08, 0.22), m["purple_mid"], rot=(0, 0, sign * 0.34), bevel_width=0.018)
-        limb(f"BLADE_{side}UpperArm", shoulder, elbow, 0.072, m["purple_mid"])
-        limb(f"BLADE_{side}LowerArm", elbow, wrist, 0.066, m["black"])
-        sphere(f"BLADE_{side}ElbowWrap", elbow, 0.09, m["pink"], scale=(1.0, 0.7, 0.62), segments=18)
-        cube(f"BLADE_{side}WristGuard", wrist, (0.13, 0.055, 0.09), m["purple_hi"], rot=(0, 0, sign * 0.24), bevel_width=0.01)
+        hip = (sign * 0.20, 0.70, 0)
+        knee = (sign * (0.70 if sign < 0 else 0.86), 0.32 if sign < 0 else 0.45, 0.18 if sign < 0 else -0.08)
+        ankle = (sign * (0.94 if sign < 0 else 1.22), 0.15 if sign < 0 else 0.20, 0.24 if sign < 0 else -0.14)
+        limb(f"BLADE_{side}Thigh", hip, knee, 0.087, m["blade_cloth"])
+        limb(f"BLADE_{side}Shin", knee, ankle, 0.078, m["blade_cloth"])
+        cube(f"BLADE_{side}KneeGuard", knee, (0.16, 0.075, 0.10), m["purple_mid"], rot=(0, 0, -sign * 0.24), bevel_width=0.014)
+        cube(f"BLADE_{side}ShinGlow", (knee[0] * 0.55 + ankle[0] * 0.45, knee[1] * 0.55 + ankle[1] * 0.45, ankle[2] + 0.09), (0.035, 0.24, 0.014), m["cyan"], rot=(0, 0, sign * 0.26), bevel_width=0.004)
+        cube(f"BLADE_{side}Foot", (sign * (0.98 if sign < 0 else 1.25), 0.09 if sign < 0 else 0.15, 0.26 if sign < 0 else -0.13), (0.36, 0.065, 0.14), m["purple_mid"], rot=(0, 0, sign * 0.20), bevel_width=0.018)
 
-    for side, sign in (("Left", -1), ("Right", 1)):
-        hip = (sign * 0.22, 0.72, 0)
-        knee = (sign * (0.66 if sign < 0 else 0.78), 0.31 if sign < 0 else 0.39, 0.15 if sign < 0 else -0.08)
-        ankle = (sign * (0.80 if sign < 0 else 0.98), 0.16 if sign < 0 else 0.20, 0.18 if sign < 0 else -0.08)
-        limb(f"BLADE_{side}Thigh", hip, knee, 0.083, m["black"])
-        limb(f"BLADE_{side}Shin", knee, ankle, 0.078, m["black"])
-        cube(f"BLADE_{side}KneeGuard", knee, (0.14, 0.065, 0.09), m["purple_mid"], rot=(0, 0, -sign * 0.24), bevel_width=0.014)
-        cube(f"BLADE_{side}ShinGlow", (knee[0] * 0.55 + ankle[0] * 0.45, knee[1] * 0.55 + ankle[1] * 0.45, ankle[2] + 0.08), (0.032, 0.17, 0.012), m["cyan"], rot=(0, 0, sign * 0.24), bevel_width=0.004)
-        cube(f"BLADE_{side}Foot", (sign * (0.82 if sign < 0 else 1.02), 0.105 if sign < 0 else 0.155, 0.19 if sign < 0 else -0.07), (0.30, 0.06, 0.12), m["purple_mid"], rot=(0, 0, sign * 0.20), bevel_width=0.018)
+    cube("BLADE_BackScabbard", (-0.34, 1.72, -0.24), (0.09, 0.98, 0.08), m["ink"], rot=(0, 0, 0.68), bevel_width=0.012)
+    cube("BLADE_BackSwordGrip", (-0.72, 2.32, -0.20), (0.12, 0.42, 0.09), m["purple_hi"], rot=(0, 0, 0.68), bevel_width=0.016)
+    for dot in range(4):
+        sphere(f"BLADE_BackGripDot_{dot}", (-0.82 + dot * 0.07, 2.43 - dot * 0.10, -0.13), 0.027, m["cyan"], scale=(1, 1, 0.35), segments=12)
 
-    cube("BLADE_SwordBlade", (1.23, 2.48, 0.34), (0.055, 0.84, 0.019), m["cyan"], rot=(0, 0, -0.62), bevel_width=0.012)
-    cube("BLADE_SwordEdge", (1.33, 2.55, 0.352), (0.014, 0.76, 0.012), m["cyan_soft"], rot=(0, 0, -0.62), bevel_width=0.004)
-    cube("BLADE_SwordSpine", (1.14, 2.38, 0.322), (0.018, 0.72, 0.012), m["bright_steel"], rot=(0, 0, -0.62), bevel_width=0.004)
-    cube("BLADE_SwordGuard", (1.0, 1.76, 0.32), (0.24, 0.045, 0.035), m["purple_hi"], rot=(0, 0, -0.62), bevel_width=0.01)
-    cylinder("BLADE_SwordPommel", (0.86, 1.58, 0.31), 0.055, 0.055, m["pink"], vertices=18, bevel_width=0.004)
+    cube("BLADE_SwordBlade", (0.76, 2.23, 0.54), (0.075, 1.48, 0.024), m["cyan"], rot=(0, 0, -0.78), bevel_width=0.012)
+    cube("BLADE_SwordEdge", (0.92, 2.38, 0.57), (0.018, 1.34, 0.012), m["cyan_soft"], rot=(0, 0, -0.78), bevel_width=0.004)
+    cube("BLADE_SwordSpine", (0.58, 2.06, 0.515), (0.022, 1.28, 0.014), m["bright_steel"], rot=(0, 0, -0.78), bevel_width=0.004)
+    cone("BLADE_SwordTip", (1.44, 2.95, 0.55), 0.075, 0.0, 0.19, m["cyan_soft"], vertices=4, rot=(0, math.pi / 2, -0.78), bevel_width=0.003)
+    cube("BLADE_SwordGuard", (1.13, 2.16, 0.46), (0.30, 0.055, 0.044), m["purple_hi"], rot=(0, 0, -0.78), bevel_width=0.01)
+    cube("BLADE_SwordHandle", (1.02, 2.02, 0.43), (0.095, 0.34, 0.06), m["ink"], rot=(0, 0, -0.78), bevel_width=0.012)
+    cylinder("BLADE_SwordPommel", (0.86, 1.84, 0.39), 0.06, 0.055, m["magenta_edge"], vertices=18, bevel_width=0.004)
 
-    cube("BLADE_Scarf", (-0.48, 1.92, -0.12), (0.46, 0.06, 0.025), m["pink"], rot=(0, 0.12, -0.34), bevel_width=0.008)
-    cube("BLADE_ScarfTail_0", (-0.80, 1.82, -0.20), (0.40, 0.045, 0.02), m["pink"], rot=(0, 0.2, -0.55), bevel_width=0.007)
-    cube("BLADE_ScarfTail_1", (-1.04, 1.62, -0.26), (0.32, 0.036, 0.018), m["pink"], rot=(0, 0.28, -0.78), bevel_width=0.006)
-    cube("BLADE_ShadowKunai", (-0.78, 1.0, 0.40), (0.18, 0.028, 0.026), m["cyan"], rot=(0, 0, math.pi / 4), bevel_width=0.006)
-    cube("BLADE_KunaiHandle", (-0.92, 0.86, 0.39), (0.09, 0.021, 0.021), m["purple_hi"], rot=(0, 0, math.pi / 4), bevel_width=0.004)
+    cube("BLADE_Scarf", (-0.48, 1.94, -0.10), (0.54, 0.065, 0.03), m["magenta_edge"], rot=(0, 0.12, -0.34), bevel_width=0.008)
+    cube("BLADE_ScarfTail_0", (-0.86, 1.83, -0.20), (0.48, 0.05, 0.024), m["magenta_edge"], rot=(0, 0.2, -0.55), bevel_width=0.007)
+    cube("BLADE_ScarfTail_1", (-1.16, 1.60, -0.28), (0.39, 0.041, 0.02), m["magenta_edge"], rot=(0, 0.28, -0.78), bevel_width=0.006)
+    flat_star("BLADE_ShadowShuriken", (-1.05, 0.47, 0.44), 0.23, 0.078, 0.035, m["cyan"], points=4, rot=math.pi / 4)
+    cylinder("BLADE_ShuriCenter", (-1.05, 0.47, 0.465), 0.045, 0.02, m["ink"], vertices=18, rot=(math.pi / 2, 0, 0), bevel_width=0.002)
     export("blade_ninja")
 
 
@@ -408,12 +487,12 @@ def build_arena_props() -> None:
     m = mats()
     cube("Arena_BaseFloor", (0, -0.08, -0.6), (8.75, 0.07, 7.25), m["dark"], bevel_width=0.0)
     cube("Arena_CommandDeck", (0, 0.018, -2.45), (1.55, 0.014, 1.85), m["steel"], bevel_width=0.012)
-    cube("Arena_BYTE_Pad", (-1.05, 0.055, -1.62), (0.62, 0.013, 0.72), m["cyan"], bevel_width=0.008)
-    cube("Arena_BLADE_Pad", (1.05, 0.055, -1.62), (0.62, 0.013, 0.72), m["pink"], bevel_width=0.008)
-    for i in range(7):
-        cube(f"Arena_HorizontalRail_{i}", (0, 0.08, -5.6 + i * 1.65), (7.8, 0.018, 0.018), m["cyan"], bevel_width=0.0)
+    cube("Arena_BYTE_Pad", (-1.12, 0.055, -1.44), (0.70, 0.013, 0.78), m["glass_cyan"], bevel_width=0.008)
+    cube("Arena_BLADE_Pad", (1.15, 0.055, -1.38), (0.72, 0.013, 0.78), m["glass_pink"], bevel_width=0.008)
     for i in range(5):
-        cube(f"Arena_VerticalRail_{i}", (-6.4 + i * 3.2, 0.085, -0.5), (0.018, 0.018, 5.8), m["cyan"], bevel_width=0.0)
+        cube(f"Arena_HorizontalRail_{i}", (0, 0.075, -5.35 + i * 0.95), (5.4, 0.012, 0.012), m["steel"], bevel_width=0.0)
+    for i in range(3):
+        cube(f"Arena_VerticalRail_{i}", (-3.4 + i * 3.4, 0.078, -3.45), (0.012, 0.012, 3.15), m["steel"], bevel_width=0.0)
     for side in (-1, 1):
         for i in range(4):
             x = side * 7.1
@@ -421,9 +500,9 @@ def build_arena_props() -> None:
             cube(f"Arena_Server_{side}_{i}", (x, 1.3, z), (0.36, 1.32, 0.52), m["dark"], rot=(0, -side * 0.18, 0), bevel_width=0.02)
             for slot in range(5):
                 cube(f"Arena_ServerLight_{side}_{i}_{slot}", (x - side * 0.39, 0.45 + slot * 0.38, z - 0.17), (0.025, 0.023, 0.31), m["cyan" if slot % 2 == 0 else "pink"], rot=(0, -side * 0.18, 0), bevel_width=0.003)
-    cable("Arena_Cable_BYTE", [Vector((-5.7, 0.08, 2.5)), Vector((-2.4, 0.1, 0.2)), Vector((-1.1, 0.08, -2.2))], 0.022, m["cyan"])
-    cable("Arena_Cable_BLADE", [Vector((5.7, 0.08, 2.2)), Vector((2.4, 0.1, 0.0)), Vector((1.1, 0.08, -2.2))], 0.022, m["pink"])
-    cable("Arena_Cable_Resolve", [Vector((-1.5, 0.08, 3.2)), Vector((0, 0.1, 1.4)), Vector((1.5, 0.08, 3.2))], 0.025, m["green"])
+    cable("Arena_Cable_BYTE", [Vector((-5.2, 0.065, -3.35)), Vector((-2.55, 0.08, -3.0)), Vector((-1.35, 0.07, -2.3))], 0.012, m["glass_cyan"])
+    cable("Arena_Cable_BLADE", [Vector((5.2, 0.065, -3.3)), Vector((2.55, 0.08, -3.0)), Vector((1.35, 0.07, -2.3))], 0.012, m["glass_pink"])
+    cable("Arena_Cable_Resolve", [Vector((-1.6, 0.065, -3.6)), Vector((0, 0.08, -3.15)), Vector((1.6, 0.065, -3.6))], 0.012, m["glass_cyan"])
     export("arena_props")
 
 

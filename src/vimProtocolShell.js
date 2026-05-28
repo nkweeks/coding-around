@@ -236,6 +236,7 @@ const vimProtocolShell = String.raw`
   
   
   
+  
 
   <!-- Narrative System Scripts -->
   

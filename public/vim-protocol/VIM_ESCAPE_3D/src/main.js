@@ -274,7 +274,7 @@ const scene = new THREE.Scene();
 scene.fog = new THREE.FogExp2(0x03070b, 0.035);
 
 const camera = new THREE.PerspectiveCamera(50, 1, 0.1, 140);
-camera.position.set(0, 5.35, 9.35);
+camera.position.set(0, 4.65, 7.15);
 
 const clock = new THREE.Clock();
 const arena = await createCyberArena();
@@ -1200,7 +1200,7 @@ function animate() {
   const time = clock.getElapsedTime();
   animateCyberArena(arena, systemNodes, time, camera);
   alarmLight.intensity = 95 + Math.sin(time * 4) * 20;
-  camera.lookAt(0, 1.48, -2.62);
+  camera.lookAt(0, 1.52, -1.9);
   renderer.render(scene, camera);
   requestAnimationFrame(animate);
 }

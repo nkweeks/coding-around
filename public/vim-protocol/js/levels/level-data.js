@@ -14,7 +14,7 @@ const LEVELS = [
     title: "OPERATION: FIRST CONTACT",
     difficulty: "beginner",
     commandsFocus: ['h', 'j', 'k', 'l'],
-    par: 8,
+    par: 12,
     story: {
       character: 'zero',
       image: '/vim-protocol/images/robot_happy.jpg',
@@ -80,7 +80,7 @@ const LEVELS = [
     title: "OPERATION: WORD RUNNER",
     difficulty: "beginner",
     commandsFocus: ['w', 'b', 'e'],
-    par: 15,
+    par: 20,
     story: {
       character: 'blade',
       image: '/vim-protocol/images/ninja.jpg',
@@ -297,7 +297,7 @@ const LEVELS = [
     title: "OPERATION: ACCESS GRANTED",
     difficulty: "beginner",
     commandsFocus: ['h', 'j', 'k', 'l', 'w', 'b', '0', '$', 'gg', 'G', 'f'],
-    par: 12,
+    par: 10,
     story: {
       character: 'zero',
       briefing: "Final initiation test, recruit. Combine everything you've learned. Navigate through our security system and prove you belong here. BYTE and BLADE are both watching.",
@@ -488,7 +488,7 @@ const LEVELS = [
         id: "open_below",
         description: "Use 'o' to open a new line below line 4",
         hint: "Move to line 4, then press o to open a new line below and enter INSERT mode.",
-        validator: (vimState) => vimState.mode === 'INSERT' && vimState.lineCount > 6,
+        validator: (vimState) => vimState.mode === 'INSERT' && vimState.lineCount > 6 && vimState.cursor.line >= 4,
         onComplete: { character: 'byte', line: "New data line created! Injection successful!" }
       },
       {

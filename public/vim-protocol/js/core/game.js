@@ -8,6 +8,7 @@ class Game {
     this.hud = null;
     this.modal = null;
     this.storage = null;
+    this.telemetry = null;
     // The level after which the story choice is presented (end of Act 2)
     this.CHOICE_AFTER_LEVEL = 11;
   }
@@ -17,6 +18,9 @@ class Game {
 
     // Initialize core systems
     this.storage = new Storage();
+    this.telemetry = new Telemetry();
+    // Expose for local inspection: __vimTelemetry.getSummary()
+    if (typeof window !== 'undefined') window.__vimTelemetry = this.telemetry;
     this.stateManager = new StateManager();
 
     // Initialize vim simulator
@@ -410,6 +414,8 @@ class Game {
     const level = this.levelManager.getCurrentLevel();
     const resolvedStory = this.getResolvedStory(level);
 
+    if (this.telemetry) this.telemetry.recordLevelStart(level.id);
+
     // Update HUD and skill log
     this.hud.updateLevel(level);
     this.skillLog.update(level.id);
@@ -478,6 +484,7 @@ class Game {
 
       // Mark level as completed
       this.stateManager.completeLevel();
+      if (this.telemetry) this.telemetry.recordLevelComplete(level.id);
       this.saveGame();
 
       const hasNext = this.levelManager.hasNextLevel();
@@ -570,6 +577,8 @@ class Game {
       const level = this.levelManager.getCurrentLevel();
       const resolvedStory = this.getResolvedStory(level);
 
+      if (this.telemetry) this.telemetry.recordLevelStart(level.id);
+
       this.stateManager.setState({
         playerStats: {
           totalCommands: 0,
@@ -600,6 +609,7 @@ class Game {
     const path = storyManager.getStoryPath();
 
     // Persist completion so the main menu can offer cert download
+    if (this.telemetry) this.telemetry.recordGameComplete();
     this.saveGame({ gameComplete: true });
 
     let endingImage = '';
