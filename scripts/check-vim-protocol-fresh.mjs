@@ -27,6 +27,44 @@ const sourceRoot = process.env.VIM_PROTOCOL_SOURCE || DEFAULT_SOURCE
 
 const committedTarget = path.join(repoRoot, 'public', 'vim-protocol')
 const committedShell = path.join(repoRoot, 'src', 'vimProtocolShell.js')
+const appSourceFile = path.join(repoRoot, 'src', 'App.jsx')
+
+// The React route (src/App.jsx -> VimProtocolPage) does NOT use the game's
+// index.html: it injects the body markup (vimProtocolShell.js) and then loads
+// the game's scripts from a hand-maintained list (VIM_PROTOCOL_SCRIPT_PATHS).
+// If the game adds/removes a <script> but that list isn't updated, the deployed
+// game silently breaks (e.g. game.js referencing an undefined class), even
+// though the static /vim-protocol/index.html is fine. Guard against that drift.
+function extractGameScripts(html) {
+  return new Set(
+    [...html.matchAll(/<script[^>]*\bsrc=["'](js\/[A-Za-z0-9_\-/.]+\.js)["']/gi)].map(
+      (m) => m[1],
+    ),
+  )
+}
+
+function extractLoaderScripts(appSource) {
+  return new Set(
+    [...appSource.matchAll(/\/(js\/[A-Za-z0-9_\-/.]+\.js)\b/g)].map((m) => m[1]),
+  )
+}
+
+function diffScriptManifest(expectedHtml, loaderSource) {
+  const expected = extractGameScripts(expectedHtml)
+  const actual = extractLoaderScripts(loaderSource)
+  const out = []
+  for (const rel of expected) {
+    if (!actual.has(rel)) {
+      out.push(`missing from React loader (VIM_PROTOCOL_SCRIPT_PATHS): ${rel}`)
+    }
+  }
+  for (const rel of actual) {
+    if (!expected.has(rel)) {
+      out.push(`stale in React loader (game no longer ships it): ${rel}`)
+    }
+  }
+  return out
+}
 
 if (!fs.existsSync(sourceRoot)) {
   console.log(
@@ -105,6 +143,13 @@ try {
   const committedShellExists = fs.existsSync(committedShell)
   if (!committedShellExists || !freshShell.equals(fs.readFileSync(committedShell))) {
     problems.push('out of date: src/vimProtocolShell.js')
+  }
+
+  // Verify the React loader's script manifest matches the game's index.html.
+  const freshIndex = fs.readFileSync(path.join(tmpTarget, 'index.html'), 'utf8')
+  if (fs.existsSync(appSourceFile)) {
+    const appSource = fs.readFileSync(appSourceFile, 'utf8')
+    problems.push(...diffScriptManifest(freshIndex, appSource))
   }
 
   if (problems.length > 0) {

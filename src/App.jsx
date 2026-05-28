@@ -21,6 +21,7 @@ const VIM_PROTOCOL_SCRIPT_PATHS = [
   `${VIM_PROTOCOL_ASSET_BASE}/js/vim/commands.js`,
   `${VIM_PROTOCOL_ASSET_BASE}/js/vim/vim-simulator.js`,
   `${VIM_PROTOCOL_ASSET_BASE}/js/core/storage.js`,
+  `${VIM_PROTOCOL_ASSET_BASE}/js/core/telemetry.js`,
   `${VIM_PROTOCOL_ASSET_BASE}/js/core/state-manager.js`,
   `${VIM_PROTOCOL_ASSET_BASE}/js/core/game.js`,
   `${VIM_PROTOCOL_ASSET_BASE}/js/narrative/characters.js`,
