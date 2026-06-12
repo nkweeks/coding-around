@@ -6,6 +6,10 @@ import vimProtocolShell from './vimProtocolShell.js'
 const HPD_ARREST_LOG_ROUTE = '/hpd-arrest-log'
 const VIM_PROTOCOL_ROUTE = '/vim-protocol'
 const VIM_PROTOCOL_LEGACY_ROUTE = '/vim-protocol/index.html'
+// VIM DOJO is served as plain static files from public/vim-dojo. If the SPA
+// rewrite catches the bare path (no trailing slash), bounce to the real file.
+const VIM_DOJO_ROUTE = '/vim-dojo'
+const VIM_DOJO_URL = '/vim-dojo/index.html'
 const VIM_PROTOCOL_ASSET_BASE = '/vim-protocol'
 const VIM_PROTOCOL_STYLE_PATHS = [
   `${VIM_PROTOCOL_ASSET_BASE}/css/main.css`,
@@ -84,7 +88,23 @@ const featuredOpsProject = {
   url: HPD_ARREST_LOG_ROUTE,
 }
 
-const featuredCollection = [featuredProject, featuredSubproject, featuredOpsProject]
+const featuredDojo = {
+  name: 'VIM DOJO',
+  label: 'New Release',
+  summary:
+    'A belt-based Vim training dojo — 47+ drills, tournament duels, achievements, and a full modal-editor engine. The ground-up sequel to VIM Protocol.',
+  orchardSummary: 'A belt-based Vim training game with drills and duels.',
+  stack: ['Vanilla JS', 'Custom Vim engine', 'Belt curriculum', 'Duels'],
+  status: 'Playable now',
+  url: VIM_DOJO_URL,
+}
+
+const featuredCollection = [
+  featuredProject,
+  featuredSubproject,
+  featuredDojo,
+  featuredOpsProject,
+]
 const HOME_THEME_STORAGE_KEY = 'coding-around-home-theme'
 
 function normalizePath(pathname) {
@@ -617,6 +637,7 @@ function PortfolioHome() {
             </a>
             <a href={featuredOpsProject.url}>HPD Log</a>
             <a href={featuredSubproject.url}>VIM Protocol</a>
+            <a href={featuredDojo.url}>VIM DOJO</a>
             <a href="mailto:hello@codingaround.dev">Contact</a>
           </nav>
           <button
@@ -790,6 +811,7 @@ function PortfolioHome() {
                 <span>{featuredSubproject.status}</span>
                 <strong>{featuredSubproject.source}</strong>
                 <a href={featuredSubproject.url}>Open full game</a>
+                <a href={featuredDojo.url}>Play VIM DOJO — the sequel</a>
               </div>
             </div>
 
@@ -921,6 +943,13 @@ function PortfolioHome() {
   )
 }
 
+function VimDojoRedirect() {
+  useEffect(() => {
+    window.location.replace(VIM_DOJO_URL)
+  }, [])
+  return null
+}
+
 function App() {
   const pathname = typeof window === 'undefined' ? '/' : normalizePath(window.location.pathname)
 
@@ -930,6 +959,10 @@ function App() {
 
   if (pathname === VIM_PROTOCOL_ROUTE || pathname === VIM_PROTOCOL_LEGACY_ROUTE) {
     return <VimProtocolPage />
+  }
+
+  if (pathname === VIM_DOJO_ROUTE) {
+    return <VimDojoRedirect />
   }
 
   return <PortfolioHome />

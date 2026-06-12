@@ -8,11 +8,13 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "check:deploy": "npm run check:vim-protocol-fresh && npm run lint && npm run build",
+    "check:deploy": "npm run check:vim-protocol-fresh && npm run check:vim-dojo-fresh && npm run lint && npm run build",
     "check:vim-protocol-fresh": "node scripts/check-vim-protocol-fresh.mjs",
+    "check:vim-dojo-fresh": "node scripts/check-vim-dojo-fresh.mjs",
     "sync:vim-protocol": "node scripts/sync-vim-protocol.mjs",
+    "sync:vim-dojo": "node scripts/sync-vim-dojo.mjs",
     "sync:hpd-arrest-log": "node scripts/sync-hpd-arrest-log.mjs",
-    "sync:projects": "npm run sync:vim-protocol && npm run sync:hpd-arrest-log"
+    "sync:projects": "npm run sync:vim-protocol && npm run sync:vim-dojo && npm run sync:hpd-arrest-log"
   },
   "engines": {
     "node": "^20.19.0 || >=22.12.0",
