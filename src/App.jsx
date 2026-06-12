@@ -99,11 +99,24 @@ const featuredDojo = {
   url: VIM_DOJO_URL,
 }
 
+const featuredPmTool = {
+  name: 'Project Manager',
+  label: 'Featured Internal Tool',
+  summary:
+    'A local-first project tracker that an AI project manager runs day-to-day: Kanban boards, Gantt, wiki-linked notes, an audit-trail activity feed, an agent CLI, and a blockers inbox for human decisions.',
+  orchardSummary: 'A local-first tracker built to be operated by AI agents.',
+  stack: ['Next.js', 'Prisma + SQLite', 'Agent CLI', 'Claude assistant'],
+  status: 'In daily use',
+  source: 'Private repo: nkweeks/project-manager',
+  url: '#case-study-pm',
+}
+
 const featuredCollection = [
   featuredProject,
   featuredSubproject,
   featuredDojo,
   featuredOpsProject,
+  featuredPmTool,
 ]
 const HOME_THEME_STORAGE_KEY = 'coding-around-home-theme'
 
@@ -853,6 +866,86 @@ function PortfolioHome() {
             </div>
           </article>
 
+          <article className="featured-project-card featured-project-card-hpd" id="pm-card">
+            <div className="featured-project-copy featured-project-copy-hpd">
+              <p className="featured-project-kicker featured-project-kicker-hpd">
+                {featuredPmTool.label}
+              </p>
+              <h3>{featuredPmTool.name}</h3>
+              <p>{isOrchardTheme ? featuredPmTool.orchardSummary : featuredPmTool.summary}</p>
+              <div className="featured-project-tags featured-project-tags-hpd">
+                {(isOrchardTheme ? featuredPmTool.stack.slice(0, 2) : featuredPmTool.stack).map((item) => (
+                  <span key={item}>{item}</span>
+                ))}
+              </div>
+              <div className="featured-project-actions featured-project-actions-hpd">
+                <span>{featuredPmTool.status}</span>
+                <strong>{featuredPmTool.source}</strong>
+                <a href={featuredPmTool.url}>Read the case study</a>
+              </div>
+            </div>
+
+            <div className="featured-project-visual featured-project-visual-hpd" aria-hidden="true">
+              <div className="hpd-preview-shell">
+                <div className="hpd-preview-topbar">
+                  <div className="hpd-preview-lights">
+                    <span className="hpd-preview-light hpd-preview-light-blue" />
+                    <span className="hpd-preview-light hpd-preview-light-orange" />
+                    <span className="hpd-preview-light hpd-preview-light-green" />
+                  </div>
+                  <p>PROJECT MANAGER :: CEO DESK</p>
+                  <span className="hpd-preview-chip">17 PROJECTS</span>
+                </div>
+
+                <div className="hpd-preview-body">
+                  <div className="hpd-preview-toolbar">
+                    <span>blockers: 4</span>
+                    <span>due this week: 3</span>
+                    <span>activity: live</span>
+                  </div>
+
+                  <div className="hpd-preview-metrics">
+                    <article>
+                      <strong>17</strong>
+                      <span>projects</span>
+                    </article>
+                    <article>
+                      <strong>214</strong>
+                      <span>issues</span>
+                    </article>
+                    <article>
+                      <strong>1</strong>
+                      <span>PM (AI)</span>
+                    </article>
+                  </div>
+
+                  <div className="hpd-preview-table">
+                    <div className="hpd-preview-row hpd-preview-row-head">
+                      <span>Key</span>
+                      <span>Status</span>
+                      <span>Activity</span>
+                    </div>
+                    <div className="hpd-preview-row">
+                      <span>VP-16</span>
+                      <span>done</span>
+                      <span>VIM DOJO shipped to /vim-dojo</span>
+                    </div>
+                    <div className="hpd-preview-row">
+                      <span>DN-9</span>
+                      <span>done</span>
+                      <span>Custom booking system built</span>
+                    </div>
+                    <div className="hpd-preview-row">
+                      <span>DN-4</span>
+                      <span>blocked</span>
+                      <span>Needs real salon details</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </article>
+
           <article className="featured-project-card featured-project-card-hpd">
             <div className="featured-project-copy featured-project-copy-hpd">
               <p className="featured-project-kicker featured-project-kicker-hpd">
@@ -932,6 +1025,113 @@ function PortfolioHome() {
               </div>
             </div>
           </article>
+        </section>
+
+        <section className="case-studies" id="case-studies">
+          <div className="section-head">
+            <p className="kicker">Deep dives</p>
+            <h2>Case studies</h2>
+            <p className="section-summary">
+              How three of these systems are actually built — the architecture
+              decisions, the failure modes, and what shipped.
+            </p>
+          </div>
+
+          <details className="case-study" id="case-study-vim">
+            <summary>
+              <strong>VIM Protocol → VIM DOJO</strong>
+              <span>Building a Vim engine twice, and the pipeline that ships it</span>
+            </summary>
+            <div className="case-study-body">
+              <p>
+                VIM Protocol started as a story-driven trainer: a hand-rolled modal
+                editor in vanilla JavaScript (buffer, cursor, command dispatch as
+                separate global classes), 20 linear missions validated by
+                per-level predicates over editor state, and zero build step. The
+                interesting engineering is in the deployment seam: the game lives
+                in its own repo, and a sync script rewrites asset paths, injects a
+                base tag, and extracts body markup into a shell module so the
+                portfolio can serve the same game through its React router. A
+                freshness guard runs in the deploy gate and fails the build if the
+                committed copy drifts from the source repo — drift between two
+                copies of the same game is a class of bug that only ever gets
+                caught in production otherwise. It did, once: a script added to
+                the game's HTML never made it into the React route's
+                hand-maintained loader list, the deployed game silently broke, and
+                the gate now diffs that manifest too.
+              </p>
+              <p>
+                VIM DOJO is the ground-up sequel: a single vim-engine module
+                (operators, registers, dot-repeat, undo trees, ex commands), a
+                belt-based curriculum of 47+ drills with randomized variants, and
+                par-based grading where every drill is proven solvable at par by a
+                test suite (107 tests) before it ships. It serves as plain static
+                files — no framework, no build, system fonts, fully offline.
+              </p>
+              <p className="case-study-links">
+                <a href={VIM_PROTOCOL_ROUTE}>Play VIM Protocol</a>
+                <a href={VIM_DOJO_URL}>Play VIM DOJO</a>
+              </p>
+            </div>
+          </details>
+
+          <details className="case-study" id="case-study-hpd">
+            <summary>
+              <strong>HPD Arrest Log Viewer</strong>
+              <span>Turning a daily PDF dump into an operational dashboard</span>
+            </summary>
+            <div className="case-study-body">
+              <p>
+                The source data is a police department's arrest log, published as
+                PDFs with no API. The pipeline pulls on an hourly scheduler,
+                parses tabular records out of each PDF (with an OCR fallback for
+                scanned pages), normalizes them to JSONL/CSV, and serves a local
+                Flask dashboard with search, watchlists, and alerting. The hard
+                parts are all data-quality: overlapping pull windows duplicate
+                records (a hash-identity dedup detector flags clusters), the
+                upstream layout changes without notice (a schema validator trips
+                an alert instead of silently mis-parsing), and provenance matters
+                (each record now carries its source PDF page so any row can be
+                audited back to the original document). It runs unattended as a
+                launchd agent with rotating structured logs.
+              </p>
+              <p className="case-study-links">
+                <a href={HPD_ARREST_LOG_ROUTE}>Open the snapshot</a>
+              </p>
+            </div>
+          </details>
+
+          <details className="case-study" id="case-study-pm">
+            <summary>
+              <strong>Project Manager</strong>
+              <span>A local-first tracker designed to be operated by AI agents</span>
+            </summary>
+            <div className="case-study-body">
+              <p>
+                A Next.js + Prisma/SQLite tracker (boards, Gantt, graph view,
+                wiki-linked notes, GitHub sync) with one unusual design goal: the
+                primary operator is an AI project manager, with a human in the
+                CEO seat. That inverts several defaults. Every mutation writes to
+                an append-only activity feed, because an agent's work needs to be
+                auditable after the fact. Agents update the tracker through a
+                dedicated CLI rather than raw SQL — ids, enums, timestamps and
+                key minting are enforced in one place, and comment bodies pipe
+                through stdin so shell quoting can't corrupt them. When the agent
+                hits something only the human can resolve (a purchase, an
+                account, a missing photo), it files a blocker; a Blockers inbox
+                in the dashboard collects the questions, and answering one posts
+                the decision back to the issue and unblocks the work. The built-in
+                Claude assistant can read everything but mutates nothing
+                directly: writes become proposals the human accepts or rejects,
+                validated server-side at execution time.
+              </p>
+              <p>
+                The repo is private (it contains a working tracker, not a demo),
+                but the pattern — agent CLI, audit trail, human-decision inbox —
+                is the writeup's point.
+              </p>
+            </div>
+          </details>
         </section>
       </main>
 
