@@ -582,17 +582,17 @@ function PortfolioHome() {
   const orbitScale = 1 + Math.min(0.26, motion.heroPhase * 0.24) * depth
   const year = new Date().getFullYear()
   const heroKicker = isOrchardTheme ? 'Coding Around' : 'Curated software portfolio'
-  const heroHeadingLead = isOrchardTheme ? 'The work comes first.' : 'Three live builds.'
+  const heroHeadingLead = isOrchardTheme ? 'The work comes first.' : 'Five live builds.'
   const heroHeadingTail = isOrchardTheme
     ? ' Open any project.'
-    : ' Three different kinds of software.'
+    : ' Five different kinds of software.'
   const heroDescription = isOrchardTheme
     ? 'A simpler view of the same portfolio.'
-    : 'Coding Around now leads with the work itself: one social product, one playable terminal game, and one operational data tool. Less filler, more software.'
-  const sectionTitle = isOrchardTheme ? 'Open the three projects.' : 'Three projects worth opening'
+    : 'Coding Around leads with the work itself: a social product, two playable Vim trainers, an operational data tool, and the AI-operated tracker that runs it all. Less filler, more software.'
+  const sectionTitle = isOrchardTheme ? 'Open the projects.' : 'Five projects worth opening'
   const sectionSummary = isOrchardTheme
     ? 'Each card leads directly to the real product.'
-    : 'The portfolio home now stays narrow on purpose: three representative builds, each with a direct path into the real product.'
+    : 'The portfolio home stays narrow on purpose: five representative builds, each with a direct path into the real product.'
 
   useEffect(() => {
     document.title = 'Coding Around | Development Portfolio'
