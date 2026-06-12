@@ -45,6 +45,10 @@ execFileSync(
     'CLAUDE.md',
     '--exclude',
     'LEVEL_AUDIT.md',
+    // v2 (VIM DOJO) is the Steam-targeted rebuild; it is not part of the
+    // hosted portfolio copy.
+    '--exclude',
+    'v2',
     `${sourceRoot}/`,
     `${targetRoot}/`,
   ],
