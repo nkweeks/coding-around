@@ -47,8 +47,8 @@ npm run sync:vim-protocol
 This sync command:
 
 - refreshes `public/vim-protocol` from the source project
-- regenerates `src/vimProtocolShell.js` for the `/vim-protocol` app route
-- keeps the deploy-safe image paths needed for Amplify hosting
+- regenerates `src/vimProtocolEntry.js` so `/vim-protocol` opens the complete static game document
+- publishes only `index.html` and `v3/`; the source Git repository, tests, and older games are excluded
 
 ### HPD Arrest Log Viewer
 

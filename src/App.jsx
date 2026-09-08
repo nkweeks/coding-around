@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import './App.css'
 import HpdArrestLogPage from './HpdArrestLogPage.jsx'
-import vimProtocolShell from './vimProtocolShell.js'
+import vimProtocolEntry from './vimProtocolEntry.js'
 
 const HPD_ARREST_LOG_ROUTE = '/hpd-arrest-log'
 const VIM_PROTOCOL_ROUTE = '/vim-protocol'
@@ -10,49 +10,6 @@ const VIM_PROTOCOL_LEGACY_ROUTE = '/vim-protocol/index.html'
 // rewrite catches the bare path (no trailing slash), bounce to the real file.
 const VIM_DOJO_ROUTE = '/vim-dojo'
 const VIM_DOJO_URL = '/vim-dojo/index.html'
-const VIM_PROTOCOL_ASSET_BASE = '/vim-protocol'
-const VIM_PROTOCOL_STYLE_PATHS = [
-  `${VIM_PROTOCOL_ASSET_BASE}/css/main.css`,
-  `${VIM_PROTOCOL_ASSET_BASE}/css/cyberpunk-theme.css`,
-  `${VIM_PROTOCOL_ASSET_BASE}/css/vim-editor.css`,
-  `${VIM_PROTOCOL_ASSET_BASE}/css/ui-components.css`,
-  `${VIM_PROTOCOL_ASSET_BASE}/css/characters.css`,
-  `${VIM_PROTOCOL_ASSET_BASE}/css/mobile.css`,
-]
-const VIM_PROTOCOL_SCRIPT_PATHS = [
-  `${VIM_PROTOCOL_ASSET_BASE}/js/vim/buffer.js`,
-  `${VIM_PROTOCOL_ASSET_BASE}/js/vim/cursor.js`,
-  `${VIM_PROTOCOL_ASSET_BASE}/js/vim/commands.js`,
-  `${VIM_PROTOCOL_ASSET_BASE}/js/vim/vim-simulator.js`,
-  `${VIM_PROTOCOL_ASSET_BASE}/js/core/storage.js`,
-  `${VIM_PROTOCOL_ASSET_BASE}/js/core/telemetry.js`,
-  `${VIM_PROTOCOL_ASSET_BASE}/js/core/state-manager.js`,
-  `${VIM_PROTOCOL_ASSET_BASE}/js/core/game.js`,
-  `${VIM_PROTOCOL_ASSET_BASE}/js/narrative/characters.js`,
-  `${VIM_PROTOCOL_ASSET_BASE}/js/narrative/story-manager.js`,
-  `${VIM_PROTOCOL_ASSET_BASE}/js/levels/skill-catalog.js`,
-  `${VIM_PROTOCOL_ASSET_BASE}/js/levels/level-data.js`,
-  `${VIM_PROTOCOL_ASSET_BASE}/js/levels/mission-validator.js`,
-  `${VIM_PROTOCOL_ASSET_BASE}/js/levels/level-manager.js`,
-  `${VIM_PROTOCOL_ASSET_BASE}/js/ui/modal.js`,
-  `${VIM_PROTOCOL_ASSET_BASE}/js/ui/hud.js`,
-  `${VIM_PROTOCOL_ASSET_BASE}/js/ui/skill-log.js`,
-  `${VIM_PROTOCOL_ASSET_BASE}/js/ui/terminal.js`,
-  'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js',
-  `${VIM_PROTOCOL_ASSET_BASE}/js/ui/certificate-generator.js`,
-]
-const VIM_BOOT_FEED = [
-  'Linking BLADE mission profile',
-  'Restoring BYTE advisory channel',
-  'Calibrating command-history relay',
-  'Arming normal-mode traversal core',
-]
-const VIM_BOOT_STATUS_CARDS = [
-  { label: 'Operatives', value: 'BLADE // BYTE' },
-  { label: 'Target', value: 'NEXUS TERMINAL' },
-  { label: 'Mode', value: 'TRAINING SHARD' },
-]
-
 const featuredProject = {
   name: 'Benstagram.net',
   label: 'Featured Project',
@@ -68,9 +25,9 @@ const featuredSubproject = {
   name: 'VIM Protocol',
   label: 'Featured Subproject',
   summary:
-    'A cyber training simulator built around a custom Vim engine, branching missions, and character-driven progression.',
+    'Learn Vim through 52 exercises, eight courses, and nine instructor duels in a focused, self-contained training workspace.',
   orchardSummary: 'A command-driven training game built on a custom Vim engine.',
-  stack: ['Vanilla JS', 'Custom Vim engine', 'Branching story', 'Terminal UI'],
+  stack: ['Vanilla JS', 'Custom Vim engine', '52 exercises', 'Local progress'],
   status: 'Playable now',
   source: 'Source project: hacking_game',
   url: VIM_PROTOCOL_ROUTE,
@@ -262,219 +219,10 @@ function OrangeBiteMark({ className = '' }) {
 }
 
 function VimProtocolPage() {
-  const [stylesReady, setStylesReady] = useState(false)
-  const [gameReady, setGameReady] = useState(false)
-  const shellRef = useRef(null)
-  const bootPhaseLabel = stylesReady ? 'Mission shell online' : 'Securing terminal skin'
-  const bootPhaseDetail = stylesReady ? 'Injecting command runtime' : 'Warming neon grid'
-
   useEffect(() => {
-    document.title = 'VIM Protocol | Coding Around'
-
-    const previousTheme = document
-      .querySelector('meta[name="theme-color"]')
-      ?.getAttribute('content')
-
-    let themeMeta = document.querySelector('meta[name="theme-color"]')
-    let createdThemeMeta = false
-    if (!themeMeta) {
-      themeMeta = document.createElement('meta')
-      themeMeta.setAttribute('name', 'theme-color')
-      document.head.appendChild(themeMeta)
-      createdThemeMeta = true
-    }
-    themeMeta.setAttribute('content', '#02080d')
-
-    let cancelled = false
-
-    let baseTag = document.querySelector('base[data-vim-protocol-base]')
-    let createdBaseTag = false
-    if (!baseTag) {
-      baseTag = document.createElement('base')
-      baseTag.href = `${VIM_PROTOCOL_ASSET_BASE}/`
-      baseTag.dataset.vimProtocolBase = 'true'
-      document.head.prepend(baseTag)
-      createdBaseTag = true
-    }
-
-    const createdLinks = []
-    const createdScripts = []
-
-    if (shellRef.current && shellRef.current.innerHTML.trim() !== vimProtocolShell.trim()) {
-      shellRef.current.innerHTML = vimProtocolShell
-    }
-
-    const nextFrame = () =>
-      new Promise((resolve) => {
-        window.requestAnimationFrame(() => resolve())
-      })
-
-    const loadStyle = (href) =>
-      new Promise((resolve, reject) => {
-        const existing = document.querySelector(`link[data-vim-protocol-style="${href}"]`)
-        if (existing) {
-          if (existing.sheet) {
-            resolve()
-            return
-          }
-          existing.addEventListener('load', () => resolve(), { once: true })
-          existing.addEventListener('error', () => reject(new Error(`Failed to load ${href}`)), {
-            once: true,
-          })
-          return
-        }
-
-        const link = document.createElement('link')
-        link.rel = 'stylesheet'
-        link.href = href
-        link.dataset.vimProtocolStyle = href
-        link.onload = () => resolve()
-        link.onerror = () => reject(new Error(`Failed to load ${href}`))
-        document.head.appendChild(link)
-        createdLinks.push(link)
-      })
-
-    const loadScript = (src) =>
-      new Promise((resolve, reject) => {
-        if (document.querySelector(`script[data-vim-protocol-src="${src}"]`)) {
-          resolve()
-          return
-        }
-
-        const script = document.createElement('script')
-        script.src = src
-        script.async = false
-        script.dataset.vimProtocolSrc = src
-        script.onload = () => resolve()
-        script.onerror = () => reject(new Error(`Failed to load ${src}`))
-        document.body.appendChild(script)
-        createdScripts.push(script)
-      })
-
-    const bootstrap = async () => {
-      await Promise.all(VIM_PROTOCOL_STYLE_PATHS.map((href) => loadStyle(href)))
-
-      if (cancelled) {
-        return
-      }
-
-      setStylesReady(true)
-      await nextFrame()
-      await nextFrame()
-
-      for (const src of VIM_PROTOCOL_SCRIPT_PATHS) {
-        if (cancelled) {
-          return
-        }
-        await loadScript(src)
-      }
-
-      if (cancelled) {
-        return
-      }
-
-      const initScript = document.createElement('script')
-      initScript.dataset.vimProtocolInit = 'true'
-      initScript.text = `
-        if (window.game && window.game.hud && typeof window.game.hud.stopTimer === 'function') {
-          window.game.hud.stopTimer();
-        }
-        window.game = new Game();
-        window.game.init();
-      `
-      document.body.appendChild(initScript)
-      createdScripts.push(initScript)
-
-      await nextFrame()
-
-      if (!cancelled) {
-        setGameReady(true)
-      }
-    }
-
-    bootstrap().catch((error) => {
-      console.error('VIM Protocol bootstrap failed', error)
-    })
-
-    return () => {
-      cancelled = true
-      if (window.game?.hud && typeof window.game.hud.stopTimer === 'function') {
-        window.game.hud.stopTimer()
-      }
-      createdScripts.reverse().forEach((node) => node.remove())
-      createdLinks.reverse().forEach((node) => node.remove())
-      if (createdBaseTag) {
-        baseTag?.remove()
-      }
-      if (themeMeta && previousTheme) {
-        themeMeta.setAttribute('content', previousTheme)
-      } else if (createdThemeMeta) {
-        themeMeta?.remove()
-      }
-    }
+    window.location.replace(vimProtocolEntry)
   }, [])
-
-  return (
-    <div className="vim-protocol-page">
-      <div
-        ref={shellRef}
-        className={`vim-protocol-shell ${stylesReady ? 'has-styles' : 'is-prerender'} ${gameReady ? 'is-live' : 'is-staged'}`}
-      />
-
-      <div className={`vim-boot-screen ${stylesReady ? 'is-styled' : ''} ${gameReady ? 'is-hidden' : ''}`}>
-        <div className="vim-boot-panel">
-          <p className="vim-boot-kicker">Coding Around // launch sequence</p>
-          <h1>VIM Protocol</h1>
-          <p className="vim-boot-copy">
-            The crew is staging a live terminal run. Mission layers, command systems, and story
-            channels come online before operator control is released.
-          </p>
-          <div className="vim-boot-chips" aria-hidden="true">
-            <span>OPERATIVE: BLADE</span>
-            <span>ADVISOR: BYTE</span>
-            <span>THREAT: NEXUS</span>
-          </div>
-          <div className="vim-boot-progress" aria-hidden="true">
-            <span className={stylesReady ? 'is-advanced' : ''} />
-          </div>
-          <div className="vim-boot-meta">
-            <span>{bootPhaseLabel}</span>
-            <span>{bootPhaseDetail}</span>
-          </div>
-          <div className="vim-boot-grid">
-            <section className="vim-boot-card">
-              <div className="vim-boot-card-head">
-                <span className="vim-boot-card-dot" />
-                <p>MISSION FEED</p>
-              </div>
-              <div className="vim-boot-log">
-                {VIM_BOOT_FEED.map((item, index) => (
-                  <p key={item} style={{ '--boot-delay': `${index * 110}ms` }}>
-                    <span>&gt;</span>
-                    {item}
-                  </p>
-                ))}
-              </div>
-            </section>
-            <section className="vim-boot-card">
-              <div className="vim-boot-card-head">
-                <span className="vim-boot-card-dot" />
-                <p>MISSION STATUS</p>
-              </div>
-              <div className="vim-boot-status-grid">
-                {VIM_BOOT_STATUS_CARDS.map((item) => (
-                  <article key={item.label}>
-                    <span>{item.label}</span>
-                    <strong>{item.value}</strong>
-                  </article>
-                ))}
-              </div>
-            </section>
-          </div>
-        </div>
-      </div>
-    </div>
-  )
+  return <main className="vim-redirect"><h1>VIM Protocol 3</h1><p>Opening your training workspace…</p><a href={vimProtocolEntry}>Open VIM Protocol</a></main>
 }
 
 function PortfolioHome() {
@@ -1039,39 +787,27 @@ function PortfolioHome() {
 
           <details className="case-study" id="case-study-vim">
             <summary>
-              <strong>VIM Protocol → VIM DOJO</strong>
-              <span>Building a Vim engine twice, and the pipeline that ships it</span>
+              <strong>VIM Protocol 3</strong>
+              <span>A focused training workspace, a tested Vim engine, and one deployable document</span>
             </summary>
             <div className="case-study-body">
               <p>
-                VIM Protocol started as a story-driven trainer: a hand-rolled modal
-                editor in vanilla JavaScript (buffer, cursor, command dispatch as
-                separate global classes), 20 linear missions validated by
-                per-level predicates over editor state, and zero build step. The
-                interesting engineering is in the deployment seam: the game lives
-                in its own repo, and a sync script rewrites asset paths, injects a
-                base tag, and extracts body markup into a shell module so the
-                portfolio can serve the same game through its React router. A
-                freshness guard runs in the deploy gate and fails the build if the
-                committed copy drifts from the source repo — drift between two
-                copies of the same game is a class of bug that only ever gets
-                caught in production otherwise. It did, once: a script added to
-                the game's HTML never made it into the React route's
-                hand-maintained loader list, the deployed game silently broke, and
-                the gate now diffs that manifest too.
+                The third major version combines the original game's characters with
+                the stronger VIM DOJO engine. Its eight courses contain 52 exercises
+                and nine instructor duels. A shared exercise runner powers both the
+                browser and automated solution checks, while keyboard-level campaign
+                playtesting verifies completion, medals, progression, and the final
+                mastery unlock. Progress lives in three validated local profiles,
+                with version-two migration and recoverable backup imports.
               </p>
               <p>
-                VIM DOJO is the ground-up sequel: a single vim-engine module
-                (operators, registers, dot-repeat, undo trees, ex commands), a
-                belt-based curriculum of 47+ drills with randomized variants, and
-                par-based grading where every drill is proven solvable at par by a
-                test suite (107 tests) before it ships. It serves as plain static
-                files — no framework, no build, system fonts, fully offline.
+                The source project owns the complete static document. A sync step
+                publishes only its entry and runtime assets, and the portfolio route
+                opens that entry directly. A freshness check compares every hosted
+                file against the source, eliminating the old duplicated script loader
+                and keeping Git history, tests, and local settings out of deployment.
               </p>
-              <p className="case-study-links">
-                <a href={VIM_PROTOCOL_ROUTE}>Play VIM Protocol</a>
-                <a href={VIM_DOJO_URL}>Play VIM DOJO</a>
-              </p>
+              <p className="case-study-links"><a href={VIM_PROTOCOL_ROUTE}>Play VIM Protocol 3</a><a href={VIM_DOJO_URL}>Explore the previous VIM DOJO</a></p>
             </div>
           </details>
 
