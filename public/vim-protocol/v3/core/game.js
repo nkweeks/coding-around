@@ -8,6 +8,10 @@
   "use strict";
 
   var SLOTS_KEY = "vim-protocol-v3-slots";
+  var Theme =
+    typeof module !== "undefined" && module.exports
+      ? require("./theme.js")
+      : window.VimTheme;
   var PREFS_KEY = "vim-protocol-v3-prefs";
   var LEGACY_KEY = "vim-dojo-v2-save";
 
@@ -142,6 +146,8 @@
       sfx: false,
       music: false,
       reducedMotion: false,
+      themeHue: Theme.DEFAULT_HUE,
+      themeCycle: false,
       termFont: "medium", // small | medium | large
       colorAssist: false, // letter labels next to medal icons
       duelMode: "normal", // assist | normal | blitz
@@ -182,6 +188,8 @@
       sfx: p.sfx === true,
       music: false,
       reducedMotion: p.reducedMotion === true,
+      themeHue: Theme.normalizeHue(p.themeHue),
+      themeCycle: p.themeCycle === true,
       termFont:
         ["small", "medium", "large"].indexOf(p.termFont) >= 0
           ? p.termFont
@@ -311,7 +319,7 @@
   };
 
   Game.prototype.savePrefs = function () {
-    writeJSON(PREFS_KEY, this.prefs);
+    return writeJSON(PREFS_KEY, this.prefs);
   };
 
   Game.prototype.reset = function () {

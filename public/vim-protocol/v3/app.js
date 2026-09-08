@@ -40,6 +40,7 @@
       ? "reduced"
       : "normal";
     document.documentElement.dataset.font = app.game.prefs.termFont;
+    P.applyTheme(app.game.prefs);
   }
   function render(focus = true) {
     clearInterval(app.timer);
@@ -299,7 +300,7 @@
     const complete = app.game.trackComplete(C.TRACKS[app.trackIndex]);
     modal(
       won ? "The form is yours." : "Breathe. Reset. Try again.",
-      `<img class="result-portrait" src="v3/assets/${duel.data.opponent}.jpeg" alt="${duel.data.opponent.toUpperCase()}"><p>${E(won ? duel.data.winText : reason)}</p>${won && complete ? `<p class="success">${P.belt(app.trackIndex)} earned${app.trackIndex < 7 ? " · Next course unlocked." : "."}</p>` : ""}<div class="actions">${B(won ? "Continue training" : "Try duel again", won ? "duel-done" : "duel-retry", 'class="primary"')}${B("Back to course", "result-course", 'class="secondary"')}</div>`,
+      `<img class="result-portrait themed-portrait" src="v3/assets/${duel.data.opponent}.jpeg" alt="${duel.data.opponent.toUpperCase()}"><p>${E(won ? duel.data.winText : reason)}</p>${won && complete ? `<p class="success">${P.belt(app.trackIndex)} earned${app.trackIndex < 7 ? " · Next course unlocked." : "."}</p>` : ""}<div class="actions">${B(won ? "Continue training" : "Try duel again", won ? "duel-done" : "duel-retry", 'class="primary"')}${B("Back to course", "result-course", 'class="secondary"')}</div>`,
       { result: true },
     );
   }
@@ -373,26 +374,27 @@
   }
   function certificate() {
     if (!app.game.gameComplete()) return;
+    const colors = window.VimTheme.palette(app.game.prefs.themeHue).tokens;
     const canvas = document.createElement("canvas");
     canvas.width = 1600;
     canvas.height = 1100;
     const c = canvas.getContext("2d");
-    c.fillStyle = "#101413";
+    c.fillStyle = colors.bg;
     c.fillRect(0, 0, 1600, 1100);
-    c.strokeStyle = "#627546";
+    c.strokeStyle = colors["border-strong"];
     c.lineWidth = 2;
     c.strokeRect(45, 45, 1510, 1010);
     c.textAlign = "center";
-    c.fillStyle = "#c5f47b";
+    c.fillStyle = colors.accent;
     c.font = "24px monospace";
     c.fillText("VIM PROTOCOL / 3", 800, 150);
-    c.fillStyle = "#eef0e7";
+    c.fillStyle = colors.ink;
     c.font = "60px Georgia";
     c.fillText("Certificate of Mastery", 800, 300);
     c.font = "22px sans-serif";
-    c.fillStyle = "#aab5a8";
+    c.fillStyle = colors.muted;
     c.fillText("Presented to", 800, 395);
-    c.fillStyle = "#eef0e7";
+    c.fillStyle = colors.ink;
     c.font = "48px Georgia";
     c.fillText(
       app.game.save.playerName || `Operator 0${app.game.slot}`,
@@ -402,14 +404,14 @@
     );
     c.font = "26px sans-serif";
     c.fillText("Eight courses. Every duel. One fluent way to edit.", 800, 580);
-    c.fillStyle = "#c5f47b";
+    c.fillStyle = colors.accent;
     c.font = "30px monospace";
     c.fillText(
       app.game.allGold() ? "PERFECT FORM / ALL GOLD" : "BLACK BELT / COMPLETE",
       800,
       695,
     );
-    c.fillStyle = "#aab5a8";
+    c.fillStyle = colors.muted;
     c.font = "22px sans-serif";
     const totals = app.game.totals();
     c.fillText(
@@ -431,8 +433,19 @@
       if (blob) download(blob, "image/png", "vim-protocol-3-mastery.png");
     }, "image/png");
   }
+  function setTheme(hue, persist = true, manual = true) {
+    app.game.prefs.themeHue = window.VimTheme.normalizeHue(hue);
+    if (manual) app.game.prefs.themeCycle = false;
+    P.applyTheme(app.game.prefs);
+    if (persist && !app.game.savePrefs())
+      notice("Theme changed for this session. Browser storage is unavailable.");
+  }
   function action(name, element) {
     const [command, a, b] = name.split(":");
+    if (command === "theme") {
+      setTheme(Number(a));
+      return;
+    }
     if (command === "nav") {
       go(a);
       return;
@@ -574,6 +587,15 @@
           app.replayTimer = setInterval(replayStep, 260);
         }
         break;
+      case "theme-dialog":
+        modal("Color theme", P.themeControls(app.game.prefs, "dialog"));
+        break;
+      case "theme-generate":
+        setTheme(window.VimTheme.nextHue(app.game.prefs.themeHue));
+        announce(
+          `Generated ${window.VimTheme.palette(app.game.prefs.themeHue).name} palette.`,
+        );
+        break;
       case "profiles":
         profiles();
         break;
@@ -662,6 +684,8 @@
     }
   });
   root.addEventListener("input", (event) => {
+    if (event.target.matches("[data-theme-hue]"))
+      setTheme(Number(event.target.value), false);
     if (event.target.id === "guide-search") {
       app.guideQuery = event.target.value;
       document.getElementById("guide-results").innerHTML = P.guideRows(
@@ -678,6 +702,19 @@
     if (event.target.id === "settings-form") action("save-settings");
   });
   root.addEventListener("change", async (event) => {
+    if (event.target.matches("[data-theme-hue]")) {
+      setTheme(Number(event.target.value));
+      return;
+    }
+    if (event.target.matches("[data-theme-cycle]")) {
+      app.game.prefs.themeCycle = event.target.checked;
+      P.updateThemeControls(app.game.prefs);
+      if (!app.game.savePrefs())
+        notice(
+          "Theme changed for this session. Browser storage is unavailable.",
+        );
+      return;
+    }
     if (event.target.id !== "import-file") return;
     const file = event.target.files[0];
     if (!file) return;
@@ -779,6 +816,20 @@
     updatePauseState();
     if (document.hidden && app.session) app.game.persist();
   });
+  setInterval(() => {
+    if (
+      window.VimTheme.canCycle({
+        enabled: app.game.prefs.themeCycle,
+        page: app.page,
+        hidden: document.hidden,
+        dialogOpen: document.getElementById("dialog")?.open,
+        reducedMotion:
+          app.game.prefs.reducedMotion ||
+          matchMedia("(prefers-reduced-motion: reduce)").matches,
+      })
+    )
+      setTheme(window.VimTheme.cycleHue(app.game.prefs.themeHue), true, false);
+  }, 45000);
   window.addEventListener("pagehide", () => {
     if (app.session) saveTime();
   });

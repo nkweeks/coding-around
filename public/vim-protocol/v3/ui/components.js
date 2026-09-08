@@ -30,6 +30,8 @@
   P.button = (text, action, extra = "") =>
     `<button type="button" data-action="${action}" ${extra}>${text}</button>`;
   const paths = {
+    palette:
+      '<circle cx="12" cy="12" r="9"/><circle cx="8" cy="8" r="1"/><circle cx="15" cy="7" r="1"/><circle cx="7" cy="14" r="1"/><path d="M20 16h-6l-2 5"/>',
     training:
       '<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/><path d="m18 6 3-3"/>',
     practice: '<path d="m4 6 6 6-6 6m9 0h7"/>',
@@ -110,6 +112,6 @@
         ),
       )
       .join("");
-    return `<aside class="sidebar"><a href="#training" data-action="nav:training" class="brand" aria-label="VIM Protocol training"><img src="v3/assets/mark.svg" width="80" height="80" alt=""><span>VIM<br>PROTOCOL</span><small>3.0</small></a><nav aria-label="Main navigation">${nav}</nav><div class="rail-bottom">${P.button(`${P.icon("settings")}<span>Settings</span>`, "nav:settings", `class="nav-item ${current === "settings" ? "active" : ""}" aria-label="Settings"`)}${P.button(`<span class="avatar">0${app.game.slot}</span><span>${P.escape(profile)}<small>Local profile</small></span>`, "profiles", `class="profile" aria-label="Switch profile: ${P.escape(profile)}"`)}</div></aside><div class="workspace"><header class="topbar"><span>${(P.nav.find((n) => n[0] === current) || ["", "Settings"])[1]}</span><span class="motto">Your pace. Your progress.</span></header><main id="main" tabindex="-1">${content}</main><footer class="app-footer"><span>VIM Protocol 3.0.0</span><span>${app.game.storageWarning ? P.escape(app.game.storageWarning) : "Progress saves on this device."}</span><span>${P.button("Keyboard help", "help", 'class="text-button"')}</span></footer></div><dialog id="dialog" aria-labelledby="dialog-title"></dialog><div class="toast" id="toast" role="status" hidden></div>`;
+    return `<aside class="sidebar"><a href="#training" data-action="nav:training" class="brand" aria-label="VIM Protocol training">${window.VimTheme.logo()}<span>VIM<br>PROTOCOL</span><small>3.1</small></a><nav aria-label="Main navigation">${nav}</nav><div class="rail-bottom">${P.button(`${P.icon("settings")}<span>Settings</span>`, "nav:settings", `class="nav-item ${current === "settings" ? "active" : ""}" aria-label="Settings"`)}${P.button(`<span class="avatar">0${app.game.slot}</span><span>${P.escape(profile)}<small>Local profile</small></span>`, "profiles", `class="profile" aria-label="Switch profile: ${P.escape(profile)}"`)}</div></aside><div class="workspace"><header class="topbar"><span>${(P.nav.find((n) => n[0] === current) || ["", "Settings"])[1]}</span><div class="topbar-tools"><span class="motto">Your pace. Your progress.</span>${P.button(`<i class="theme-dot"></i><span data-theme-name>${window.VimTheme.palette(app.game.prefs.themeHue).name}</span>`, "theme-dialog", 'class="theme-trigger" aria-label="Change color theme"')}</div></header><main id="main" tabindex="-1">${content}</main><footer class="app-footer"><span>VIM Protocol 3.1.0</span><span>${app.game.storageWarning ? P.escape(app.game.storageWarning) : "Progress saves on this device."}</span><span>${P.button("Keyboard help", "help", 'class="text-button"')}</span></footer></div><dialog id="dialog" aria-labelledby="dialog-title"></dialog><div class="toast" id="toast" role="status" hidden></div>`;
   };
 })();
